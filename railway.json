@@ -1,8 +1,4 @@
-# railway.json
-# Railway deployment configuration for DecentraStore
-# Deploy at: https://railway.app
-
-{
+﻿{
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS"
