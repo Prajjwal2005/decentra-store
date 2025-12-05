@@ -1,0 +1,2639 @@
+[
+  {
+    "index": 0,
+    "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "data": {
+      "file_id": "0451acb2-300c-4acb-b369-d4c89fb9d77c",
+      "owner_id": "a1ab0222-46c2-4a0c-9af2-0fcae020b3c2",
+      "owner_username": "okayprajj",
+      "filename": "test_big.txt",
+      "file_size": 5315652,
+      "file_hash": "d1b9ca8904a3937fe2de2b5cf48f383dac35e1835a54f219d68e59f88c2a81b7",
+      "merkle_root": "65dce97a0dac15461f6aee591257d769fa672613ef90ac7a1fa9df3727e5753a",
+      "chunk_count": 21,
+      "chunk_size": 262144,
+      "chunks": [
+        {
+          "index": 0,
+          "original_hash": "f430db861aef88231f873777ea6b695837832ed76328e43513d177fc4d57d55c",
+          "encrypted_hash": "55e3f31bd10abbd7c58abfc5f0e1693eb384034122ffb9c24badd4fff2cef93a",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01591205596923828,
+              "chunk_hash": "55e3f31bd10abbd7c58abfc5f0e1693eb384034122ffb9c24badd4fff2cef93a",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "original_hash": "f78cdf1df53c4ba04de74b94abf40879f055c4607c1b91996adfdc651bc51a27",
+          "encrypted_hash": "3068fca52566cf589c2e700b9f2ce0ea705554a766a4d748980e372a01297123",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.015973806381225586,
+              "chunk_hash": "3068fca52566cf589c2e700b9f2ce0ea705554a766a4d748980e372a01297123",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "original_hash": "dbfdd4436ebe898c5f47e4192ee1cdc23b335fbc897632cad7c84c2c8302c0c4",
+          "encrypted_hash": "e557df3180a3a7d176d9d6f7346109009a05d396f3a4d39b0b61c5a2d5a2d4f9",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.015322208404541016,
+              "chunk_hash": "e557df3180a3a7d176d9d6f7346109009a05d396f3a4d39b0b61c5a2d5a2d4f9",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "original_hash": "78018cca618b8c56d568560dfe91dbbf74e9cf3114531f27e95834d9c5c96a81",
+          "encrypted_hash": "9f30edd2cb3985376336e39dab7d413161b00137a1fc5c38efe5775efbce57ed",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.016025781631469727,
+              "chunk_hash": "9f30edd2cb3985376336e39dab7d413161b00137a1fc5c38efe5775efbce57ed",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "original_hash": "68a95ddd6fb8bf9888e16a0f78ec7659b5b66a9f56c30c66b3a341b644d42735",
+          "encrypted_hash": "b97b190a8f19de18d6b1d8aa6b47eb5a400d6c5901f04da6bd4f041d12e60a91",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.018398523330688477,
+              "chunk_hash": "b97b190a8f19de18d6b1d8aa6b47eb5a400d6c5901f04da6bd4f041d12e60a91",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "original_hash": "b50997deab48e56eade8bc7f775221caf021f6a3fcee3d02678bb25594c0f506",
+          "encrypted_hash": "3ce6f71145a88d5434a5566899b5f92759402d39802ef3a31b8d6bd90e048060",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.015580415725708008,
+              "chunk_hash": "3ce6f71145a88d5434a5566899b5f92759402d39802ef3a31b8d6bd90e048060",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "original_hash": "d82a3b3f156a892d93a9e7c99336cf48aa1714da4995bae03c7b72d172b3bee8",
+          "encrypted_hash": "61af04c00f46a1d67d393cfc1cf88ad89e024c88ead412c74e3d0c8a3196c063",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.016130924224853516,
+              "chunk_hash": "61af04c00f46a1d67d393cfc1cf88ad89e024c88ead412c74e3d0c8a3196c063",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "original_hash": "03ecd56328b8cffc2d4ac0f2fafbdba8d595644b306a3f8c6f29d48f7f9029dc",
+          "encrypted_hash": "d2e63285c3deb4e99f50aed2023a04683a7887406f9cc73f841c76e95abe2eba",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01602458953857422,
+              "chunk_hash": "d2e63285c3deb4e99f50aed2023a04683a7887406f9cc73f841c76e95abe2eba",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "original_hash": "1abed91b5d413761bdfdef5a7773070bf12a4b69c63bece7ed9c7158164fbeb1",
+          "encrypted_hash": "bcf38e2415802cb9dc5691a6b51c29dbeaf7144475c7855c3e6b671d29601f74",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.012383699417114258,
+              "chunk_hash": "bcf38e2415802cb9dc5691a6b51c29dbeaf7144475c7855c3e6b671d29601f74",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "original_hash": "6acb621942081946c1eaf211673637e0fc65b0829ab2252b76c1b536497780e5",
+          "encrypted_hash": "8222c1e3142ec407a2354cff64deff6b1b43e111bca908d0d96f144688168e6f",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.011122465133666992,
+              "chunk_hash": "8222c1e3142ec407a2354cff64deff6b1b43e111bca908d0d96f144688168e6f",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 10,
+          "original_hash": "4d5a6b0fc27715e99a23afa3a4ec333d36af111428376f9a73de8edbf4269aa1",
+          "encrypted_hash": "f9c0d07b1b0cbb383903277d029c4a9c6a5dbcdd8f894efa5e13d3478129efc9",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01615595817565918,
+              "chunk_hash": "f9c0d07b1b0cbb383903277d029c4a9c6a5dbcdd8f894efa5e13d3478129efc9",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 11,
+          "original_hash": "c07c8099cd37dbe52d36540821e300336cde5131a1b94e6daab306257024cc47",
+          "encrypted_hash": "eb7c4cc29eb743165d80a0973dff4cf201c9d5b44aef1357dfce64a7e8257516",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.024921417236328125,
+              "chunk_hash": "eb7c4cc29eb743165d80a0973dff4cf201c9d5b44aef1357dfce64a7e8257516",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 12,
+          "original_hash": "09013b27a4344e90980811d137572b0d3d9cd0b376c98bb58630595964dc02be",
+          "encrypted_hash": "400d767fcf3847475efc1eff74a7f66984fe3054f014196cae3a0aff32f9627e",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.032716989517211914,
+              "chunk_hash": "400d767fcf3847475efc1eff74a7f66984fe3054f014196cae3a0aff32f9627e",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 13,
+          "original_hash": "2639eeb0e3401bc8437cb7af2c6a31a35e86ab82969676b7fc98d780b524a442",
+          "encrypted_hash": "e506006c7571c79643e6dad1fff1812a7b5577d99baa7589214a32c0b88cecbf",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.008942127227783203,
+              "chunk_hash": "e506006c7571c79643e6dad1fff1812a7b5577d99baa7589214a32c0b88cecbf",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 14,
+          "original_hash": "9a680f9389097b19253fec20d61fa435b2381a56657693e026948f4ced5c7b90",
+          "encrypted_hash": "26bb4ed37f87eb29e2617a35d36ff26050abaef3a6f7a51003f6cdf1e770ba6a",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.016029834747314453,
+              "chunk_hash": "26bb4ed37f87eb29e2617a35d36ff26050abaef3a6f7a51003f6cdf1e770ba6a",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 15,
+          "original_hash": "b97e3c26f2ce18577855d05eaf5bb7ef1d57e9351568cb81ff0aa83e7c6b117b",
+          "encrypted_hash": "6bab0ef6268a90d0a622f4f7fc9a0e52df16879f619b7536cfb2d2ed27b217ee",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.04273867607116699,
+              "chunk_hash": "6bab0ef6268a90d0a622f4f7fc9a0e52df16879f619b7536cfb2d2ed27b217ee",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 16,
+          "original_hash": "23724206e23b8dd5a3f18408bfd3f59b22c9a4742aba62cfa3ee9e3b4291d42a",
+          "encrypted_hash": "9285afcb1ea1555b54fc907cb34b150ec7b4689aef0485eb20d6eef386760153",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.015477657318115234,
+              "chunk_hash": "9285afcb1ea1555b54fc907cb34b150ec7b4689aef0485eb20d6eef386760153",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 17,
+          "original_hash": "8e5f254080c63057c81651c2afd02d337f2f1689693a27fe4fa1896ebde803a5",
+          "encrypted_hash": "9f89c43159e9b7e109098c818c9b9c90d1ab218b264b3672ed6779bd93f318bb",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.017765283584594727,
+              "chunk_hash": "9f89c43159e9b7e109098c818c9b9c90d1ab218b264b3672ed6779bd93f318bb",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 18,
+          "original_hash": "bd4ef74b5a6c22774e7ecf09db99a9511f2876434c907fec314415841b4106b9",
+          "encrypted_hash": "82d523ee9a8d592733661f144eec900d44c42196ea90768fde5f4c54b5297a7e",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02026844024658203,
+              "chunk_hash": "82d523ee9a8d592733661f144eec900d44c42196ea90768fde5f4c54b5297a7e",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 19,
+          "original_hash": "7c5e091fb9fbcae9176b8c1b1468fe0dc0a23978d8b490c842a16831c614bdf1",
+          "encrypted_hash": "65ed9ebf275d6054d0c1c868ea69bb30fe14368f95293aa559c840d0171c9cf9",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.009775400161743164,
+              "chunk_hash": "65ed9ebf275d6054d0c1c868ea69bb30fe14368f95293aa559c840d0171c9cf9",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 20,
+          "original_hash": "a0d28a38da3acc58ff95442614dc57a86b1eae12d1d32805ffcece80fff4d5e0",
+          "encrypted_hash": "9550641d72deb206506b86315f480e343a73e6c16ea3761d0095dd0ee0e810c3",
+          "size": 72800,
+          "assignments": [
+            {
+              "node_id": "node-adc942c0",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02665996551513672,
+              "chunk_hash": "9550641d72deb206506b86315f480e343a73e6c16ea3761d0095dd0ee0e810c3",
+              "size": 72800
+            }
+          ]
+        }
+      ],
+      "encrypted_file_key": "TGpCxiG1j1dT8UiIF6PrUj8w1z3ouK8BeL3HTojGbcpXbaL2mmUPbLzU3emW4HQlbRI+UyWyocdetwSP",
+      "timestamp": 1764898284,
+      "created_at": "2025-12-05T01:32:07.659147"
+    },
+    "timestamp": 1764898327,
+    "hash": "e3a118d25084f45f241b06430866372590f65e60f08b79406c0a5c5821241f24"
+  },
+  {
+    "index": 1,
+    "prev_hash": "e3a118d25084f45f241b06430866372590f65e60f08b79406c0a5c5821241f24",
+    "data": {
+      "file_id": "b593fc79-bf69-4256-b9c0-9e9e7d423a1f",
+      "owner_id": "a1ab0222-46c2-4a0c-9af2-0fcae020b3c2",
+      "owner_username": "okayprajj",
+      "filename": "test_v2.txt",
+      "file_size": 1368,
+      "file_hash": "4d0fcee44bd65ea0a0c983da992b053d6f5d94a25e91eae6a783f59fb5ef0cc1",
+      "merkle_root": "4d0fcee44bd65ea0a0c983da992b053d6f5d94a25e91eae6a783f59fb5ef0cc1",
+      "chunk_count": 1,
+      "chunk_size": 262144,
+      "chunks": [
+        {
+          "index": 0,
+          "original_hash": "4d0fcee44bd65ea0a0c983da992b053d6f5d94a25e91eae6a783f59fb5ef0cc1",
+          "encrypted_hash": "9a09058c1025d9cd8a0d175233e15879c1a152d837462e0968d0fd17bdbc0747",
+          "size": 1396,
+          "assignments": [
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.015960216522216797,
+              "chunk_hash": "9a09058c1025d9cd8a0d175233e15879c1a152d837462e0968d0fd17bdbc0747",
+              "size": 1396
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01573944091796875,
+              "chunk_hash": "9a09058c1025d9cd8a0d175233e15879c1a152d837462e0968d0fd17bdbc0747",
+              "size": 1396
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01975393295288086,
+              "chunk_hash": "9a09058c1025d9cd8a0d175233e15879c1a152d837462e0968d0fd17bdbc0747",
+              "size": 1396
+            }
+          ]
+        }
+      ],
+      "encrypted_file_key": "svujpyKbX06GcTAliF594czDrNfdEGt6hrkIQWn8Co/aSNWi/FfJYdc0Arkp94ZHBUaPVi5yJqOOmWzI",
+      "timestamp": 1764899250,
+      "created_at": "2025-12-05T01:47:32.794129"
+    },
+    "timestamp": 1764899252,
+    "hash": "de54f4a965c4ac470e026bf3b5b223b2d562f07311145156aad87f4bddf499e0"
+  },
+  {
+    "index": 2,
+    "prev_hash": "de54f4a965c4ac470e026bf3b5b223b2d562f07311145156aad87f4bddf499e0",
+    "data": {
+      "file_id": "2786ecde-9c79-468a-8082-7f9bdda1a657",
+      "owner_id": "a1ab0222-46c2-4a0c-9af2-0fcae020b3c2",
+      "owner_username": "okayprajj",
+      "filename": "testfile.txt",
+      "file_size": 10491538,
+      "file_hash": "bd06290147d8bc6347a4e10be9d545fdfb067d44adfa783e3ab5516b85d26077",
+      "merkle_root": "f5bd5543c4f6ce312a88f0932e45a73960cc7d94a69b351b78d78bb16f0bf75d",
+      "chunk_count": 41,
+      "chunk_size": 262144,
+      "chunks": [
+        {
+          "index": 0,
+          "original_hash": "36b6a82d59447de450ed50e384ce6cf19de88f4ffc1d1a13e6a10e9bb02eb4cd",
+          "encrypted_hash": "8c9ddbeba28ffca658f85e478b92dbb76f6490baf7675b150e11f7c0eb2cec77",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.03591728210449219,
+              "chunk_hash": "8c9ddbeba28ffca658f85e478b92dbb76f6490baf7675b150e11f7c0eb2cec77",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.03944087028503418,
+              "chunk_hash": "8c9ddbeba28ffca658f85e478b92dbb76f6490baf7675b150e11f7c0eb2cec77",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.04228568077087402,
+              "chunk_hash": "8c9ddbeba28ffca658f85e478b92dbb76f6490baf7675b150e11f7c0eb2cec77",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "original_hash": "3a156c2bb116d4e5c342e06a736b44412399763ca8f4c8bdc7592043feb2cc1c",
+          "encrypted_hash": "fcd1cf9ab823f31b78eda86bf919987dad516002b54fbd5dcc004b3df3c3ba3e",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.016570091247558594,
+              "chunk_hash": "fcd1cf9ab823f31b78eda86bf919987dad516002b54fbd5dcc004b3df3c3ba3e",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.03185629844665527,
+              "chunk_hash": "fcd1cf9ab823f31b78eda86bf919987dad516002b54fbd5dcc004b3df3c3ba3e",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.03185629844665527,
+              "chunk_hash": "fcd1cf9ab823f31b78eda86bf919987dad516002b54fbd5dcc004b3df3c3ba3e",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "original_hash": "f115d9a7c5c5e56b140b6dee58562a963aa50cc9236dadce4717b8f362e1f961",
+          "encrypted_hash": "b01b5c8a6dbbbad387e4e714ede0727104760b66aa0017d793253f722fd56bf7",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.024853229522705078,
+              "chunk_hash": "b01b5c8a6dbbbad387e4e714ede0727104760b66aa0017d793253f722fd56bf7",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.024853229522705078,
+              "chunk_hash": "b01b5c8a6dbbbad387e4e714ede0727104760b66aa0017d793253f722fd56bf7",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.03931427001953125,
+              "chunk_hash": "b01b5c8a6dbbbad387e4e714ede0727104760b66aa0017d793253f722fd56bf7",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "original_hash": "a572b7881331d51b0a01f142a467774b043f4384ebd81dea5e1b6815c142893b",
+          "encrypted_hash": "4cdf1fab2f4bc31697c3bcff65714ceeb9e12cc6830f2905bd2ee97e667c35d1",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.015483856201171875,
+              "chunk_hash": "4cdf1fab2f4bc31697c3bcff65714ceeb9e12cc6830f2905bd2ee97e667c35d1",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.013202667236328125,
+              "chunk_hash": "4cdf1fab2f4bc31697c3bcff65714ceeb9e12cc6830f2905bd2ee97e667c35d1",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02531909942626953,
+              "chunk_hash": "4cdf1fab2f4bc31697c3bcff65714ceeb9e12cc6830f2905bd2ee97e667c35d1",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "original_hash": "7a73214c36daeee67c86e7a74570e7695d084c090a8816a41a277f534dc1cb28",
+          "encrypted_hash": "243e64aa777327705dd15586f26b82717b2c56d99a42fdbb9c4252f2c9397626",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.025530338287353516,
+              "chunk_hash": "243e64aa777327705dd15586f26b82717b2c56d99a42fdbb9c4252f2c9397626",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.025530338287353516,
+              "chunk_hash": "243e64aa777327705dd15586f26b82717b2c56d99a42fdbb9c4252f2c9397626",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.03215622901916504,
+              "chunk_hash": "243e64aa777327705dd15586f26b82717b2c56d99a42fdbb9c4252f2c9397626",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "original_hash": "985d8aa17aca1ec0c53034a890c4abbfa183bcce451135800a27dc73ded9d144",
+          "encrypted_hash": "ec3e13ce56a16b35a671a3bd48cab610dda091d5f9aa96eea92402ad03a16af1",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02539825439453125,
+              "chunk_hash": "ec3e13ce56a16b35a671a3bd48cab610dda091d5f9aa96eea92402ad03a16af1",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02539825439453125,
+              "chunk_hash": "ec3e13ce56a16b35a671a3bd48cab610dda091d5f9aa96eea92402ad03a16af1",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.029439210891723633,
+              "chunk_hash": "ec3e13ce56a16b35a671a3bd48cab610dda091d5f9aa96eea92402ad03a16af1",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "original_hash": "43993d9d221165261d292f91ba7b9ff767ab12d4d0fdb384846e5c7545874c7f",
+          "encrypted_hash": "21feb78c13212d3981eec1b5d2cc353688a16f621ad24fc09343dea168daaf0c",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01922607421875,
+              "chunk_hash": "21feb78c13212d3981eec1b5d2cc353688a16f621ad24fc09343dea168daaf0c",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.020489215850830078,
+              "chunk_hash": "21feb78c13212d3981eec1b5d2cc353688a16f621ad24fc09343dea168daaf0c",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01848435401916504,
+              "chunk_hash": "21feb78c13212d3981eec1b5d2cc353688a16f621ad24fc09343dea168daaf0c",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "original_hash": "7bb4b39c4b472a1084fdd7e5efe71738b48ac021bb645a3d55d8f7e3b3fb7ce1",
+          "encrypted_hash": "b6187dcc7196167b46a611de9490d3a866f05260873505561d1ab2a6a4e15915",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.009973526000976562,
+              "chunk_hash": "b6187dcc7196167b46a611de9490d3a866f05260873505561d1ab2a6a4e15915",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.007965087890625,
+              "chunk_hash": "b6187dcc7196167b46a611de9490d3a866f05260873505561d1ab2a6a4e15915",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02044200897216797,
+              "chunk_hash": "b6187dcc7196167b46a611de9490d3a866f05260873505561d1ab2a6a4e15915",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "original_hash": "a8b63ccc102bf4212c9a5701881f495c224e1172828e676c8d163f766227487e",
+          "encrypted_hash": "6d38596d29ee84f5a922d683f3af398820d38982acab76dedc64ce6f577c797a",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.018170833587646484,
+              "chunk_hash": "6d38596d29ee84f5a922d683f3af398820d38982acab76dedc64ce6f577c797a",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.0319361686706543,
+              "chunk_hash": "6d38596d29ee84f5a922d683f3af398820d38982acab76dedc64ce6f577c797a",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.033954620361328125,
+              "chunk_hash": "6d38596d29ee84f5a922d683f3af398820d38982acab76dedc64ce6f577c797a",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "original_hash": "1c8692a2671ac6e5a6a76f763d73559817e7ad2242958a14bf96099506ae5b59",
+          "encrypted_hash": "f38737ccf82a333d6980ce96ebda804d8002bcfdf9fcdd594b0d80ac5630fffa",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.014968395233154297,
+              "chunk_hash": "f38737ccf82a333d6980ce96ebda804d8002bcfdf9fcdd594b0d80ac5630fffa",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.0313260555267334,
+              "chunk_hash": "f38737ccf82a333d6980ce96ebda804d8002bcfdf9fcdd594b0d80ac5630fffa",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02931833267211914,
+              "chunk_hash": "f38737ccf82a333d6980ce96ebda804d8002bcfdf9fcdd594b0d80ac5630fffa",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 10,
+          "original_hash": "7a1b75f4dac0f62fa3e8a26831f28f815f7103bf9616aa9749b8e921732fab74",
+          "encrypted_hash": "7e9f9c0536172a388a59df2b5b9a8c0955f419be1ce490bd8d9ee0b3e273b0b6",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.017409801483154297,
+              "chunk_hash": "7e9f9c0536172a388a59df2b5b9a8c0955f419be1ce490bd8d9ee0b3e273b0b6",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.016382217407226562,
+              "chunk_hash": "7e9f9c0536172a388a59df2b5b9a8c0955f419be1ce490bd8d9ee0b3e273b0b6",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.015323877334594727,
+              "chunk_hash": "7e9f9c0536172a388a59df2b5b9a8c0955f419be1ce490bd8d9ee0b3e273b0b6",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 11,
+          "original_hash": "41043942d40d07ad69f1725555bf68274e560532afed625cd65585921ab0f0de",
+          "encrypted_hash": "549b91f6208260cf16054632a705cb998fbd8f39851c9bdb6b2c9797bf7a5bbc",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.016154766082763672,
+              "chunk_hash": "549b91f6208260cf16054632a705cb998fbd8f39851c9bdb6b2c9797bf7a5bbc",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.016154766082763672,
+              "chunk_hash": "549b91f6208260cf16054632a705cb998fbd8f39851c9bdb6b2c9797bf7a5bbc",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.03284883499145508,
+              "chunk_hash": "549b91f6208260cf16054632a705cb998fbd8f39851c9bdb6b2c9797bf7a5bbc",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 12,
+          "original_hash": "ee18e79579fe8c808fcdcb1e906e1a0bddb6974378e79fc5dc28938b3e06c9bf",
+          "encrypted_hash": "e5025abb24ce2c688c751e04bf5cb47c95c71df16c04b178425b8e4e7b1f7107",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.014735221862792969,
+              "chunk_hash": "e5025abb24ce2c688c751e04bf5cb47c95c71df16c04b178425b8e4e7b1f7107",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.020755529403686523,
+              "chunk_hash": "e5025abb24ce2c688c751e04bf5cb47c95c71df16c04b178425b8e4e7b1f7107",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.021999359130859375,
+              "chunk_hash": "e5025abb24ce2c688c751e04bf5cb47c95c71df16c04b178425b8e4e7b1f7107",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 13,
+          "original_hash": "e0459ee0155957be8499adc31487fd39bf39d426b8a6940f81ae3b0dc756859d",
+          "encrypted_hash": "b2cec5e5deab6e3556227e84296079239ba18799b793b93ca3e08f8ccf8c694a",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01659989356994629,
+              "chunk_hash": "b2cec5e5deab6e3556227e84296079239ba18799b793b93ca3e08f8ccf8c694a",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01459050178527832,
+              "chunk_hash": "b2cec5e5deab6e3556227e84296079239ba18799b793b93ca3e08f8ccf8c694a",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.017536163330078125,
+              "chunk_hash": "b2cec5e5deab6e3556227e84296079239ba18799b793b93ca3e08f8ccf8c694a",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 14,
+          "original_hash": "f0c9d4e042eb4c0cb2765461c390ec37edd788aa84dc0eea3b31ddcb9946425e",
+          "encrypted_hash": "38caf4c0cb042abbc0da2d426a5a2d7a4ac605b36df76fce87e0fc74012b4f73",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.015124797821044922,
+              "chunk_hash": "38caf4c0cb042abbc0da2d426a5a2d7a4ac605b36df76fce87e0fc74012b4f73",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.015124797821044922,
+              "chunk_hash": "38caf4c0cb042abbc0da2d426a5a2d7a4ac605b36df76fce87e0fc74012b4f73",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.04364633560180664,
+              "chunk_hash": "38caf4c0cb042abbc0da2d426a5a2d7a4ac605b36df76fce87e0fc74012b4f73",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 15,
+          "original_hash": "342789eb809773afdc6c80ce6f6cc578f95cfea1f1845e4a3244d9771b7f4c1f",
+          "encrypted_hash": "cf7a3c34f47e2eb1cef9bc6ee1440edeb7d98f098f8134424d3747d909d1a013",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01575183868408203,
+              "chunk_hash": "cf7a3c34f47e2eb1cef9bc6ee1440edeb7d98f098f8134424d3747d909d1a013",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02281332015991211,
+              "chunk_hash": "cf7a3c34f47e2eb1cef9bc6ee1440edeb7d98f098f8134424d3747d909d1a013",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.0337677001953125,
+              "chunk_hash": "cf7a3c34f47e2eb1cef9bc6ee1440edeb7d98f098f8134424d3747d909d1a013",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 16,
+          "original_hash": "f2e1be57f4e37fc2fd9bc35ab7f1a3b1ba6bfbf43ca3b6651c7d784fa3761324",
+          "encrypted_hash": "7dae353b03da4171be498b2115b1d39aee82a4c1e0c89eca1585bec913496d39",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.016239166259765625,
+              "chunk_hash": "7dae353b03da4171be498b2115b1d39aee82a4c1e0c89eca1585bec913496d39",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01656627655029297,
+              "chunk_hash": "7dae353b03da4171be498b2115b1d39aee82a4c1e0c89eca1585bec913496d39",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.017547607421875,
+              "chunk_hash": "7dae353b03da4171be498b2115b1d39aee82a4c1e0c89eca1585bec913496d39",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 17,
+          "original_hash": "e87907b510d442c8017858640bfa9c8c841ff32f29778b0e82cff05ae7faf155",
+          "encrypted_hash": "657d3a5b9a2e114843c25c71b031ba57e05a2cc8bf6f25c1eb24989b2953bdf2",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.020073890686035156,
+              "chunk_hash": "657d3a5b9a2e114843c25c71b031ba57e05a2cc8bf6f25c1eb24989b2953bdf2",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01795673370361328,
+              "chunk_hash": "657d3a5b9a2e114843c25c71b031ba57e05a2cc8bf6f25c1eb24989b2953bdf2",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.019038915634155273,
+              "chunk_hash": "657d3a5b9a2e114843c25c71b031ba57e05a2cc8bf6f25c1eb24989b2953bdf2",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 18,
+          "original_hash": "0db63da9316b991110d5a925d390e1eb724f2d73ec47df7fed3ca7cbfb59dfcd",
+          "encrypted_hash": "f1c417d56af97e60247383156ccd6398fe016bdef0d7a2d6d425532d61197d4d",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.019243717193603516,
+              "chunk_hash": "f1c417d56af97e60247383156ccd6398fe016bdef0d7a2d6d425532d61197d4d",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.021233558654785156,
+              "chunk_hash": "f1c417d56af97e60247383156ccd6398fe016bdef0d7a2d6d425532d61197d4d",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.051332950592041016,
+              "chunk_hash": "f1c417d56af97e60247383156ccd6398fe016bdef0d7a2d6d425532d61197d4d",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 19,
+          "original_hash": "7adc24edcf8fbddda0e2e67ac2463d27092749458a060426862fc2870dcac1fa",
+          "encrypted_hash": "75b1c1a256c6eabec1ad3fade2934d5d27ea21a22003a7b920ad9d02dfac505c",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.026973724365234375,
+              "chunk_hash": "75b1c1a256c6eabec1ad3fade2934d5d27ea21a22003a7b920ad9d02dfac505c",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.030066490173339844,
+              "chunk_hash": "75b1c1a256c6eabec1ad3fade2934d5d27ea21a22003a7b920ad9d02dfac505c",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.03104567527770996,
+              "chunk_hash": "75b1c1a256c6eabec1ad3fade2934d5d27ea21a22003a7b920ad9d02dfac505c",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 20,
+          "original_hash": "c47b2f917d3c30082bb0e035c3332c7bc9f41d2a366def550937aa3c619e3f64",
+          "encrypted_hash": "fc7e1bef6fb69da6ca8dce6e8c985364bd3d926a35525f0c24eab8fbc50c9867",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.021992921829223633,
+              "chunk_hash": "fc7e1bef6fb69da6ca8dce6e8c985364bd3d926a35525f0c24eab8fbc50c9867",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.056487321853637695,
+              "chunk_hash": "fc7e1bef6fb69da6ca8dce6e8c985364bd3d926a35525f0c24eab8fbc50c9867",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.06576156616210938,
+              "chunk_hash": "fc7e1bef6fb69da6ca8dce6e8c985364bd3d926a35525f0c24eab8fbc50c9867",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 21,
+          "original_hash": "1294200ef8324af0dc9102933c871e7f4f705003eb2ca266d4844fdedfebbd3a",
+          "encrypted_hash": "2db9ddba5e372f80b20698aefed03851e319cdaeccaf8e12440e92a4097cbf46",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.014709234237670898,
+              "chunk_hash": "2db9ddba5e372f80b20698aefed03851e319cdaeccaf8e12440e92a4097cbf46",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.03276348114013672,
+              "chunk_hash": "2db9ddba5e372f80b20698aefed03851e319cdaeccaf8e12440e92a4097cbf46",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.029775619506835938,
+              "chunk_hash": "2db9ddba5e372f80b20698aefed03851e319cdaeccaf8e12440e92a4097cbf46",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 22,
+          "original_hash": "1af8f914031974ed2e7697b207154b6de78589884d110fcd178b00bfca2c04ce",
+          "encrypted_hash": "187266e156db8e31542c30badf49c47ecc753ccb96916d17f7675821eadb51bd",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.016666173934936523,
+              "chunk_hash": "187266e156db8e31542c30badf49c47ecc753ccb96916d17f7675821eadb51bd",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.019279956817626953,
+              "chunk_hash": "187266e156db8e31542c30badf49c47ecc753ccb96916d17f7675821eadb51bd",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01559138298034668,
+              "chunk_hash": "187266e156db8e31542c30badf49c47ecc753ccb96916d17f7675821eadb51bd",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 23,
+          "original_hash": "5ac14c9dd82809cc69fbd62d4074b436182ea6cadc2259374788fe75bef059b0",
+          "encrypted_hash": "4b89ab7e3af4fe7536abd4846c0ef713c0c3ca3a4b635cac94d62c4dec4a64db",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.014333248138427734,
+              "chunk_hash": "4b89ab7e3af4fe7536abd4846c0ef713c0c3ca3a4b635cac94d62c4dec4a64db",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.014333248138427734,
+              "chunk_hash": "4b89ab7e3af4fe7536abd4846c0ef713c0c3ca3a4b635cac94d62c4dec4a64db",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.014333248138427734,
+              "chunk_hash": "4b89ab7e3af4fe7536abd4846c0ef713c0c3ca3a4b635cac94d62c4dec4a64db",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 24,
+          "original_hash": "42bf780eb4d8522d84a6b751d714e6fdd71b93d0bd65100cb248917fcf422f44",
+          "encrypted_hash": "7713296ba5c9e4cfab1d63a49eb7e94bb4b9e9e8cc4fb6a7ab550efb77fe3331",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02246689796447754,
+              "chunk_hash": "7713296ba5c9e4cfab1d63a49eb7e94bb4b9e9e8cc4fb6a7ab550efb77fe3331",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.013585805892944336,
+              "chunk_hash": "7713296ba5c9e4cfab1d63a49eb7e94bb4b9e9e8cc4fb6a7ab550efb77fe3331",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.028610944747924805,
+              "chunk_hash": "7713296ba5c9e4cfab1d63a49eb7e94bb4b9e9e8cc4fb6a7ab550efb77fe3331",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 25,
+          "original_hash": "0612d2cad53079430eff596ebc2c5dc939cf00fc85aafb61f75830e86519893e",
+          "encrypted_hash": "61030b54c9b68e6f608b95479758c149ff9d5045a70d917b9c8f79b28f8d21ed",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.014823675155639648,
+              "chunk_hash": "61030b54c9b68e6f608b95479758c149ff9d5045a70d917b9c8f79b28f8d21ed",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.030898094177246094,
+              "chunk_hash": "61030b54c9b68e6f608b95479758c149ff9d5045a70d917b9c8f79b28f8d21ed",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.030466794967651367,
+              "chunk_hash": "61030b54c9b68e6f608b95479758c149ff9d5045a70d917b9c8f79b28f8d21ed",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 26,
+          "original_hash": "368230e7628e8e7df68e4eb945d669b089e8ebf2b2f5196db3707b42c394e6a9",
+          "encrypted_hash": "4431a4b281c107c31218578752ccf69b28c94f5379b8dbd3a26ebb4cd4118fe6",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.015774250030517578,
+              "chunk_hash": "4431a4b281c107c31218578752ccf69b28c94f5379b8dbd3a26ebb4cd4118fe6",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.015774250030517578,
+              "chunk_hash": "4431a4b281c107c31218578752ccf69b28c94f5379b8dbd3a26ebb4cd4118fe6",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.03141307830810547,
+              "chunk_hash": "4431a4b281c107c31218578752ccf69b28c94f5379b8dbd3a26ebb4cd4118fe6",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 27,
+          "original_hash": "ed3e8ac2796f391991c1735ce67b63875f85fa1ec004eab8a62fb485fa9e026f",
+          "encrypted_hash": "015520f10da1ec9f389a76b43cfdb700880c1c724cff4132e1bde80b0e5a8dbd",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01641368865966797,
+              "chunk_hash": "015520f10da1ec9f389a76b43cfdb700880c1c724cff4132e1bde80b0e5a8dbd",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.024350881576538086,
+              "chunk_hash": "015520f10da1ec9f389a76b43cfdb700880c1c724cff4132e1bde80b0e5a8dbd",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.024350881576538086,
+              "chunk_hash": "015520f10da1ec9f389a76b43cfdb700880c1c724cff4132e1bde80b0e5a8dbd",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 28,
+          "original_hash": "3944a416f13a6a0390ddec2af888e7af0737ae7f5faf4c0864a4f2af9b9868bb",
+          "encrypted_hash": "86c21ae9c52ff48397fb16410a8d3d61e34c44176abfe78b07b13a504ac58852",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.012335777282714844,
+              "chunk_hash": "86c21ae9c52ff48397fb16410a8d3d61e34c44176abfe78b07b13a504ac58852",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.018718957901000977,
+              "chunk_hash": "86c21ae9c52ff48397fb16410a8d3d61e34c44176abfe78b07b13a504ac58852",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.020584821701049805,
+              "chunk_hash": "86c21ae9c52ff48397fb16410a8d3d61e34c44176abfe78b07b13a504ac58852",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 29,
+          "original_hash": "ecfe2481625034ae37c42e77a32a450463889388cd383797b86697304b323774",
+          "encrypted_hash": "f7be2fe90e0dfeeb72ed8c714d658eee747267beee4ba3983a38e141fa21f6fa",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.017838239669799805,
+              "chunk_hash": "f7be2fe90e0dfeeb72ed8c714d658eee747267beee4ba3983a38e141fa21f6fa",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.024131059646606445,
+              "chunk_hash": "f7be2fe90e0dfeeb72ed8c714d658eee747267beee4ba3983a38e141fa21f6fa",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02926945686340332,
+              "chunk_hash": "f7be2fe90e0dfeeb72ed8c714d658eee747267beee4ba3983a38e141fa21f6fa",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 30,
+          "original_hash": "7df6d9ae5f7388dc57b5d5d5655e2ae49764505828a20b8dc66c620735fb0e8f",
+          "encrypted_hash": "1d9a6fa3f0abf2f813949333446baae726975e4e443c42e7cfe8c3bfa028d122",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.018947839736938477,
+              "chunk_hash": "1d9a6fa3f0abf2f813949333446baae726975e4e443c42e7cfe8c3bfa028d122",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.031525373458862305,
+              "chunk_hash": "1d9a6fa3f0abf2f813949333446baae726975e4e443c42e7cfe8c3bfa028d122",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.035925865173339844,
+              "chunk_hash": "1d9a6fa3f0abf2f813949333446baae726975e4e443c42e7cfe8c3bfa028d122",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 31,
+          "original_hash": "84ae8f41074b7eb7e82c758abb5b2638237d127a0938ffdab5e5fb1c7e951871",
+          "encrypted_hash": "5c0d419e4b7c5107420f388ab72336d6a3693d033612caa821aef5e7108e37dd",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.017638206481933594,
+              "chunk_hash": "5c0d419e4b7c5107420f388ab72336d6a3693d033612caa821aef5e7108e37dd",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.018138885498046875,
+              "chunk_hash": "5c0d419e4b7c5107420f388ab72336d6a3693d033612caa821aef5e7108e37dd",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.018152952194213867,
+              "chunk_hash": "5c0d419e4b7c5107420f388ab72336d6a3693d033612caa821aef5e7108e37dd",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 32,
+          "original_hash": "c46b25a823189b82dc14950449915a2481d4faeb34d73ae3f5256ee9b9484b3e",
+          "encrypted_hash": "005e689c77325f0c0d556bbb83728c31452049be06c0acda94e510a2c4cd25ab",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.017310142517089844,
+              "chunk_hash": "005e689c77325f0c0d556bbb83728c31452049be06c0acda94e510a2c4cd25ab",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.020364761352539062,
+              "chunk_hash": "005e689c77325f0c0d556bbb83728c31452049be06c0acda94e510a2c4cd25ab",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.029044151306152344,
+              "chunk_hash": "005e689c77325f0c0d556bbb83728c31452049be06c0acda94e510a2c4cd25ab",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 33,
+          "original_hash": "3cfd98801e823589a4c6412a33369925481d5f299c97573111a1b0c241d98b34",
+          "encrypted_hash": "47bcde2b3a7476f020d805ea15f839fce66911cce60beca5e8deae773cb791c9",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.024678945541381836,
+              "chunk_hash": "47bcde2b3a7476f020d805ea15f839fce66911cce60beca5e8deae773cb791c9",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.029294967651367188,
+              "chunk_hash": "47bcde2b3a7476f020d805ea15f839fce66911cce60beca5e8deae773cb791c9",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.029294967651367188,
+              "chunk_hash": "47bcde2b3a7476f020d805ea15f839fce66911cce60beca5e8deae773cb791c9",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 34,
+          "original_hash": "2ca2a2f6595e103de9792d699351a70ee043feaf9da8cd74f7281778403e4cb1",
+          "encrypted_hash": "890a85f80ce6bccd35daf96cca2daa9bfce7eec4e3fe4fed8c334a5376f830ba",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.016394615173339844,
+              "chunk_hash": "890a85f80ce6bccd35daf96cca2daa9bfce7eec4e3fe4fed8c334a5376f830ba",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.017396926879882812,
+              "chunk_hash": "890a85f80ce6bccd35daf96cca2daa9bfce7eec4e3fe4fed8c334a5376f830ba",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01753854751586914,
+              "chunk_hash": "890a85f80ce6bccd35daf96cca2daa9bfce7eec4e3fe4fed8c334a5376f830ba",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 35,
+          "original_hash": "ec813498521862211f4943edc51d4e93c643d42811246b2339b8723e1edf778d",
+          "encrypted_hash": "f2f317643f04f3f0da4c1c7873b35dd2e185cc7e6bcb9aae7341447433f40574",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.003062009811401367,
+              "chunk_hash": "f2f317643f04f3f0da4c1c7873b35dd2e185cc7e6bcb9aae7341447433f40574",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.020699739456176758,
+              "chunk_hash": "f2f317643f04f3f0da4c1c7873b35dd2e185cc7e6bcb9aae7341447433f40574",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.022709131240844727,
+              "chunk_hash": "f2f317643f04f3f0da4c1c7873b35dd2e185cc7e6bcb9aae7341447433f40574",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 36,
+          "original_hash": "c8a077aef0864940788222febfbf422dfecff80bcc756c6ea6186bce55e950ac",
+          "encrypted_hash": "7073cdd7df1af2e4f7021a57dff073b9029f2defddea433dc9f3c729f695ffe4",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02024555206298828,
+              "chunk_hash": "7073cdd7df1af2e4f7021a57dff073b9029f2defddea433dc9f3c729f695ffe4",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.021254539489746094,
+              "chunk_hash": "7073cdd7df1af2e4f7021a57dff073b9029f2defddea433dc9f3c729f695ffe4",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02019214630126953,
+              "chunk_hash": "7073cdd7df1af2e4f7021a57dff073b9029f2defddea433dc9f3c729f695ffe4",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 37,
+          "original_hash": "ed4241b2f3384959d5ce5b0b4144dffab74b64cd3149b85e35e7af7b18e0d24c",
+          "encrypted_hash": "77e66dfefa6e0f52ec324e132875c8dce1878b1abb1d3ebea877feb3ca0568e3",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.017706871032714844,
+              "chunk_hash": "77e66dfefa6e0f52ec324e132875c8dce1878b1abb1d3ebea877feb3ca0568e3",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.012610435485839844,
+              "chunk_hash": "77e66dfefa6e0f52ec324e132875c8dce1878b1abb1d3ebea877feb3ca0568e3",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.020117998123168945,
+              "chunk_hash": "77e66dfefa6e0f52ec324e132875c8dce1878b1abb1d3ebea877feb3ca0568e3",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 38,
+          "original_hash": "aad0d8216ed6a84715d012126698472002bd03801f6707311212c40af22852ca",
+          "encrypted_hash": "4e9fb8a8522182f55bc6757747f9b71f76d6571922a6c7cc0017a9b0be5318bc",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.018009185791015625,
+              "chunk_hash": "4e9fb8a8522182f55bc6757747f9b71f76d6571922a6c7cc0017a9b0be5318bc",
+              "size": 262172
+            },
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.015454769134521484,
+              "chunk_hash": "4e9fb8a8522182f55bc6757747f9b71f76d6571922a6c7cc0017a9b0be5318bc",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01945328712463379,
+              "chunk_hash": "4e9fb8a8522182f55bc6757747f9b71f76d6571922a6c7cc0017a9b0be5318bc",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 39,
+          "original_hash": "b60f661ad20c83c12cc05c3ed93e525cea07c1cfc4966351f219feb5f5ae4ac8",
+          "encrypted_hash": "8d14547976027c100e16e8bcf745ac49dc6d1d18a38d8b86115263477bda0862",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.022524595260620117,
+              "chunk_hash": "8d14547976027c100e16e8bcf745ac49dc6d1d18a38d8b86115263477bda0862",
+              "size": 262172
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02152729034423828,
+              "chunk_hash": "8d14547976027c100e16e8bcf745ac49dc6d1d18a38d8b86115263477bda0862",
+              "size": 262172
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01950359344482422,
+              "chunk_hash": "8d14547976027c100e16e8bcf745ac49dc6d1d18a38d8b86115263477bda0862",
+              "size": 262172
+            }
+          ]
+        },
+        {
+          "index": 40,
+          "original_hash": "8b212c87465446744ac4bdd49693c0001d0092f1c3ca5ce47e9cac2c4ba32071",
+          "encrypted_hash": "0f6134cbe696e2dd6536f9adf0330f4f5ff95f9dff62e8bb33ff1f1badbc0198",
+          "size": 5806,
+          "assignments": [
+            {
+              "node_id": "node-alpha",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.016896963119506836,
+              "chunk_hash": "0f6134cbe696e2dd6536f9adf0330f4f5ff95f9dff62e8bb33ff1f1badbc0198",
+              "size": 5806
+            },
+            {
+              "node_id": "node-beta",
+              "ip": "127.0.0.1",
+              "port": 6002,
+              "status": "ok",
+              "error": null,
+              "duration": 0.015868663787841797,
+              "chunk_hash": "0f6134cbe696e2dd6536f9adf0330f4f5ff95f9dff62e8bb33ff1f1badbc0198",
+              "size": 5806
+            },
+            {
+              "node_id": "node-gamma",
+              "ip": "127.0.0.1",
+              "port": 6003,
+              "status": "ok",
+              "error": null,
+              "duration": 0.028978347778320312,
+              "chunk_hash": "0f6134cbe696e2dd6536f9adf0330f4f5ff95f9dff62e8bb33ff1f1badbc0198",
+              "size": 5806
+            }
+          ]
+        }
+      ],
+      "encrypted_file_key": "U9nwOH7O6FbuqCxFvENhQe98syR5lx1FyvXlFd2WQJGQYqem8f+bJgePDgywfPmkjC5g+juspvlhoEWb",
+      "timestamp": 1764899519,
+      "created_at": "2025-12-05T01:53:24.562732"
+    },
+    "timestamp": 1764899604,
+    "hash": "edf9fff3a0253f8f9931199358dd090a05e3f2bc7131e7f446ec95f796d9b67b"
+  },
+  {
+    "index": 3,
+    "prev_hash": "edf9fff3a0253f8f9931199358dd090a05e3f2bc7131e7f446ec95f796d9b67b",
+    "data": {
+      "file_id": "a2d5fd9e-759f-49e4-9f5d-a8c82d6f7752",
+      "owner_id": "6f56f87f-5a6a-499a-a952-9adcbd3e9306",
+      "owner_username": "Devesh",
+      "filename": "1511.06464v4.pdf",
+      "file_size": 1300482,
+      "file_hash": "6d1cece68d88b7fd8c2198c8277066f8975c37998360e1a0fc101c1cb11b8751",
+      "merkle_root": "6abd66ad45a28287f74f692b0dcd455d9967cd3096d0ea06ca5b4b6211ffd3fc",
+      "chunk_count": 5,
+      "chunk_size": 262144,
+      "chunks": [
+        {
+          "index": 0,
+          "original_hash": "cda16dbb8e65d8fdfb54aa3929cae04bbcce1760db0929c846076b08abe0c886",
+          "encrypted_hash": "614ab801fa14fb707c1d054ba1747f05a2fe3a517c362bc4284f9c1ce3239142",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01862025260925293,
+              "chunk_hash": "614ab801fa14fb707c1d054ba1747f05a2fe3a517c362bc4284f9c1ce3239142"
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "original_hash": "9cb4930315b471cee72c23bfa91fa56c941a73f76195427b8befeb4b8b36b711",
+          "encrypted_hash": "13452e4c632599426cfa003d506eb2855006245262cf53dcb44e9809f743f785",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.03174328804016113,
+              "chunk_hash": "13452e4c632599426cfa003d506eb2855006245262cf53dcb44e9809f743f785"
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "original_hash": "ac2da043fc2b1d050b0fbafcfae2f879905ba0ceba2eb7e60a346504728f573b",
+          "encrypted_hash": "050fed44955c36e515129ec83c33e9241ffe3c87bd5d26fc3e4a1f6dc23655c5",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.014211654663085938,
+              "chunk_hash": "050fed44955c36e515129ec83c33e9241ffe3c87bd5d26fc3e4a1f6dc23655c5"
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "original_hash": "52a624a24e93803b7d32d06311b8c07a7a5bf37479f0880f3400eb616d68ee19",
+          "encrypted_hash": "1edace56e89525a742e29d1b04648658d320a24a5d3bbffa5c8f4e9486441ea5",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.0478055477142334,
+              "chunk_hash": "1edace56e89525a742e29d1b04648658d320a24a5d3bbffa5c8f4e9486441ea5"
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "original_hash": "d62b33a04ce6b2a38b5598d0b9e2ee18d1ea4524415d3e7675d5b242cb0164d2",
+          "encrypted_hash": "dbedd564263bf3d08a654a324e096d00b808ff0812a355e093086e6937fe23b3",
+          "size": 251934,
+          "assignments": [
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.012715339660644531,
+              "chunk_hash": "dbedd564263bf3d08a654a324e096d00b808ff0812a355e093086e6937fe23b3"
+            }
+          ]
+        }
+      ],
+      "encrypted_file_key": "TJCCo9kxmWfIdL5Dw1FStu6D/se9CAbCGC9D3huvCGLd6NnG3nwDjCDpUZFfHD4ytww1AepWa6Y0Jv2W",
+      "timestamp": 1764911176,
+      "created_at": "2025-12-05T05:06:17.093843"
+    },
+    "timestamp": 1764911177,
+    "hash": "0867ecad9939670e57f13affddda08bd2f6f70180b3d393b592befa5edef60f3"
+  },
+  {
+    "index": 4,
+    "prev_hash": "0867ecad9939670e57f13affddda08bd2f6f70180b3d393b592befa5edef60f3",
+    "data": {
+      "file_id": "e4957bda-f8ee-45d2-8054-f4ba72759142",
+      "owner_id": "6f56f87f-5a6a-499a-a952-9adcbd3e9306",
+      "owner_username": "Devesh",
+      "filename": "1811.02266v1.pdf",
+      "file_size": 4503272,
+      "file_hash": "85838aa59fa34283a5fe0c21625a02f7ee6e56b10e96c67fd7e9a91f31acec31",
+      "merkle_root": "b33eac9e2a108b416f8a7229eec0667986a2075c246bc6cd915c3e4c6d61f853",
+      "chunk_count": 18,
+      "chunk_size": 262144,
+      "chunks": [
+        {
+          "index": 0,
+          "original_hash": "1defcce11a5f27dfd12b980421f1599fa1f44023b69b6827de3db6322999bef4",
+          "encrypted_hash": "b0f309af5332c45816d74216d83bd74f80045c29c001f550fdc6e96f46c93f20",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.016695261001586914,
+              "chunk_hash": "b0f309af5332c45816d74216d83bd74f80045c29c001f550fdc6e96f46c93f20"
+            },
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.014678716659545898,
+              "chunk_hash": "b0f309af5332c45816d74216d83bd74f80045c29c001f550fdc6e96f46c93f20"
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "original_hash": "e8e4d709250f822034c3bee4d661507d3c72b9249163e4bfdb8c5448bda82259",
+          "encrypted_hash": "3fd79314d5bd9e635f494c5a5490590c5c09229d2f7f7e5749dc14e8b54f4f40",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01485133171081543,
+              "chunk_hash": "3fd79314d5bd9e635f494c5a5490590c5c09229d2f7f7e5749dc14e8b54f4f40"
+            },
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01289510726928711,
+              "chunk_hash": "3fd79314d5bd9e635f494c5a5490590c5c09229d2f7f7e5749dc14e8b54f4f40"
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "original_hash": "ef3dfd453df94180849e8fb9a82f0ec41e6765242f8b611a2a5ed8b4acd7db58",
+          "encrypted_hash": "9839b937747f7231e9b8a21c80ceccbdf4708c1a1b4d169ec70e18eb2ecb8427",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.019612789154052734,
+              "chunk_hash": "9839b937747f7231e9b8a21c80ceccbdf4708c1a1b4d169ec70e18eb2ecb8427"
+            },
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.021623849868774414,
+              "chunk_hash": "9839b937747f7231e9b8a21c80ceccbdf4708c1a1b4d169ec70e18eb2ecb8427"
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "original_hash": "8083b74dc7caafcde8ac7872e5ebb7fb2136d5b548c09455b75c9c589199ca29",
+          "encrypted_hash": "e8848d2589318b24c7270f20e683f7a43da13eaff3d968d8454fe7770401ab19",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02335333824157715,
+              "chunk_hash": "e8848d2589318b24c7270f20e683f7a43da13eaff3d968d8454fe7770401ab19"
+            },
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02335333824157715,
+              "chunk_hash": "e8848d2589318b24c7270f20e683f7a43da13eaff3d968d8454fe7770401ab19"
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "original_hash": "ccc14a4be47dd2dfac65e8e9a64eb0fc2e00c45186d9ef427ebfe260735db154",
+          "encrypted_hash": "7b2dffb79ab817e355ac3322795b9cf299b65e18fc5dc2d0f69a190ef93266b4",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01324915885925293,
+              "chunk_hash": "7b2dffb79ab817e355ac3322795b9cf299b65e18fc5dc2d0f69a190ef93266b4"
+            },
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.0160524845123291,
+              "chunk_hash": "7b2dffb79ab817e355ac3322795b9cf299b65e18fc5dc2d0f69a190ef93266b4"
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "original_hash": "502ff712555f949da5423056e2910810ef30cbbf704e2223a42e821ac2b6c93d",
+          "encrypted_hash": "eaf7a7d0f53e5e284a836e3158dec1ee226eaf25097089ad7dc2e573228ae057",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.027050018310546875,
+              "chunk_hash": "eaf7a7d0f53e5e284a836e3158dec1ee226eaf25097089ad7dc2e573228ae057"
+            },
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02879190444946289,
+              "chunk_hash": "eaf7a7d0f53e5e284a836e3158dec1ee226eaf25097089ad7dc2e573228ae057"
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "original_hash": "d9240339921c0ee2b31e2398a86b7a0438ad9c5275613f438548c9e9e51b07b2",
+          "encrypted_hash": "1da932914d0f35c3278353474f5ed9abc86f9e1e17c09998c0a0e3f60a53e7bc",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.029853343963623047,
+              "chunk_hash": "1da932914d0f35c3278353474f5ed9abc86f9e1e17c09998c0a0e3f60a53e7bc"
+            },
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.029853343963623047,
+              "chunk_hash": "1da932914d0f35c3278353474f5ed9abc86f9e1e17c09998c0a0e3f60a53e7bc"
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "original_hash": "9d3628bd1c3d1cf39594627eae0411a6ec2bb55d498d97ec48aac7f8cf61ebf1",
+          "encrypted_hash": "241c7e45fb767dc9d64aa0a858a6a2520668909971486a92881795bae45a4c00",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.017986059188842773,
+              "chunk_hash": "241c7e45fb767dc9d64aa0a858a6a2520668909971486a92881795bae45a4c00"
+            },
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.017986059188842773,
+              "chunk_hash": "241c7e45fb767dc9d64aa0a858a6a2520668909971486a92881795bae45a4c00"
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "original_hash": "f798985d155da36c575f789c8896c0b995c19131c3f84df277093df1729084f8",
+          "encrypted_hash": "de27cd94f4e7bbfd8df6ceecc573b4012fa209ba44aef2e91f19d01781541e2b",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.011172056198120117,
+              "chunk_hash": "de27cd94f4e7bbfd8df6ceecc573b4012fa209ba44aef2e91f19d01781541e2b"
+            },
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.011172056198120117,
+              "chunk_hash": "de27cd94f4e7bbfd8df6ceecc573b4012fa209ba44aef2e91f19d01781541e2b"
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "original_hash": "ebd7fc1e6477e8cbe3eead6b32c40e513a3eee825ba6b4acb927888a325f7b7d",
+          "encrypted_hash": "12100b2121333504e063af0c175694b5aa615f7c99552f28a4522287b005d6b7",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.03028559684753418,
+              "chunk_hash": "12100b2121333504e063af0c175694b5aa615f7c99552f28a4522287b005d6b7"
+            },
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.03028559684753418,
+              "chunk_hash": "12100b2121333504e063af0c175694b5aa615f7c99552f28a4522287b005d6b7"
+            }
+          ]
+        },
+        {
+          "index": 10,
+          "original_hash": "671ae997ad11b18a9edd2717c52aa4d355256e2e05df8e3b78f4beda6fd3e31c",
+          "encrypted_hash": "45505fa710b4dbe32461d5d72ccd38fcaf5c84bebd08127e316627a3abe3be1d",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.020484209060668945,
+              "chunk_hash": "45505fa710b4dbe32461d5d72ccd38fcaf5c84bebd08127e316627a3abe3be1d"
+            },
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.02549290657043457,
+              "chunk_hash": "45505fa710b4dbe32461d5d72ccd38fcaf5c84bebd08127e316627a3abe3be1d"
+            }
+          ]
+        },
+        {
+          "index": 11,
+          "original_hash": "1dbe72079f9c285da9bfae88480e896d9dc638f8718e4fc7d8cd47fb27cd7a77",
+          "encrypted_hash": "8b96b652e34dcc13b55e4c5a7b7e22b1dc7079b846ca4e7b1c3cadb6d4612d9a",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.023436784744262695,
+              "chunk_hash": "8b96b652e34dcc13b55e4c5a7b7e22b1dc7079b846ca4e7b1c3cadb6d4612d9a"
+            },
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.023436784744262695,
+              "chunk_hash": "8b96b652e34dcc13b55e4c5a7b7e22b1dc7079b846ca4e7b1c3cadb6d4612d9a"
+            }
+          ]
+        },
+        {
+          "index": 12,
+          "original_hash": "0ca61501b903d62b562973695b2d17c14c6043255392c7080b9d2fc95bcd0fa5",
+          "encrypted_hash": "015eb00bb4097aa4e13626f853ca45ae03e96b002899021a695d083d507cd9d9",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.024152517318725586,
+              "chunk_hash": "015eb00bb4097aa4e13626f853ca45ae03e96b002899021a695d083d507cd9d9"
+            },
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.024152517318725586,
+              "chunk_hash": "015eb00bb4097aa4e13626f853ca45ae03e96b002899021a695d083d507cd9d9"
+            }
+          ]
+        },
+        {
+          "index": 13,
+          "original_hash": "50774a0ef6bff6d1f285372a4dbeec6badc92927169d8b750075ce0ebff87448",
+          "encrypted_hash": "20edd91c4b457fb683a5eaa889d31edb076733d206e98934a20ea90de33db5d8",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01705622673034668,
+              "chunk_hash": "20edd91c4b457fb683a5eaa889d31edb076733d206e98934a20ea90de33db5d8"
+            },
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.015044927597045898,
+              "chunk_hash": "20edd91c4b457fb683a5eaa889d31edb076733d206e98934a20ea90de33db5d8"
+            }
+          ]
+        },
+        {
+          "index": 14,
+          "original_hash": "ca931fed8651556f532f7a3ac9e42f3944dd872f064d1151cf9725ea690520b2",
+          "encrypted_hash": "948df21ae8346be504a48eb269af3ac8bef0e236c3c383b8ef97ec6efbfd5aff",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.005677700042724609,
+              "chunk_hash": "948df21ae8346be504a48eb269af3ac8bef0e236c3c383b8ef97ec6efbfd5aff"
+            },
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.020714282989501953,
+              "chunk_hash": "948df21ae8346be504a48eb269af3ac8bef0e236c3c383b8ef97ec6efbfd5aff"
+            }
+          ]
+        },
+        {
+          "index": 15,
+          "original_hash": "093bff83e9dab8a2161d6f6496cc6b0b46e1b70e0c913d3ca947bda9499f066c",
+          "encrypted_hash": "0a6b076e3bc249e04e2acb2777cfb245f58353e1397a0c09a4d04f354e3490ea",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.010122060775756836,
+              "chunk_hash": "0a6b076e3bc249e04e2acb2777cfb245f58353e1397a0c09a4d04f354e3490ea"
+            },
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.008099079132080078,
+              "chunk_hash": "0a6b076e3bc249e04e2acb2777cfb245f58353e1397a0c09a4d04f354e3490ea"
+            }
+          ]
+        },
+        {
+          "index": 16,
+          "original_hash": "5400a2eae1d3d604b53e787ae37c6dc3223490fcfc134d8726e14b6c4406ce32",
+          "encrypted_hash": "9f8c30072c2e009a5e18ae1a019a3780fc007583048428c4ab56a5af402cc9f2",
+          "size": 262172,
+          "assignments": [
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.010887861251831055,
+              "chunk_hash": "9f8c30072c2e009a5e18ae1a019a3780fc007583048428c4ab56a5af402cc9f2"
+            },
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.029466629028320312,
+              "chunk_hash": "9f8c30072c2e009a5e18ae1a019a3780fc007583048428c4ab56a5af402cc9f2"
+            }
+          ]
+        },
+        {
+          "index": 17,
+          "original_hash": "6db1678ccb41c8322fe3cd0cc0cc3feb617df3962495156c0cb69377daea7c73",
+          "encrypted_hash": "7213fab0b9b7f6273ba980e4d830ebc0f03088b229faa392cfd6d3b3d2ad81df",
+          "size": 46852,
+          "assignments": [
+            {
+              "node_id": "node-PRAJ_LAPTOP",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.01546335220336914,
+              "chunk_hash": "7213fab0b9b7f6273ba980e4d830ebc0f03088b229faa392cfd6d3b3d2ad81df"
+            },
+            {
+              "node_id": "node-Deveshs-MacBook-Pro.local",
+              "ip": "127.0.0.1",
+              "port": 6001,
+              "status": "ok",
+              "error": null,
+              "duration": 0.027294397354125977,
+              "chunk_hash": "7213fab0b9b7f6273ba980e4d830ebc0f03088b229faa392cfd6d3b3d2ad81df"
+            }
+          ]
+        }
+      ],
+      "encrypted_file_key": "j5uvJVe3HpUs8gIju1ro3zTmA0+IP7hEW5doUTzZqea8qa3WaA0wBEhxOwdg8HiUD37/pHibf83Obf09",
+      "timestamp": 1764911723,
+      "created_at": "2025-12-05T05:15:24.028069"
+    },
+    "timestamp": 1764911724,
+    "hash": "d3921d2906630a0fa99236bd87f66c2d22de473887bf1d2d3aa69460e37650cd"
+  }
+]

@@ -1,0 +1,28 @@
+# DecentraStore Dependencies
+
+# Web framework
+Flask>=2.3.0
+Flask-CORS>=4.0.0
+Werkzeug>=2.3.0
+
+# Authentication
+PyJWT>=2.8.0
+bcrypt>=4.1.0
+
+# Database
+SQLAlchemy>=2.0.0
+
+# HTTP client with retries
+requests>=2.31.0
+urllib3>=2.0.0
+
+# Cryptography
+cryptography>=41.0.0
+pycryptodome>=3.19.0
+
+# Utilities
+python-dotenv>=1.0.0
+
+# For production deployment (optional)
+gunicorn>=21.0.0
+gevent>=23.0.0

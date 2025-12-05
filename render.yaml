@@ -1,0 +1,20 @@
+# render.yaml
+# Render deployment configuration for DecentraStore
+# Deploy at: https://render.com
+
+services:
+  # Main web service (Backend + Discovery combined)
+  - type: web
+    name: decentrastore
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py --port $PORT --discovery-port 4000
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DISCOVERY_URL
+        value: http://localhost:4000
+    disk:
+      name: decentra-data
+      mountPath: /app/data
+      sizeGB: 1

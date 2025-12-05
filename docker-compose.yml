@@ -1,0 +1,87 @@
+# docker-compose.yml
+# DecentraStore Multi-Node Deployment
+#
+# Usage:
+#   docker-compose up -d                    # Start all services
+#   docker-compose up -d --scale node=5     # Start with 5 storage nodes
+#   docker-compose logs -f                  # View logs
+#   docker-compose down                     # Stop all services
+
+version: '3.8'
+
+services:
+  # Discovery Service - Central registry for peer discovery
+  discovery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m discovery.server --host 0.0.0.0 --port 4000
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_TTL=60
+      - LOG_LEVEL=INFO
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - decentra-net
+
+  # Backend Server - Main API for clients
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m backend.app --host 0.0.0.0 --port 5000
+    ports:
+      - "5000:5000"
+    environment:
+      - DISCOVERY_URL=http://discovery:4000
+      - REPLICATION=3
+      - CHUNK_SIZE=262144
+      - LOG_LEVEL=INFO
+    volumes:
+      - backend-data:/app/data
+    depends_on:
+      discovery:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - decentra-net
+
+  # Storage Node - Can be scaled to multiple instances
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      python -m node.storage_node 
+      --host 0.0.0.0 
+      --port 6001 
+      --discovery http://discovery:4000
+    environment:
+      - NODE_HEARTBEAT_INTERVAL=15
+      - LOG_LEVEL=INFO
+    volumes:
+      - node-data:/app/node_storage
+    depends_on:
+      discovery:
+        condition: service_healthy
+    deploy:
+      replicas: 3
+    networks:
+      - decentra-net
+
+networks:
+  decentra-net:
+    driver: bridge
+
+volumes:
+  backend-data:
+  node-data:
