@@ -1,1466 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DecentraStore — Decentralized Secure Storage</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-deep: #0a0a0f;
-            --bg-card: #12121a;
-            --bg-elevated: #1a1a24;
-            --border: rgba(255, 255, 255, 0.06);
-            --border-hover: rgba(255, 255, 255, 0.12);
-            --text-primary: #f0f0f5;
-            --text-secondary: #8888a0;
-            --text-muted: #55556a;
-            --accent: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.3);
-            --success: #22c55e;
-            --success-bg: rgba(34, 197, 94, 0.1);
-            --danger: #ef4444;
-            --danger-bg: rgba(239, 68, 68, 0.1);
-            --warning: #f59e0b;
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-            --font-sans: 'Outfit', system-ui, sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        html, body { height: 100%; }
-
-        body {
-            font-family: var(--font-sans);
-            background: var(--bg-deep);
-            color: var(--text-primary);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* Animated background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: 
-                radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 32px 24px;
-        }
-
-        /* Header */
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 32px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 32px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 24px var(--accent-glow);
-        }
-
-        .logo-icon svg { width: 28px; height: 28px; }
-
-        .logo-text h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-        }
-
-        .logo-text p {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .auth-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-badge {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 16px;
-            background: var(--bg-elevated);
-            border-radius: var(--radius-md);
-            font-size: 0.9rem;
-        }
-
-        .user-badge .avatar {
-            width: 28px;
-            height: 28px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 18px;
-            font-family: var(--font-sans);
-            font-size: 0.9rem;
-            font-weight: 500;
-            border: none;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
-            color: white;
-            box-shadow: 0 2px 12px var(--accent-glow);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 20px var(--accent-glow);
-        }
-
-        .btn-secondary {
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--border-hover);
-            background: var(--bg-card);
-        }
-
-        .btn-ghost {
-            background: transparent;
-            color: var(--text-secondary);
-        }
-
-        .btn-ghost:hover { color: var(--text-primary); }
-
-        .btn-danger {
-            background: var(--danger-bg);
-            color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.85rem;
-        }
-
-        /* Cards */
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-title svg {
-            width: 20px;
-            height: 20px;
-            color: var(--accent);
-        }
-
-        /* Upload Zone */
-        .upload-zone {
-            border: 2px dashed var(--border);
-            border-radius: var(--radius-md);
-            padding: 48px 24px;
-            text-align: center;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .upload-zone:hover, .upload-zone.dragover {
-            border-color: var(--accent);
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .upload-zone svg {
-            width: 48px;
-            height: 48px;
-            color: var(--text-muted);
-            margin-bottom: 16px;
-        }
-
-        .upload-zone h3 {
-            font-size: 1rem;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-
-        .upload-zone p {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .upload-zone input[type="file"] {
-            display: none;
-        }
-
-        /* Progress */
-        .progress-bar {
-            height: 6px;
-            background: var(--bg-elevated);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 16px;
-        }
-
-        .progress-bar .fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), #8b5cf6);
-            border-radius: 3px;
-            transition: width 0.3s ease;
-        }
-
-        /* Files Grid */
-        .files-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 16px;
-        }
-
-        .file-card {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            transition: all 0.2s ease;
-        }
-
-        .file-card:hover {
-            border-color: var(--border-hover);
-            transform: translateY(-2px);
-        }
-
-        .file-card .file-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(99, 102, 241, 0.1);
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 12px;
-        }
-
-        .file-card .file-icon svg {
-            width: 20px;
-            height: 20px;
-            color: var(--accent);
-        }
-
-        .file-card .file-name {
-            font-weight: 500;
-            margin-bottom: 4px;
-            word-break: break-all;
-        }
-
-        .file-card .file-meta {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-        }
-
-        .file-card .file-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        /* Status badges */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            border-radius: 100px;
-        }
-
-        .badge-success {
-            background: var(--success-bg);
-            color: var(--success);
-        }
-
-        .badge-warning {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
-
-        /* Network Stats */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
-        }
-
-        .stat-card {
-            background: var(--bg-elevated);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            text-align: center;
-        }
-
-        .stat-card .stat-value {
-            font-size: 1.75rem;
-            font-weight: 600;
-            font-family: var(--font-mono);
-            color: var(--accent);
-        }
-
-        .stat-card .stat-label {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-
-        /* Inputs */
-        input[type="text"], input[type="password"], input[type="email"] {
-            width: 100%;
-            padding: 12px 16px;
-            font-family: var(--font-sans);
-            font-size: 0.95rem;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            transition: all 0.2s ease;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-
-        input::placeholder { color: var(--text-muted); }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 6px;
-            color: var(--text-secondary);
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 28px;
-            width: 100%;
-            max-width: 400px;
-            transform: translateY(20px);
-            transition: transform 0.2s ease;
-        }
-
-        .modal-overlay.active .modal {
-            transform: translateY(0);
-        }
-
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        .modal-actions .btn { flex: 1; justify-content: center; }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 4px;
-            background: var(--bg-elevated);
-            padding: 4px;
-            border-radius: var(--radius-sm);
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 10px 16px;
-            text-align: center;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            background: transparent;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .tab.active {
-            background: var(--bg-card);
-            color: var(--text-primary);
-        }
-
-        .tab:hover:not(.active) {
-            color: var(--text-primary);
-        }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        /* Toast */
-        .toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 2000;
-        }
-
-        .toast {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 14px 20px;
-            margin-top: 12px;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: slideIn 0.3s ease;
-        }
-
-        .toast.success { border-left: 3px solid var(--success); }
-        .toast.error { border-left: 3px solid var(--danger); }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        /* Empty state */
-        .empty-state {
-            text-align: center;
-            padding: 48px 24px;
-            color: var(--text-secondary);
-        }
-
-        .empty-state svg {
-            width: 64px;
-            height: 64px;
-            color: var(--text-muted);
-            margin-bottom: 16px;
-        }
-
-        /* Blockchain explorer */
-        .block-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .block-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 12px 16px;
-            background: var(--bg-elevated);
-            border-radius: var(--radius-sm);
-            margin-bottom: 8px;
-        }
-
-        .block-item .block-index {
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--accent);
-            min-width: 40px;
-        }
-
-        .block-item .block-hash {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .block-item .block-info {
-            flex: 1;
-        }
-
-        .block-item .block-time {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                gap: 16px;
-                text-align: center;
-            }
-
-            .auth-section { width: 100%; justify-content: center; }
-
-            .files-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* Guest view */
-        .guest-only { display: block; }
-        .auth-only { display: none; }
-        body.authenticated .guest-only { display: none; }
-        body.authenticated .auth-only { display: block; }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-deep);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--bg-elevated);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--border-hover);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DecentraStore</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+    h2 { margin-top: 30px; }
+    input { display: block; margin: 8px 0; padding: 10px; width: 250px; }
+    button { padding: 10px 15px; margin: 5px 0; cursor: pointer; }
+    #output { background: #fff; padding: 15px; border-radius: 5px; margin-top: 20px; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header>
-            <div class="logo">
-                <div class="logo-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                        <path d="M2 17l10 5 10-5"/>
-                        <path d="M2 12l10 5 10-5"/>
-                    </svg>
-                </div>
-                <div class="logo-text">
-                    <h1>DecentraStore</h1>
-                    <p>Encrypted P2P Storage</p>
-                </div>
-            </div>
-            <div class="auth-section">
-                <div class="guest-only">
-                    <button class="btn btn-secondary" onclick="showModal('login')">Sign In</button>
-                    <button class="btn btn-primary" onclick="showModal('register')">Get Started</button>
-                </div>
-                <div class="auth-only">
-                    <div class="user-badge">
-                        <div class="avatar" id="userAvatar">?</div>
-                        <span id="userName">User</span>
-                    </div>
-                    <button class="btn btn-ghost" onclick="logout()">Sign Out</button>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <main>
-            <!-- Guest Welcome -->
-            <div class="guest-only">
-                <div class="card" style="text-align: center; padding: 48px;">
-                    <h2 style="margin-bottom: 12px;">Secure. Decentralized. Private.</h2>
-                    <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto 24px;">
-                        Your files are encrypted, chunked, and distributed across a peer-to-peer network.
-                        Only you can access your data.
-                    </p>
-                    <button class="btn btn-primary" onclick="showModal('register')">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 5v14M5 12h14"/>
-                        </svg>
-                        Create Account
-                    </button>
-                </div>
-            </div>
-
-            <!-- Authenticated Content -->
-            <div class="auth-only">
-                <!-- Tabs -->
-                <div class="tabs">
-                    <button class="tab active" data-tab="files">My Files</button>
-                    <button class="tab" data-tab="upload">Upload</button>
-                    <button class="tab" data-tab="node">Become a Node</button>
-                    <button class="tab" data-tab="network">Network</button>
-                    <button class="tab" data-tab="explorer">Blockchain</button>
-                </div>
-
-                <!-- My Files Tab -->
-                <div class="tab-content active" id="tab-files">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                    <path d="M14 2v6h6"/>
-                                </svg>
-                                Your Files
-                            </div>
-                            <button class="btn btn-secondary btn-sm" onclick="loadMyFiles()">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M23 4v6h-6M1 20v-6h6"/>
-                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-                                </svg>
-                                Refresh
-                            </button>
-                        </div>
-                        <div id="filesContainer" class="files-grid">
-                            <div class="empty-state">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/>
-                                </svg>
-                                <p>No files yet. Upload your first file!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Upload Tab -->
-                <div class="tab-content" id="tab-upload">
-                    <div class="card">
-                        <div class="card-title" style="margin-bottom: 20px;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                <polyline points="17 8 12 3 7 8"/>
-                                <line x1="12" y1="3" x2="12" y2="15"/>
-                            </svg>
-                            Upload File
-                        </div>
-                        <div class="upload-zone" id="uploadZone">
-                            <input type="file" id="fileInput">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/>
-                                <path d="M12 12v9"/>
-                                <path d="m16 16-4-4-4 4"/>
-                            </svg>
-                            <h3>Drop your file here</h3>
-                            <p>or click to browse (max 100MB)</p>
-                        </div>
-                        <div id="uploadProgress" style="display: none;">
-                            <div style="display: flex; justify-content: space-between; margin-top: 16px;">
-                                <span id="uploadFileName">Uploading...</span>
-                                <span id="uploadPercent">0%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="fill" id="uploadProgressFill" style="width: 0%"></div>
-                            </div>
-                        </div>
-                        <div id="uploadResult" style="margin-top: 16px;"></div>
-                    </div>
-
-                    <div class="card">
-                        <p style="font-size: 0.9rem; color: var(--text-secondary);">
-                            <strong>How it works:</strong><br>
-                            1. Your file is encrypted with AES-256-GCM<br>
-                            2. Split into 256KB chunks<br>
-                            3. Each chunk distributed to 3+ storage nodes<br>
-                            4. Metadata recorded on private blockchain<br>
-                            5. Only your password can decrypt your files
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Become a Node Tab -->
-                <div class="tab-content" id="tab-node">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
-                                    <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
-                                    <line x1="6" y1="6" x2="6.01" y2="6"/>
-                                    <line x1="6" y1="18" x2="6.01" y2="18"/>
-                                </svg>
-                                Become a Storage Node
-                            </div>
-                        </div>
-                        <p style="color: var(--text-secondary); margin-bottom: 24px;">
-                            Contribute storage space to the network! Storage nodes only see encrypted data - they cannot read any content.
-                        </p>
-
-                        <div class="stats-grid" style="margin-bottom: 24px;">
-                            <div class="stat-card">
-                                <div class="stat-value">🔒</div>
-                                <div class="stat-label">Encrypted Only</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value">📦</div>
-                                <div class="stat-label">Store Chunks</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value">🌐</div>
-                                <div class="stat-label">Join P2P Network</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value">⚡</div>
-                                <div class="stat-label">Auto-Discovery</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h3 style="margin-bottom: 16px; font-size: 1.1rem;">Step 1: Download Node Software</h3>
-                        
-                        <button class="btn btn-primary" onclick="window.location.href='/download-node'" style="width: 100%; justify-content: center;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                <polyline points="7 10 12 15 17 10"/>
-                                <line x1="12" y1="15" x2="12" y2="3"/>
-                            </svg>
-                            Download Node Package (.zip)
-                        </button>
-                        
-                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 12px;">
-                            Contains everything you need - just extract and run!
-                        </p>
-                    </div>
-
-                    <div class="card">
-                        <h3 style="margin-bottom: 16px; font-size: 1.1rem;">Step 2: Configure Discovery URL</h3>
-                        
-                        <p style="color: var(--text-secondary); margin-bottom: 12px;">
-                            After extracting, edit <code>run_node.bat</code> (Windows) or <code>run_node.sh</code> (Linux/Mac) and set:
-                        </p>
-
-                        <div style="background: var(--bg-elevated); padding: 16px; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.9rem;">
-                            DISCOVERY_URL=<span id="discoveryUrlDisplay" style="color: var(--success);">http://YOUR_SERVER:4000</span>
-                        </div>
-                        
-                        <div class="form-group" style="margin-top: 16px;">
-                            <label>Your Discovery URL (copy this):</label>
-                            <div style="display: flex; gap: 8px;">
-                                <input type="text" id="nodeDiscoveryUrl" value="" readonly style="flex: 1;">
-                                <button class="btn btn-secondary" onclick="copyDiscoveryUrl()">Copy</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h3 style="margin-bottom: 16px; font-size: 1.1rem;">Step 3: Run the Node</h3>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                            <div style="background: var(--bg-elevated); padding: 16px; border-radius: var(--radius-sm);">
-                                <strong style="color: var(--accent);">Windows</strong>
-                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 8px;">
-                                    Double-click <code>run_node.bat</code>
-                                </p>
-                            </div>
-                            <div style="background: var(--bg-elevated); padding: 16px; border-radius: var(--radius-sm);">
-                                <strong style="color: var(--accent);">Linux / Mac</strong>
-                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 8px;">
-                                    Run <code>./run_node.sh</code>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h3 style="margin-bottom: 12px; font-size: 1rem;">Requirements</h3>
-                        <ul style="color: var(--text-secondary); font-size: 0.9rem; list-style: none;">
-                            <li style="margin-bottom: 8px;">✅ <a href="https://python.org/downloads" target="_blank" style="color: var(--accent);">Python 3.8+</a> installed</li>
-                            <li style="margin-bottom: 8px;">✅ Port 6001 open in firewall</li>
-                            <li style="margin-bottom: 8px;">✅ Stable internet connection</li>
-                            <li style="margin-bottom: 8px;">✅ Some available disk space</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Network Tab -->
-                <div class="tab-content" id="tab-network">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="3"/>
-                                    <circle cx="19" cy="5" r="2"/>
-                                    <circle cx="5" cy="19" r="2"/>
-                                    <circle cx="19" cy="19" r="2"/>
-                                    <circle cx="5" cy="5" r="2"/>
-                                    <line x1="12" y1="9" x2="12" y2="3"/>
-                                    <line x1="12" y1="15" x2="12" y2="21"/>
-                                </svg>
-                                Network Status
-                            </div>
-                            <button class="btn btn-secondary btn-sm" onclick="loadNetworkStats()">Refresh</button>
-                        </div>
-                        <div class="stats-grid" id="networkStats">
-                            <div class="stat-card">
-                                <div class="stat-value" id="statPeers">-</div>
-                                <div class="stat-label">Active Nodes</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value" id="statBlocks">-</div>
-                                <div class="stat-label">Blocks</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value" id="statFiles">-</div>
-                                <div class="stat-label">Files Stored</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value" id="statCapacity">-</div>
-                                <div class="stat-label">Total Capacity</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-title" style="margin-bottom: 16px;">Active Peers</div>
-                        <div id="peersList">Loading...</div>
-                    </div>
-                </div>
-
-                <!-- Blockchain Explorer Tab -->
-                <div class="tab-content" id="tab-explorer">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="3" width="7" height="7"/>
-                                    <rect x="14" y="3" width="7" height="7"/>
-                                    <rect x="14" y="14" width="7" height="7"/>
-                                    <rect x="3" y="14" width="7" height="7"/>
-                                </svg>
-                                Blockchain Explorer
-                            </div>
-                            <button class="btn btn-secondary btn-sm" onclick="loadBlockchain()">Refresh</button>
-                        </div>
-                        <div class="block-list" id="blockList">Loading...</div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Login Modal -->
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal">
-            <h2 class="modal-title">Sign In</h2>
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" name="username" required autocomplete="username">
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" required autocomplete="current-password">
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="hideModal('login')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Sign In</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Register Modal -->
-    <div class="modal-overlay" id="registerModal">
-        <div class="modal">
-            <h2 class="modal-title">Create Account</h2>
-            <form id="registerForm" onsubmit="handleRegister(event)">
-                <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" name="username" required minlength="3" autocomplete="username">
-                </div>
-                <div class="form-group">
-                    <label>Email (optional)</label>
-                    <input type="email" name="email" autocomplete="email">
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" required minlength="6" autocomplete="new-password">
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="hideModal('register')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Account</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Password Modal (for file operations) -->
-    <div class="modal-overlay" id="passwordModal">
-        <div class="modal">
-            <h2 class="modal-title">Enter Password</h2>
-            <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.9rem;">
-                Your password is needed to encrypt/decrypt files.
-            </p>
-            <form id="passwordForm">
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" required autocomplete="current-password">
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="hideModal('password')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Confirm</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
-
-    <script>
-        // State
-        let token = localStorage.getItem('token');
-        let user = JSON.parse(localStorage.getItem('user') || 'null');
-        let currentPassword = sessionStorage.getItem('userPassword');
-        let pendingAction = null;
-
-        // Tabs
-        function initTabs() {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    tab.classList.add('active');
-                    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
-                });
-            });
-        }
-
-        // Upload Zone
-        function initUploadZone() {
-            const zone = document.getElementById('uploadZone');
-            const input = document.getElementById('fileInput');
-
-            zone.addEventListener('click', () => input.click());
-            zone.addEventListener('dragover', e => {
-                e.preventDefault();
-                zone.classList.add('dragover');
-            });
-            zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-            zone.addEventListener('drop', e => {
-                e.preventDefault();
-                zone.classList.remove('dragover');
-                if (e.dataTransfer.files.length) {
-                    input.files = e.dataTransfer.files;
-                    handleFileSelect();
-                }
-            });
-            input.addEventListener('change', handleFileSelect);
-        }
-
-        function handleFileSelect() {
-            const file = document.getElementById('fileInput').files[0];
-            if (!file) return;
-
-            if (!currentPassword) {
-                pendingAction = { type: 'upload', file };
-                showModal('password');
-                return;
-            }
-
-            uploadFile(file);
-        }
-
-        async function uploadFile(file) {
-            const progress = document.getElementById('uploadProgress');
-            const result = document.getElementById('uploadResult');
-            const fileName = document.getElementById('uploadFileName');
-            const percent = document.getElementById('uploadPercent');
-            const fill = document.getElementById('uploadProgressFill');
-
-            progress.style.display = 'block';
-            result.innerHTML = '';
-            fileName.textContent = file.name;
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            try {
-                // Simulate progress (actual progress tracking requires XHR)
-                fill.style.width = '30%';
-                percent.textContent = '30%';
-
-                const response = await fetch('/upload', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'X-User-Password': currentPassword
-                    },
-                    body: formData
-                });
-
-                fill.style.width = '100%';
-                percent.textContent = '100%';
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    result.innerHTML = `
-                        <div class="badge badge-success">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 6L9 17l-5-5"/>
-                            </svg>
-                            Upload successful
-                        </div>
-                        <p style="margin-top: 8px; font-size: 0.85rem; color: var(--text-secondary);">
-                            ${data.chunk_count} chunks distributed • Block #${data.block_index}
-                        </p>
-                    `;
-                    showToast('File uploaded successfully!', 'success');
-                    loadMyFiles();
-                } else {
-                    throw new Error(data.error || 'Upload failed');
-                }
-            } catch (err) {
-                result.innerHTML = `<div class="badge" style="background: var(--danger-bg); color: var(--danger);">Error: ${err.message}</div>`;
-                showToast(err.message, 'error');
-            }
-
-            setTimeout(() => {
-                progress.style.display = 'none';
-                fill.style.width = '0%';
-            }, 2000);
-        }
-
-        // Auth
-        function checkAuth() {
-            if (token && user) {
-                document.body.classList.add('authenticated');
-                document.getElementById('userName').textContent = user.username;
-                document.getElementById('userAvatar').textContent = user.username[0].toUpperCase();
-                loadMyFiles();
-                loadNetworkStats();
-            } else {
-                document.body.classList.remove('authenticated');
-            }
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            const form = e.target;
-            const username = form.username.value;
-            const password = form.password.value;
-
-            try {
-                const res = await fetch('/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error);
-
-                token = data.token;
-                user = data.user;
-                currentPassword = password;
-
-                localStorage.setItem('token', token);
-                localStorage.setItem('user', JSON.stringify(user));
-                sessionStorage.setItem('userPassword', password);
-
-                hideModal('login');
-                checkAuth();
-                showToast('Welcome back, ' + user.username + '!', 'success');
-            } catch (err) {
-                showToast(err.message, 'error');
-            }
-        }
-
-        async function handleRegister(e) {
-            e.preventDefault();
-            const form = e.target;
-
-            try {
-                const res = await fetch('/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        username: form.username.value,
-                        password: form.password.value,
-                        email: form.email.value || null
-                    })
-                });
-
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error);
-
-                hideModal('register');
-                showToast('Account created! Please sign in.', 'success');
-                showModal('login');
-            } catch (err) {
-                showToast(err.message, 'error');
-            }
-        }
-
-        function logout() {
-            token = null;
-            user = null;
-            currentPassword = null;
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            sessionStorage.removeItem('userPassword');
-            checkAuth();
-            showToast('Signed out', 'success');
-        }
-
-        // Password modal
-        document.getElementById('passwordForm').addEventListener('submit', e => {
-            e.preventDefault();
-            currentPassword = e.target.password.value;
-            sessionStorage.setItem('userPassword', currentPassword);
-            hideModal('password');
-
-            if (pendingAction) {
-                if (pendingAction.type === 'upload') {
-                    uploadFile(pendingAction.file);
-                } else if (pendingAction.type === 'download') {
-                    downloadFile(pendingAction.fileId, pendingAction.filename);
-                }
-                pendingAction = null;
-            }
-        });
-
-        // Files
-        async function loadMyFiles() {
-            const container = document.getElementById('filesContainer');
-
-            try {
-                const res = await fetch('/my-files', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-
-                if (!data.files || data.files.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/>
-                            </svg>
-                            <p>No files yet. Upload your first file!</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                container.innerHTML = data.files.map(f => `
-                    <div class="file-card">
-                        <div class="file-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                <path d="M14 2v6h6"/>
-                            </svg>
-                        </div>
-                        <div class="file-name">${escapeHtml(f.filename)}</div>
-                        <div class="file-meta">
-                            ${formatBytes(f.file_size)} • ${f.chunk_count} chunks
-                            <br>
-                            ${new Date(f.timestamp * 1000).toLocaleDateString()}
-                        </div>
-                        <div class="file-actions">
-                            <button class="btn btn-primary btn-sm" onclick="initiateDownload('${f.file_id}', '${escapeHtml(f.filename)}')">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                    <polyline points="7 10 12 15 17 10"/>
-                                    <line x1="12" y1="15" x2="12" y2="3"/>
-                                </svg>
-                                Download
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (err) {
-                container.innerHTML = `<div class="empty-state"><p>Error loading files</p></div>`;
-            }
-        }
-
-        function initiateDownload(fileId, filename) {
-            if (!currentPassword) {
-                pendingAction = { type: 'download', fileId, filename };
-                showModal('password');
-                return;
-            }
-            downloadFile(fileId, filename);
-        }
-
-        async function downloadFile(fileId, filename) {
-            showToast('Downloading ' + filename + '...', 'success');
-
-            try {
-                const res = await fetch(`/download/${fileId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'X-User-Password': currentPassword
-                    }
-                });
-
-                if (!res.ok) {
-                    const data = await res.json();
-                    throw new Error(data.error || 'Download failed');
-                }
-
-                const blob = await res.blob();
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                a.click();
-                URL.revokeObjectURL(url);
-
-                showToast('Download complete!', 'success');
-            } catch (err) {
-                showToast(err.message, 'error');
-            }
-        }
-
-        // Network
-        async function loadNetworkStats() {
-            try {
-                const [peersRes, statsRes] = await Promise.all([
-                    fetch('/network/peers'),
-                    fetch('/blockchain/stats')
-                ]);
-
-                const peers = await peersRes.json();
-                const stats = await statsRes.json();
-
-                document.getElementById('statPeers').textContent = peers.count || 0;
-                document.getElementById('statBlocks').textContent = stats.block_count || 0;
-                document.getElementById('statFiles').textContent = stats.file_count || 0;
-
-                const capacity = peers.peers?.reduce((sum, p) => sum + (p.capacity_gb || 0), 0) || 0;
-                document.getElementById('statCapacity').textContent = capacity.toFixed(1) + ' GB';
-
-                // Peers list
-                const peersList = document.getElementById('peersList');
-                if (peers.peers?.length) {
-                    peersList.innerHTML = peers.peers.map(p => `
-                        <div class="block-item">
-                            <div class="block-index">${p.node_id?.slice(0, 8) || '?'}</div>
-                            <div class="block-info">
-                                <div>Capacity: ${p.capacity_gb || 0} GB</div>
-                            </div>
-                            <div class="badge badge-success">Active</div>
-                        </div>
-                    `).join('');
-                } else {
-                    peersList.innerHTML = '<p style="color: var(--text-secondary);">No active peers</p>';
-                }
-            } catch (err) {
-                console.error('Failed to load network stats:', err);
-            }
-        }
-
-        // Blockchain
-        async function loadBlockchain() {
-            const container = document.getElementById('blockList');
-
-            try {
-                const res = await fetch('/blockchain/blocks?limit=50');
-                const data = await res.json();
-
-                if (!data.blocks?.length) {
-                    container.innerHTML = '<p style="color: var(--text-secondary);">No blocks yet</p>';
-                    return;
-                }
-
-                container.innerHTML = data.blocks.reverse().map(b => `
-                    <div class="block-item">
-                        <div class="block-index">#${b.index}</div>
-                        <div class="block-info">
-                            <div class="block-hash">${b.hash}</div>
-                            <div class="block-time">${new Date(b.timestamp * 1000).toLocaleString()}</div>
-                        </div>
-                        <div class="badge ${b.type === 'file' ? 'badge-success' : 'badge-warning'}">${b.type}</div>
-                    </div>
-                `).join('');
-            } catch (err) {
-                container.innerHTML = '<p style="color: var(--text-secondary);">Error loading blockchain</p>';
-            }
-        }
-
-        // Modals
-        function showModal(name) {
-            document.getElementById(name + 'Modal').classList.add('active');
-        }
-
-        function hideModal(name) {
-            document.getElementById(name + 'Modal').classList.remove('active');
-        }
-
-        // Close modals on overlay click
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', e => {
-                if (e.target === overlay) {
-                    overlay.classList.remove('active');
-                }
-            });
-        });
-
-        // Toast
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = message;
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.animation = 'slideIn 0.3s ease reverse';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // Utilities
-        function formatBytes(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Node setup functions
-        function copyDiscoveryUrl() {
-            const input = document.getElementById('nodeDiscoveryUrl');
-            navigator.clipboard.writeText(input.value).then(() => {
-                showToast('Discovery URL copied!', 'success');
-            });
-        }
-
-        // Initialize node tab with current server URL
-        function initNodeTab() {
-            const currentHost = window.location.hostname;
-            const currentProtocol = window.location.protocol;
-            const currentPort = window.location.port;
-            
-            // Determine discovery URL based on deployment
-            let discoveryUrl;
-            
-            if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-                // Local development
-                discoveryUrl = 'http://localhost:4000';
-            } else if (currentPort && currentPort !== '80' && currentPort !== '443') {
-                // Custom port deployment
-                discoveryUrl = `${currentProtocol}//${currentHost}:4000`;
-            } else {
-                // Standard deployment (Railway, Render, etc.)
-                // Discovery might be on same host different port, or same origin
-                discoveryUrl = `${currentProtocol}//${currentHost}:4000`;
-            }
-            
-            const input = document.getElementById('nodeDiscoveryUrl');
-            if (input) {
-                input.value = discoveryUrl;
-            }
-            
-            const display = document.getElementById('discoveryUrlDisplay');
-            if (display) {
-                display.textContent = discoveryUrl;
-            }
-        }
-
-        // Call on load
-        document.addEventListener('DOMContentLoaded', () => {
-            initTabs();
-            initUploadZone();
-            checkAuth();
-            initNodeTab();
-        });
-    </script>
+
+  <h1>DecentraStore</h1>
+
+  <h2>Login</h2>
+  <input id="login-username" placeholder="username" />
+  <input id="login-password" type="password" placeholder="password" />
+  <button onclick="handleLogin()">Login</button>
+
+  <h2>Register</h2>
+  <input id="reg-username" placeholder="username" />
+  <input id="reg-email" placeholder="email (optional)" />
+  <input id="reg-password" type="password" placeholder="password" />
+  <button onclick="handleRegister()">Register</button>
+
+  <h2>Upload File</h2>
+  <input type="file" id="file-input" />
+  <button onclick="uploadFile()">Upload</button>
+
+  <h2>My Files</h2>
+  <button onclick="loadMyFiles()">Load Files</button>
+  <ul id="files-list"></ul>
+
+  <h2>Network Peers</h2>
+  <button onclick="loadPeers()">Show Peers</button>
+  <pre id="peers-output"></pre>
+
+  <h2>Blockchain Info</h2>
+  <button onclick="loadBlockchainStats()">Load Stats</button>
+  <pre id="blockchain-output"></pre>
+
+  <pre id="output"></pre>
+
+  <script>
+    const API_BASE = "https://web-production-dcddc.up.railway.app/app";
+
+    function show(msg) {
+      document.getElementById("output").textContent = typeof msg === "string" ? msg : JSON.stringify(msg, null, 2);
+    }
+
+    async function handleLogin() {
+      const username = document.getElementById("login-username").value;
+      const password = document.getElementById("login-password").value;
+
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+      show(data);
+
+      if (res.ok) {
+        localStorage.setItem("token", data.token);
+        alert("Login successful");
+      } else {
+        alert("Login failed: " + data.error);
+      }
+    }
+
+    async function handleRegister() {
+      const username = document.getElementById("reg-username").value;
+      const email = document.getElementById("reg-email").value;
+      const password = document.getElementById("reg-password").value;
+
+      const res = await fetch(`${API_BASE}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, email })
+      });
+
+      const data = await res.json();
+      show(data);
+
+      if (res.ok) alert("Registration successful");
+      else alert("Registration failed: " + data.error);
+    }
+
+    async function uploadFile() {
+      const token = localStorage.getItem("token");
+      if (!token) return alert("Login first");
+
+      const file = document.getElementById("file-input").files[0];
+      if (!file) return alert("Select a file");
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${API_BASE}/upload`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` },
+        body: formData
+      });
+
+      const data = await res.json();
+      show(data);
+    }
+
+    async function loadMyFiles() {
+      const token = localStorage.getItem("token");
+      if (!token) return alert("Login first");
+
+      const res = await fetch(`${API_BASE}/my-files`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      const data = await res.json();
+      show(data);
+
+      const list = document.getElementById("files-list");
+      list.innerHTML = "";
+
+      data.files?.forEach(f => {
+        const li = document.createElement("li");
+        li.textContent = f.filename + " ";
+
+        const btn = document.createElement("button");
+        btn.textContent = "Download";
+        btn.onclick = () => downloadFile(f.id);
+
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+    }
+
+    async function downloadFile(fileId) {
+      const token = localStorage.getItem("token");
+      if (!token) return alert("Login first");
+
+      const res = await fetch(`${API_BASE}/download/${fileId}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "file";
+      a.click();
+    }
+
+    async function loadPeers() {
+      const res = await fetch(`${API_BASE}/network/peers`);
+      const data = await res.json();
+      document.getElementById("peers-output").textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function loadBlockchainStats() {
+      const res = await fetch(`${API_BASE}/blockchain/stats`);
+      const data = await res.json();
+      document.getElementById("blockchain-output").textContent = JSON.stringify(data, null, 2);
+    }
+  </script>
+
 </body>
 </html>
