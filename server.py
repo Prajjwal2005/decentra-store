@@ -170,10 +170,18 @@ def auth_register():
     if len(password) < 6:
         return jsonify({"error": "Password must be at least 6 characters"}), 400
     
-    result = auth.register_user(username, password)
-    if "error" in result:
-        return jsonify(result), 400
-    return jsonify(result)
+    user, error = auth.register_user(username, password)
+    if error:
+        return jsonify({"error": error}), 400
+    
+    # Generate token for auto-login after registration
+    token = auth.generate_token(user.id, user.username)
+    return jsonify({
+        "status": "success",
+        "token": token,
+        "user_id": user.id,
+        "username": user.username
+    })
 
 @app.route("/auth/login", methods=["POST"])
 def auth_login():
@@ -181,17 +189,23 @@ def auth_login():
     username = data.get("username", "").strip()
     password = data.get("password", "")
     
-    result = auth.login_user(username, password)
-    if "error" in result:
-        return jsonify(result), 401
-    return jsonify(result)
+    token, user, error = auth.login_user(username, password)
+    if error:
+        return jsonify({"error": error}), 401
+    
+    return jsonify({
+        "status": "success",
+        "token": token,
+        "user_id": user.id,
+        "username": user.username
+    })
 
 @app.route("/auth/me", methods=["GET"])
 @auth.login_required
 def auth_me():
     return jsonify({
-        "user_id": g.user.id,
-        "username": g.user.username,
+        "user_id": g.current_user.id,
+        "username": g.current_user.username,
     })
 
 # Config endpoint
@@ -304,7 +318,7 @@ def upload_file():
                 "peers": assigned_peers
             })
         
-        user_key = crypto.derive_key_from_password(user_password, g.user.key_salt)
+        user_key = crypto.derive_key_from_password(user_password, g.current_user.key_salt)
         encrypted_file_key = crypto.encrypt_file_key(file_key, user_key)
         
         file_id = str(uuid.uuid4())
@@ -312,7 +326,7 @@ def upload_file():
         metadata = {
             "file_id": file_id,
             "filename": filename,
-            "owner_id": g.user.id,
+            "owner_id": g.current_user.id,
             "size": len(file_data),
             "merkle_root": merkle_root,
             "encrypted_file_key": encrypted_file_key,
@@ -352,11 +366,11 @@ def download_file(file_id):
     if not file_meta:
         return jsonify({"error": "File not found"}), 404
     
-    if file_meta.get("owner_id") != g.user.id:
+    if file_meta.get("owner_id") != g.current_user.id:
         return jsonify({"error": "Access denied"}), 403
     
     try:
-        user_key = crypto.derive_key_from_password(user_password, g.user.key_salt)
+        user_key = crypto.derive_key_from_password(user_password, g.current_user.key_salt)
         file_key = crypto.decrypt_file_key(file_meta["encrypted_file_key"], user_key)
         
         chunks_data = []
@@ -391,7 +405,7 @@ def download_file(file_id):
 @app.route("/my-files", methods=["GET"])
 @auth.login_required
 def my_files():
-    files = blockchain.get_user_files(g.user.id)
+    files = blockchain.get_user_files(g.current_user.id)
     return jsonify({
         "files": [
             {
