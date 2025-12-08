@@ -742,8 +742,8 @@
         const stats = await statsRes.json();
 
         document.getElementById('stat-peers').textContent = peers.count || 0;
-        document.getElementById('stat-blocks').textContent = stats.block_count || 0;
-        document.getElementById('stat-files').textContent = stats.file_count || 0;
+        document.getElementById('stat-blocks').textContent = stats.total_blocks || 0;
+        document.getElementById('stat-files').textContent = stats.total_files || 0;
         document.getElementById('stat-size').textContent = formatBytes(stats.total_size || 0);
       } catch (err) {
         log('Failed to load stats', 'error');
@@ -857,7 +857,7 @@
                 </div>
                 <div>
                   <div class="file-name">${f.filename}</div>
-                  <div class="file-meta">${formatBytes(f.file_size)} &bull; ${f.chunk_count} chunks</div>
+                  <div class="file-meta">${formatBytes(f.size)} &bull; ${f.chunks} chunks</div>
                 </div>
               </div>
               <button class="btn btn-primary btn-sm" onclick="downloadFile('${f.file_id}', '${f.filename}')">Download</button>
@@ -962,13 +962,30 @@
     }
 
     // ==================== INIT ====================
-    (function init() {
+    (async function init() {
       const token = localStorage.getItem('token');
       const username = localStorage.getItem('username');
+      const password = localStorage.getItem('password');
 
-      if (token && username) {
-        initDashboard();
+      if (token && username && password) {
+        // Validate token by calling /auth/me
+        try {
+          const res = await fetch(`${API_BASE}/auth/me`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            initDashboard();
+          } else {
+            // Token is invalid, clear and show login
+            localStorage.clear();
+            showPage('login-page');
+          }
+        } catch (err) {
+          // Network error, try to show dashboard anyway
+          initDashboard();
+        }
       } else {
+        localStorage.clear();
         showPage('login-page');
       }
     })();
