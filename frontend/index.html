@@ -3,167 +3,905 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DecentraStore</title>
+  <title>DecentraStore - Decentralized File Storage</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
-    h2 { margin-top: 30px; }
-    input { display: block; margin: 8px 0; padding: 10px; width: 250px; }
-    button { padding: 10px 15px; margin: 5px 0; cursor: pointer; }
-    #output { background: #fff; padding: 15px; border-radius: 5px; margin-top: 20px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 40px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(90deg, #e94560, #0f3460);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      color: #a0a0a0;
+      font-size: 1.1rem;
+    }
+
+    /* User Status Bar */
+    .user-bar {
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .user-bar .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-bar .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #e94560;
+    }
+
+    .user-bar .status-dot.online {
+      background: #4ade80;
+    }
+
+    .user-bar button {
+      background: #e94560;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .user-bar button:hover {
+      background: #d63850;
+    }
+
+    /* Main Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 30px;
+    }
+
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 15px;
+      padding: 25px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .card h2 {
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      color: #e94560;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h2::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: #e94560;
+      border-radius: 2px;
+    }
+
+    /* Auth Section */
+    .auth-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .auth-tabs button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: #a0a0a0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1rem;
+    }
+
+    .auth-tabs button.active {
+      background: #e94560;
+      color: white;
+    }
+
+    .auth-form {
+      display: none;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .auth-form.active {
+      display: flex;
+    }
+
+    /* Inputs */
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      background: rgba(0,0,0,0.2);
+      color: #fff;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #e94560;
+    }
+
+    input::placeholder {
+      color: #666;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 14px 24px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #e94560, #d63850);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* File Upload */
+    .upload-zone {
+      border: 2px dashed rgba(255,255,255,0.2);
+      border-radius: 15px;
+      padding: 40px;
+      text-align: center;
+      transition: all 0.3s;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+
+    .upload-zone:hover {
+      border-color: #e94560;
+      background: rgba(233, 69, 96, 0.05);
+    }
+
+    .upload-zone.dragover {
+      border-color: #e94560;
+      background: rgba(233, 69, 96, 0.1);
+    }
+
+    .upload-zone svg {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 15px;
+      color: #e94560;
+    }
+
+    .upload-zone p {
+      color: #a0a0a0;
+      margin-bottom: 10px;
+    }
+
+    .upload-zone .file-name {
+      color: #4ade80;
+      font-weight: 600;
+    }
+
+    #file-input {
+      display: none;
+    }
+
+    /* Files List */
+    .files-section {
+      margin-top: 20px;
+    }
+
+    .files-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .files-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .files-list::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.05);
+      border-radius: 3px;
+    }
+
+    .files-list::-webkit-scrollbar-thumb {
+      background: #e94560;
+      border-radius: 3px;
+    }
+
+    .file-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .file-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #e94560, #d63850);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .file-details h4 {
+      font-size: 0.95rem;
+      margin-bottom: 3px;
+    }
+
+    .file-details span {
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    .file-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .file-actions button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+    }
+
+    .btn-download {
+      background: #4ade80;
+      color: #000;
+    }
+
+    .btn-download:hover {
+      background: #3cc970;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .stat-card {
+      background: rgba(0,0,0,0.2);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .stat-card .value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #e94560;
+    }
+
+    .stat-card .label {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    /* Output/Messages */
+    .output-section {
+      margin-top: 30px;
+    }
+
+    #output {
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      padding: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      max-height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      color: #4ade80;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Alerts */
+    .alert {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 500;
+      animation: slideIn 0.3s ease;
+      z-index: 1000;
+    }
+
+    .alert-success {
+      background: linear-gradient(135deg, #4ade80, #22c55e);
+    }
+
+    .alert-error {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    .empty-state svg {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
   </style>
 </head>
 <body>
 
-  <h1>DecentraStore</h1>
+  <div class="container">
+    <header>
+      <h1>DecentraStore</h1>
+      <p>Secure, Decentralized File Storage on the Blockchain</p>
+    </header>
 
-  <h2>Login</h2>
-  <input id="login-username" placeholder="username" />
-  <input id="login-password" type="password" placeholder="password" />
-  <button onclick="handleLogin()">Login</button>
+    <div class="user-bar">
+      <div class="status">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="user-status">Not logged in</span>
+      </div>
+      <button id="logout-btn" style="display: none;" onclick="handleLogout()">Logout</button>
+    </div>
 
-  <h2>Register</h2>
-  <input id="reg-username" placeholder="username" />
-  <input id="reg-email" placeholder="email (optional)" />
-  <input id="reg-password" type="password" placeholder="password" />
-  <button onclick="handleRegister()">Register</button>
+    <div class="main-grid">
+      <!-- Left Column - Auth & Upload -->
+      <div class="left-column">
+        <!-- Auth Card -->
+        <div class="card auth-section" id="auth-card">
+          <h2>Account</h2>
+          <div class="auth-tabs">
+            <button class="active" onclick="switchTab('login')">Login</button>
+            <button onclick="switchTab('register')">Register</button>
+          </div>
 
-  <h2>Upload File</h2>
-  <input type="file" id="file-input" />
-  <button onclick="uploadFile()">Upload</button>
+          <form class="auth-form active" id="login-form" onsubmit="handleLogin(event)">
+            <input type="text" id="login-username" placeholder="Username" required />
+            <input type="password" id="login-password" placeholder="Password" required />
+            <button type="submit" class="btn btn-primary">
+              Login
+              <span class="spinner" id="login-spinner"></span>
+            </button>
+          </form>
 
-  <h2>My Files</h2>
-  <button onclick="loadMyFiles()">Load Files</button>
-  <ul id="files-list"></ul>
+          <form class="auth-form" id="register-form" onsubmit="handleRegister(event)">
+            <input type="text" id="reg-username" placeholder="Username" required />
+            <input type="email" id="reg-email" placeholder="Email (optional)" />
+            <input type="password" id="reg-password" placeholder="Password" required />
+            <button type="submit" class="btn btn-primary">
+              Create Account
+              <span class="spinner" id="register-spinner"></span>
+            </button>
+          </form>
+        </div>
 
-  <h2>Network Peers</h2>
-  <button onclick="loadPeers()">Show Peers</button>
-  <pre id="peers-output"></pre>
+        <!-- Upload Card -->
+        <div class="card" style="margin-top: 20px;">
+          <h2>Upload File</h2>
+          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+            <p>Click or drag files here to upload</p>
+            <p class="file-name" id="selected-file"></p>
+          </div>
+          <input type="file" id="file-input" onchange="handleFileSelect(this)" />
+          <button class="btn btn-primary" style="width: 100%;" onclick="uploadFile()">
+            Upload to Network
+            <span class="spinner" id="upload-spinner"></span>
+          </button>
+        </div>
+      </div>
 
-  <h2>Blockchain Info</h2>
-  <button onclick="loadBlockchainStats()">Load Stats</button>
-  <pre id="blockchain-output"></pre>
+      <!-- Right Column - Files & Stats -->
+      <div class="right-column">
+        <!-- Files Card -->
+        <div class="card">
+          <h2>My Files</h2>
+          <button class="btn btn-secondary" style="margin-bottom: 20px;" onclick="loadMyFiles()">
+            Refresh Files
+          </button>
+          <ul class="files-list" id="files-list">
+            <li class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+              </svg>
+              <p>No files yet. Upload your first file!</p>
+            </li>
+          </ul>
+        </div>
 
-  <pre id="output"></pre>
+        <!-- Network Stats Card -->
+        <div class="card" style="margin-top: 20px;">
+          <h2>Network Status</h2>
+          <div class="stats-grid" id="stats-grid">
+            <div class="stat-card">
+              <div class="value" id="stat-peers">-</div>
+              <div class="label">Active Peers</div>
+            </div>
+            <div class="stat-card">
+              <div class="value" id="stat-blocks">-</div>
+              <div class="label">Blocks</div>
+            </div>
+            <div class="stat-card">
+              <div class="value" id="stat-files">-</div>
+              <div class="label">Total Files</div>
+            </div>
+            <div class="stat-card">
+              <div class="value" id="stat-size">-</div>
+              <div class="label">Network Size</div>
+            </div>
+          </div>
+          <button class="btn btn-secondary" style="width: 100%; margin-top: 20px;" onclick="loadStats()">
+            Refresh Stats
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output Section -->
+    <div class="output-section">
+      <div class="card">
+        <h2>Activity Log</h2>
+        <pre id="output">Welcome to DecentraStore. Login or register to get started.</pre>
+      </div>
+    </div>
+  </div>
 
   <script>
     const API_BASE = "https://web-production-dcddc.up.railway.app";
 
-    function show(msg) {
-      document.getElementById("output").textContent = typeof msg === "string" ? msg : JSON.stringify(msg, null, 2);
+    // UI Helpers
+    function showAlert(message, type = 'success') {
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      document.body.appendChild(alert);
+      setTimeout(() => alert.remove(), 3000);
     }
 
-    async function handleLogin() {
-      const username = document.getElementById("login-username").value;
-      const password = document.getElementById("login-password").value;
+    function log(msg) {
+      const output = document.getElementById('output');
+      const timestamp = new Date().toLocaleTimeString();
+      const text = typeof msg === 'string' ? msg : JSON.stringify(msg, null, 2);
+      output.textContent = `[${timestamp}] ${text}\n` + output.textContent;
+    }
 
-      const res = await fetch(`${API_BASE}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-      });
+    function updateUserStatus() {
+      const token = localStorage.getItem('token');
+      const username = localStorage.getItem('username');
+      const statusDot = document.getElementById('status-dot');
+      const userStatus = document.getElementById('user-status');
+      const logoutBtn = document.getElementById('logout-btn');
+      const authCard = document.getElementById('auth-card');
 
-      const data = await res.json();
-      show(data);
-
-      if (res.ok) {
-        localStorage.setItem("token", data.token);
-        alert("Login successful");
+      if (token && username) {
+        statusDot.classList.add('online');
+        userStatus.textContent = `Logged in as ${username}`;
+        logoutBtn.style.display = 'block';
+        authCard.style.display = 'none';
       } else {
-        alert("Login failed: " + data.error);
+        statusDot.classList.remove('online');
+        userStatus.textContent = 'Not logged in';
+        logoutBtn.style.display = 'none';
+        authCard.style.display = 'block';
       }
     }
 
-    async function handleRegister() {
-      const username = document.getElementById("reg-username").value;
-      const email = document.getElementById("reg-email").value;
-      const password = document.getElementById("reg-password").value;
+    function switchTab(tab) {
+      document.querySelectorAll('.auth-tabs button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
 
-      const res = await fetch(`${API_BASE}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password, email })
-      });
-
-      const data = await res.json();
-      show(data);
-
-      if (res.ok) alert("Registration successful");
-      else alert("Registration failed: " + data.error);
+      if (tab === 'login') {
+        document.querySelector('.auth-tabs button:first-child').classList.add('active');
+        document.getElementById('login-form').classList.add('active');
+      } else {
+        document.querySelector('.auth-tabs button:last-child').classList.add('active');
+        document.getElementById('register-form').classList.add('active');
+      }
     }
 
-    async function uploadFile() {
-      const token = localStorage.getItem("token");
-      if (!token) return alert("Login first");
+    function handleFileSelect(input) {
+      const fileName = input.files[0]?.name || '';
+      document.getElementById('selected-file').textContent = fileName;
+    }
 
-      const file = document.getElementById("file-input").files[0];
-      if (!file) return alert("Select a file");
+    // Drag and drop
+    const uploadZone = document.getElementById('upload-zone');
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.classList.add('dragover');
+    });
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.classList.remove('dragover');
+    });
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length) {
+        document.getElementById('file-input').files = files;
+        handleFileSelect(document.getElementById('file-input'));
+      }
+    });
+
+    // Auth Functions
+    async function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+      const spinner = document.getElementById('login-spinner');
+
+      spinner.style.display = 'inline-block';
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+        log(data);
+
+        if (res.ok) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('username', username);
+          showAlert('Login successful!');
+          updateUserStatus();
+          loadMyFiles();
+        } else {
+          showAlert(data.error || 'Login failed', 'error');
+        }
+      } catch (err) {
+        showAlert('Network error', 'error');
+        log({ error: err.message });
+      }
+
+      spinner.style.display = 'none';
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const username = document.getElementById('reg-username').value;
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+      const spinner = document.getElementById('register-spinner');
+
+      spinner.style.display = 'inline-block';
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password, email })
+        });
+
+        const data = await res.json();
+        log(data);
+
+        if (res.ok) {
+          showAlert('Registration successful! Please login.');
+          switchTab('login');
+        } else {
+          showAlert(data.error || 'Registration failed', 'error');
+        }
+      } catch (err) {
+        showAlert('Network error', 'error');
+        log({ error: err.message });
+      }
+
+      spinner.style.display = 'none';
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('username');
+      updateUserStatus();
+      showAlert('Logged out');
+      log('Logged out successfully');
+    }
+
+    // File Functions
+    async function uploadFile() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showAlert('Please login first', 'error');
+        return;
+      }
+
+      const file = document.getElementById('file-input').files[0];
+      if (!file) {
+        showAlert('Please select a file', 'error');
+        return;
+      }
+
+      const spinner = document.getElementById('upload-spinner');
+      spinner.style.display = 'inline-block';
 
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append('file', file);
 
-      const res = await fetch(`${API_BASE}/upload`, {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${token}` },
-        body: formData
-      });
+      try {
+        const res = await fetch(`${API_BASE}/upload`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
 
-      const data = await res.json();
-      show(data);
+        const data = await res.json();
+        log(data);
+
+        if (res.ok) {
+          showAlert('File uploaded successfully!');
+          document.getElementById('file-input').value = '';
+          document.getElementById('selected-file').textContent = '';
+          loadMyFiles();
+        } else {
+          showAlert(data.error || 'Upload failed', 'error');
+        }
+      } catch (err) {
+        showAlert('Network error', 'error');
+        log({ error: err.message });
+      }
+
+      spinner.style.display = 'none';
     }
 
     async function loadMyFiles() {
-      const token = localStorage.getItem("token");
-      if (!token) return alert("Login first");
+      const token = localStorage.getItem('token');
+      if (!token) {
+        return;
+      }
 
-      const res = await fetch(`${API_BASE}/my-files`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
+      try {
+        const res = await fetch(`${API_BASE}/my-files`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
 
-      const data = await res.json();
-      show(data);
+        const data = await res.json();
+        log(data);
 
-      const list = document.getElementById("files-list");
-      list.innerHTML = "";
+        const list = document.getElementById('files-list');
+        list.innerHTML = '';
 
-      data.files?.forEach(f => {
-        const li = document.createElement("li");
-        li.textContent = f.filename + " ";
-
-        const btn = document.createElement("button");
-        btn.textContent = "Download";
-        btn.onclick = () => downloadFile(f.file_id);
-
-        li.appendChild(btn);
-        list.appendChild(li);
-      });
+        if (data.files && data.files.length > 0) {
+          data.files.forEach(f => {
+            const li = document.createElement('li');
+            li.className = 'file-item';
+            li.innerHTML = `
+              <div class="file-info">
+                <div class="file-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 24 24">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                </div>
+                <div class="file-details">
+                  <h4>${f.filename}</h4>
+                  <span>${formatBytes(f.file_size)} - ${f.chunk_count} chunks</span>
+                </div>
+              </div>
+              <div class="file-actions">
+                <button class="btn-download" onclick="downloadFile('${f.file_id}', '${f.filename}')">Download</button>
+              </div>
+            `;
+            list.appendChild(li);
+          });
+        } else {
+          list.innerHTML = `
+            <li class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+              </svg>
+              <p>No files yet. Upload your first file!</p>
+            </li>
+          `;
+        }
+      } catch (err) {
+        log({ error: err.message });
+      }
     }
 
-    async function downloadFile(fileId) {
-      const token = localStorage.getItem("token");
-      if (!token) return alert("Login first");
+    async function downloadFile(fileId, filename) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showAlert('Please login first', 'error');
+        return;
+      }
 
-      const res = await fetch(`${API_BASE}/download/${fileId}`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
+      try {
+        log(`Downloading ${filename}...`);
+        const res = await fetch(`${API_BASE}/download/${fileId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
 
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "file";
-      a.click();
+        if (!res.ok) {
+          const data = await res.json();
+          showAlert(data.error || 'Download failed', 'error');
+          return;
+        }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        showAlert('Download started!');
+        log(`Downloaded ${filename}`);
+      } catch (err) {
+        showAlert('Download failed', 'error');
+        log({ error: err.message });
+      }
     }
 
-    async function loadPeers() {
-      const res = await fetch(`${API_BASE}/network/peers`);
-      const data = await res.json();
-      document.getElementById("peers-output").textContent = JSON.stringify(data, null, 2);
+    // Stats Functions
+    async function loadStats() {
+      try {
+        const [peersRes, statsRes] = await Promise.all([
+          fetch(`${API_BASE}/network/peers`),
+          fetch(`${API_BASE}/blockchain/stats`)
+        ]);
+
+        const peers = await peersRes.json();
+        const stats = await statsRes.json();
+
+        document.getElementById('stat-peers').textContent = peers.count || 0;
+        document.getElementById('stat-blocks').textContent = stats.block_count || 0;
+        document.getElementById('stat-files').textContent = stats.file_count || 0;
+        document.getElementById('stat-size').textContent = formatBytes(stats.total_size || 0);
+
+        log({ peers: peers.count, blocks: stats.block_count, files: stats.file_count });
+      } catch (err) {
+        log({ error: err.message });
+      }
     }
 
-    async function loadBlockchainStats() {
-      const res = await fetch(`${API_BASE}/blockchain/stats`);
-      const data = await res.json();
-      document.getElementById("blockchain-output").textContent = JSON.stringify(data, null, 2);
+    // Utility
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Initialize
+    updateUserStatus();
+    loadStats();
+    if (localStorage.getItem('token')) {
+      loadMyFiles();
     }
   </script>
 
