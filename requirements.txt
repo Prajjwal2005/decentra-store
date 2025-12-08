@@ -27,3 +27,4 @@ python-dotenv>=1.0.0
 # For production deployment (optional)
 gunicorn>=21.0.0
 gevent>=23.0.0
+gevent-websocket>=0.10.1
