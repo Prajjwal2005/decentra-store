@@ -5,574 +5,608 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DecentraStore - Decentralized File Storage</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%);
       min-height: 100vh;
-      color: #fff;
+      color: #c9d1d9;
     }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
+    /* Page Views */
+    .page { display: none; min-height: 100vh; }
+    .page.active { display: block; }
+
+    /* ==================== LOGIN PAGE ==================== */
+    .login-page {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       padding: 20px;
     }
 
-    /* Header */
-    header {
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .login-header {
       text-align: center;
-      padding: 40px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
       margin-bottom: 40px;
     }
 
-    header h1 {
-      font-size: 2.5rem;
-      background: linear-gradient(90deg, #e94560, #0f3460);
+    .login-header h1 {
+      font-size: 2.8rem;
+      background: linear-gradient(135deg, #58a6ff, #1f6feb);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       margin-bottom: 10px;
     }
 
-    header p {
-      color: #a0a0a0;
-      font-size: 1.1rem;
+    .login-header p {
+      color: #8b949e;
+      font-size: 1rem;
     }
 
-    /* User Status Bar */
-    .user-bar {
-      background: rgba(255,255,255,0.05);
-      border-radius: 10px;
-      padding: 15px 20px;
-      margin-bottom: 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .user-bar .status {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .user-bar .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #e94560;
-    }
-
-    .user-bar .status-dot.online {
-      background: #4ade80;
-    }
-
-    .user-bar button {
-      background: #e94560;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      color: white;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .user-bar button:hover {
-      background: #d63850;
-    }
-
-    /* Main Grid */
-    .main-grid {
-      display: grid;
-      grid-template-columns: 350px 1fr;
-      gap: 30px;
-    }
-
-    @media (max-width: 900px) {
-      .main-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Cards */
-    .card {
-      background: rgba(255,255,255,0.05);
-      border-radius: 15px;
-      padding: 25px;
+    .login-card {
+      background: rgba(22, 27, 34, 0.8);
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 32px;
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .card h2 {
-      font-size: 1.3rem;
-      margin-bottom: 20px;
-      color: #e94560;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .card h2::before {
-      content: '';
-      width: 4px;
-      height: 20px;
-      background: #e94560;
-      border-radius: 2px;
-    }
-
-    /* Auth Section */
-    .auth-section {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
     }
 
     .auth-tabs {
       display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
+      margin-bottom: 24px;
+      background: #21262d;
+      border-radius: 8px;
+      padding: 4px;
     }
 
     .auth-tabs button {
       flex: 1;
       padding: 12px;
       border: none;
-      background: rgba(255,255,255,0.1);
-      color: #a0a0a0;
-      border-radius: 8px;
+      background: transparent;
+      color: #8b949e;
+      border-radius: 6px;
       cursor: pointer;
-      transition: all 0.3s;
-      font-size: 1rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s;
     }
 
     .auth-tabs button.active {
-      background: #e94560;
-      color: white;
-    }
-
-    .auth-form {
-      display: none;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .auth-form.active {
-      display: flex;
-    }
-
-    /* Inputs */
-    input[type="text"],
-    input[type="password"],
-    input[type="email"] {
-      width: 100%;
-      padding: 14px 18px;
-      border: 2px solid rgba(255,255,255,0.1);
-      border-radius: 10px;
-      background: rgba(0,0,0,0.2);
+      background: #58a6ff;
       color: #fff;
+    }
+
+    .auth-form { display: none; flex-direction: column; gap: 16px; }
+    .auth-form.active { display: flex; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 0.85rem; color: #8b949e; }
+
+    input[type="text"], input[type="password"], input[type="email"] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      background: #0d1117;
+      color: #c9d1d9;
       font-size: 1rem;
-      transition: border-color 0.3s;
+      transition: border-color 0.2s;
     }
 
-    input:focus {
-      outline: none;
-      border-color: #e94560;
-    }
+    input:focus { outline: none; border-color: #58a6ff; }
+    input::placeholder { color: #484f58; }
 
-    input::placeholder {
-      color: #666;
-    }
-
-    /* Buttons */
     .btn {
-      padding: 14px 24px;
+      padding: 12px 20px;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       font-size: 1rem;
       cursor: pointer;
-      transition: all 0.3s;
       font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #e94560, #d63850);
-      color: white;
+      background: #238636;
+      color: #fff;
     }
 
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+    .btn-primary:hover { background: #2ea043; }
+
+    .btn-blue {
+      background: #1f6feb;
+      color: #fff;
     }
 
-    .btn-secondary {
-      background: rgba(255,255,255,0.1);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.2);
+    .btn-blue:hover { background: #388bfd; }
+
+    .btn-outline {
+      background: transparent;
+      color: #58a6ff;
+      border: 1px solid #30363d;
     }
 
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.2);
+    .btn-outline:hover { background: rgba(88, 166, 255, 0.1); }
+
+    .btn-danger {
+      background: #da3633;
+      color: #fff;
     }
 
-    /* File Upload */
-    .upload-zone {
-      border: 2px dashed rgba(255,255,255,0.2);
-      border-radius: 15px;
-      padding: 40px;
+    .btn-danger:hover { background: #f85149; }
+
+    /* ==================== DASHBOARD PAGE ==================== */
+    .dashboard-page { display: none; }
+    .dashboard-page.active { display: block; }
+
+    .navbar {
+      background: rgba(13, 17, 23, 0.95);
+      border-bottom: 1px solid #30363d;
+      padding: 12px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .navbar-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar-brand {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #58a6ff;
+    }
+
+    .navbar-user {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .navbar-user span { color: #8b949e; }
+    .navbar-user strong { color: #c9d1d9; }
+
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 24px;
+    }
+
+    @media (max-width: 1000px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #21262d;
+    }
+
+    .card-header h2 {
+      font-size: 1.1rem;
+      color: #c9d1d9;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-header h2 svg { width: 20px; height: 20px; color: #58a6ff; }
+
+    /* Stats Cards */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 800px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .stat-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
       text-align: center;
-      transition: all 0.3s;
+    }
+
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #58a6ff;
+    }
+
+    .stat-card .label {
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-top: 4px;
+    }
+
+    /* Upload Zone */
+    .upload-zone {
+      border: 2px dashed #30363d;
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
       cursor: pointer;
-      margin-bottom: 15px;
+      transition: all 0.2s;
+      margin-bottom: 16px;
     }
 
-    .upload-zone:hover {
-      border-color: #e94560;
-      background: rgba(233, 69, 96, 0.05);
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: #58a6ff;
+      background: rgba(88, 166, 255, 0.05);
     }
 
-    .upload-zone.dragover {
-      border-color: #e94560;
-      background: rgba(233, 69, 96, 0.1);
-    }
+    .upload-zone svg { width: 48px; height: 48px; color: #58a6ff; margin-bottom: 12px; }
+    .upload-zone p { color: #8b949e; }
+    .upload-zone .file-name { color: #3fb950; font-weight: 600; margin-top: 8px; }
 
-    .upload-zone svg {
-      width: 50px;
-      height: 50px;
-      margin-bottom: 15px;
-      color: #e94560;
-    }
-
-    .upload-zone p {
-      color: #a0a0a0;
-      margin-bottom: 10px;
-    }
-
-    .upload-zone .file-name {
-      color: #4ade80;
-      font-weight: 600;
-    }
-
-    #file-input {
-      display: none;
-    }
+    #file-input { display: none; }
 
     /* Files List */
-    .files-section {
-      margin-top: 20px;
-    }
-
     .files-list {
       list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
       max-height: 400px;
       overflow-y: auto;
-    }
-
-    .files-list::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .files-list::-webkit-scrollbar-track {
-      background: rgba(255,255,255,0.05);
-      border-radius: 3px;
-    }
-
-    .files-list::-webkit-scrollbar-thumb {
-      background: #e94560;
-      border-radius: 3px;
     }
 
     .file-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px;
-      background: rgba(0,0,0,0.2);
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.05);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: #0d1117;
+      border: 1px solid #21262d;
     }
 
-    .file-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .file-info { display: flex; align-items: center; gap: 12px; }
 
     .file-icon {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, #e94560, #d63850);
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #1f6feb, #58a6ff);
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .file-details h4 {
-      font-size: 0.95rem;
-      margin-bottom: 3px;
-    }
+    .file-icon svg { width: 18px; height: 18px; color: #fff; }
+    .file-name { font-weight: 500; color: #c9d1d9; }
+    .file-meta { font-size: 0.8rem; color: #8b949e; }
 
-    .file-details span {
-      font-size: 0.8rem;
-      color: #666;
-    }
-
-    .file-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .file-actions button {
-      padding: 8px 12px;
-      border: none;
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.85rem;
       border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.3s;
     }
 
-    .btn-download {
-      background: #4ade80;
-      color: #000;
+    /* Peers List */
+    .peers-list { max-height: 300px; overflow-y: auto; }
+
+    .peer-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      margin-bottom: 8px;
     }
 
-    .btn-download:hover {
-      background: #3cc970;
-    }
-
-    /* Stats Grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin-top: 20px;
-    }
-
-    .stat-card {
-      background: rgba(0,0,0,0.2);
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-    }
-
-    .stat-card .value {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: #e94560;
-    }
-
-    .stat-card .label {
-      font-size: 0.85rem;
-      color: #666;
-      margin-top: 5px;
-    }
-
-    /* Output/Messages */
-    .output-section {
-      margin-top: 30px;
-    }
-
-    #output {
-      background: rgba(0,0,0,0.3);
-      border-radius: 10px;
-      padding: 20px;
-      font-family: 'Courier New', monospace;
-      font-size: 0.9rem;
-      max-height: 200px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      color: #4ade80;
-    }
-
-    /* Loading Spinner */
-    .spinner {
-      display: none;
-      width: 20px;
-      height: 20px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
+    .peer-status {
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-left: 10px;
+      background: #3fb950;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    .peer-info { flex: 1; }
+    .peer-id { font-family: monospace; font-size: 0.85rem; color: #c9d1d9; }
+    .peer-capacity { font-size: 0.8rem; color: #8b949e; }
+
+    /* Node Section */
+    .node-section {
+      text-align: center;
+      padding: 20px;
     }
+
+    .node-section p { color: #8b949e; margin-bottom: 16px; }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #8b949e;
+    }
+
+    .empty-state svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.5; }
 
     /* Alerts */
     .alert {
       position: fixed;
       top: 20px;
       right: 20px;
-      padding: 15px 25px;
-      border-radius: 10px;
-      color: white;
+      padding: 14px 20px;
+      border-radius: 8px;
+      color: #fff;
       font-weight: 500;
       animation: slideIn 0.3s ease;
       z-index: 1000;
     }
 
-    .alert-success {
-      background: linear-gradient(135deg, #4ade80, #22c55e);
-    }
-
-    .alert-error {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-    }
+    .alert-success { background: #238636; }
+    .alert-error { background: #da3633; }
 
     @keyframes slideIn {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
     }
 
-    /* Empty State */
-    .empty-state {
-      text-align: center;
-      padding: 40px;
-      color: #666;
+    /* Spinner */
+    .spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
     }
 
-    .empty-state svg {
-      width: 60px;
-      height: 60px;
-      margin-bottom: 15px;
-      opacity: 0.5;
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Activity Log */
+    #activity-log {
+      background: #0d1117;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.85rem;
+      max-height: 200px;
+      overflow-y: auto;
+      color: #8b949e;
+      white-space: pre-wrap;
     }
+
+    .log-success { color: #3fb950; }
+    .log-error { color: #f85149; }
+    .log-info { color: #58a6ff; }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <header>
-      <h1>DecentraStore</h1>
-      <p>Secure, Decentralized File Storage on the Blockchain</p>
-    </header>
-
-    <div class="user-bar">
-      <div class="status">
-        <div class="status-dot" id="status-dot"></div>
-        <span id="user-status">Not logged in</span>
+  <!-- ==================== LOGIN PAGE ==================== -->
+  <div class="page login-page active" id="login-page">
+    <div class="login-container">
+      <div class="login-header">
+        <h1>DecentraStore</h1>
+        <p>Secure, Decentralized File Storage on the Blockchain</p>
       </div>
-      <button id="logout-btn" style="display: none;" onclick="handleLogout()">Logout</button>
+
+      <div class="login-card">
+        <div class="auth-tabs">
+          <button class="active" onclick="switchAuthTab('login')">Sign In</button>
+          <button onclick="switchAuthTab('register')">Create Account</button>
+        </div>
+
+        <form class="auth-form active" id="login-form" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="login-username" placeholder="Enter username" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="Enter password" required />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+            Sign In
+            <span class="spinner" id="login-spinner"></span>
+          </button>
+        </form>
+
+        <form class="auth-form" id="register-form" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="reg-username" placeholder="Choose a username" required />
+          </div>
+          <div class="form-group">
+            <label>Email (optional)</label>
+            <input type="email" id="reg-email" placeholder="your@email.com" />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="reg-password" placeholder="Choose a password" required />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+            Create Account
+            <span class="spinner" id="register-spinner"></span>
+          </button>
+        </form>
+      </div>
+
+      <p style="text-align: center; margin-top: 24px; color: #8b949e; font-size: 0.9rem;">
+        Your files are encrypted and distributed across the network
+      </p>
     </div>
+  </div>
 
-    <div class="main-grid">
-      <!-- Left Column - Auth & Upload -->
-      <div class="left-column">
-        <!-- Auth Card -->
-        <div class="card auth-section" id="auth-card">
-          <h2>Account</h2>
-          <div class="auth-tabs">
-            <button class="active" onclick="switchTab('login')">Login</button>
-            <button onclick="switchTab('register')">Register</button>
-          </div>
-
-          <form class="auth-form active" id="login-form" onsubmit="handleLogin(event)">
-            <input type="text" id="login-username" placeholder="Username" required />
-            <input type="password" id="login-password" placeholder="Password" required />
-            <button type="submit" class="btn btn-primary">
-              Login
-              <span class="spinner" id="login-spinner"></span>
-            </button>
-          </form>
-
-          <form class="auth-form" id="register-form" onsubmit="handleRegister(event)">
-            <input type="text" id="reg-username" placeholder="Username" required />
-            <input type="email" id="reg-email" placeholder="Email (optional)" />
-            <input type="password" id="reg-password" placeholder="Password" required />
-            <button type="submit" class="btn btn-primary">
-              Create Account
-              <span class="spinner" id="register-spinner"></span>
-            </button>
-          </form>
+  <!-- ==================== DASHBOARD PAGE ==================== -->
+  <div class="page dashboard-page" id="dashboard-page">
+    <nav class="navbar">
+      <div class="navbar-content">
+        <span class="navbar-brand">DecentraStore</span>
+        <div class="navbar-user">
+          <span>Welcome, <strong id="nav-username">User</strong></span>
+          <button class="btn btn-outline btn-sm" onclick="handleLogout()">Logout</button>
         </div>
+      </div>
+    </nav>
 
-        <!-- Upload Card -->
-        <div class="card" style="margin-top: 20px;">
-          <h2>Upload File</h2>
-          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-            </svg>
-            <p>Click or drag files here to upload</p>
-            <p class="file-name" id="selected-file"></p>
-          </div>
-          <input type="file" id="file-input" onchange="handleFileSelect(this)" />
-          <button class="btn btn-primary" style="width: 100%;" onclick="uploadFile()">
-            Upload to Network
-            <span class="spinner" id="upload-spinner"></span>
-          </button>
+    <div class="dashboard-container">
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="value" id="stat-peers">0</div>
+          <div class="label">Active Nodes</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="stat-blocks">0</div>
+          <div class="label">Blocks</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="stat-files">0</div>
+          <div class="label">Your Files</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="stat-size">0 B</div>
+          <div class="label">Storage Used</div>
         </div>
       </div>
 
-      <!-- Right Column - Files & Stats -->
-      <div class="right-column">
-        <!-- Files Card -->
-        <div class="card">
-          <h2>My Files</h2>
-          <button class="btn btn-secondary" style="margin-bottom: 20px;" onclick="loadMyFiles()">
-            Refresh Files
-          </button>
-          <ul class="files-list" id="files-list">
-            <li class="empty-state">
+      <div class="dashboard-grid">
+        <!-- Main Column -->
+        <div class="main-column">
+          <!-- Upload Card -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header">
+              <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                Upload File
+              </h2>
+            </div>
+            <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
-              <p>No files yet. Upload your first file!</p>
-            </li>
-          </ul>
+              <p>Click or drag files here to upload</p>
+              <p class="file-name" id="selected-file"></p>
+            </div>
+            <input type="file" id="file-input" onchange="handleFileSelect(this)" />
+            <button class="btn btn-blue" style="width: 100%;" onclick="uploadFile()">
+              Encrypt & Upload to Network
+              <span class="spinner" id="upload-spinner"></span>
+            </button>
+          </div>
+
+          <!-- My Files Card -->
+          <div class="card">
+            <div class="card-header">
+              <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                </svg>
+                My Files
+              </h2>
+              <button class="btn btn-outline btn-sm" onclick="loadMyFiles()">Refresh</button>
+            </div>
+            <ul class="files-list" id="files-list">
+              <li class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+                </svg>
+                <p>No files yet. Upload your first file!</p>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        <!-- Network Stats Card -->
-        <div class="card" style="margin-top: 20px;">
-          <h2>Network Status</h2>
-          <div class="stats-grid" id="stats-grid">
-            <div class="stat-card">
-              <div class="value" id="stat-peers">-</div>
-              <div class="label">Active Peers</div>
+        <!-- Sidebar -->
+        <div class="sidebar">
+          <!-- Become a Node Card -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header">
+              <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
+                </svg>
+                Become a Node
+              </h2>
             </div>
-            <div class="stat-card">
-              <div class="value" id="stat-blocks">-</div>
-              <div class="label">Blocks</div>
-            </div>
-            <div class="stat-card">
-              <div class="value" id="stat-files">-</div>
-              <div class="label">Total Files</div>
-            </div>
-            <div class="stat-card">
-              <div class="value" id="stat-size">-</div>
-              <div class="label">Network Size</div>
+            <div class="node-section">
+              <p>Help the network by running a storage node. Earn rewards by storing encrypted file chunks.</p>
+              <button class="btn btn-primary" style="width: 100%;" onclick="downloadNodePackage()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download Node Software
+              </button>
             </div>
           </div>
-          <button class="btn btn-secondary" style="width: 100%; margin-top: 20px;" onclick="loadStats()">
-            Refresh Stats
-          </button>
-        </div>
-      </div>
-    </div>
 
-    <!-- Output Section -->
-    <div class="output-section">
-      <div class="card">
-        <h2>Activity Log</h2>
-        <pre id="output">Welcome to DecentraStore. Login or register to get started.</pre>
+          <!-- Active Peers Card -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header">
+              <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Active Nodes
+              </h2>
+              <button class="btn btn-outline btn-sm" onclick="loadPeers()">Refresh</button>
+            </div>
+            <div class="peers-list" id="peers-list">
+              <div class="empty-state">
+                <p>No active nodes</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Log Card -->
+          <div class="card">
+            <div class="card-header">
+              <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Activity
+              </h2>
+            </div>
+            <div id="activity-log">Ready.</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -580,7 +614,7 @@
   <script>
     const API_BASE = "https://web-production-dcddc.up.railway.app";
 
-    // UI Helpers
+    // ==================== UI HELPERS ====================
     function showAlert(message, type = 'success') {
       const alert = document.createElement('div');
       alert.className = `alert alert-${type}`;
@@ -589,35 +623,20 @@
       setTimeout(() => alert.remove(), 3000);
     }
 
-    function log(msg) {
-      const output = document.getElementById('output');
+    function log(msg, type = 'info') {
+      const logEl = document.getElementById('activity-log');
       const timestamp = new Date().toLocaleTimeString();
       const text = typeof msg === 'string' ? msg : JSON.stringify(msg, null, 2);
-      output.textContent = `[${timestamp}] ${text}\n` + output.textContent;
+      const colorClass = type === 'error' ? 'log-error' : type === 'success' ? 'log-success' : 'log-info';
+      logEl.innerHTML = `<span class="${colorClass}">[${timestamp}]</span> ${text}\n` + logEl.innerHTML;
     }
 
-    function updateUserStatus() {
-      const token = localStorage.getItem('token');
-      const username = localStorage.getItem('username');
-      const statusDot = document.getElementById('status-dot');
-      const userStatus = document.getElementById('user-status');
-      const logoutBtn = document.getElementById('logout-btn');
-      const authCard = document.getElementById('auth-card');
-
-      if (token && username) {
-        statusDot.classList.add('online');
-        userStatus.textContent = `Logged in as ${username}`;
-        logoutBtn.style.display = 'block';
-        authCard.style.display = 'none';
-      } else {
-        statusDot.classList.remove('online');
-        userStatus.textContent = 'Not logged in';
-        logoutBtn.style.display = 'none';
-        authCard.style.display = 'block';
-      }
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
     }
 
-    function switchTab(tab) {
+    function switchAuthTab(tab) {
       document.querySelectorAll('.auth-tabs button').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
 
@@ -630,31 +649,7 @@
       }
     }
 
-    function handleFileSelect(input) {
-      const fileName = input.files[0]?.name || '';
-      document.getElementById('selected-file').textContent = fileName;
-    }
-
-    // Drag and drop
-    const uploadZone = document.getElementById('upload-zone');
-    uploadZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadZone.classList.add('dragover');
-    });
-    uploadZone.addEventListener('dragleave', () => {
-      uploadZone.classList.remove('dragover');
-    });
-    uploadZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      uploadZone.classList.remove('dragover');
-      const files = e.dataTransfer.files;
-      if (files.length) {
-        document.getElementById('file-input').files = files;
-        handleFileSelect(document.getElementById('file-input'));
-      }
-    });
-
-    // Auth Functions
+    // ==================== AUTH ====================
     async function handleLogin(e) {
       e.preventDefault();
       const username = document.getElementById('login-username').value;
@@ -671,20 +666,18 @@
         });
 
         const data = await res.json();
-        log(data);
 
         if (res.ok) {
           localStorage.setItem('token', data.token);
           localStorage.setItem('username', username);
+          localStorage.setItem('password', password); // For X-User-Password header
           showAlert('Login successful!');
-          updateUserStatus();
-          loadMyFiles();
+          initDashboard();
         } else {
           showAlert(data.error || 'Login failed', 'error');
         }
       } catch (err) {
         showAlert('Network error', 'error');
-        log({ error: err.message });
       }
 
       spinner.style.display = 'none';
@@ -707,166 +700,37 @@
         });
 
         const data = await res.json();
-        log(data);
 
         if (res.ok) {
-          showAlert('Registration successful! Please login.');
-          switchTab('login');
+          showAlert('Account created! Please sign in.');
+          switchAuthTab('login');
+          document.getElementById('login-username').value = username;
         } else {
           showAlert(data.error || 'Registration failed', 'error');
         }
       } catch (err) {
         showAlert('Network error', 'error');
-        log({ error: err.message });
       }
 
       spinner.style.display = 'none';
     }
 
     function handleLogout() {
-      localStorage.removeItem('token');
-      localStorage.removeItem('username');
-      updateUserStatus();
+      localStorage.clear();
+      showPage('login-page');
       showAlert('Logged out');
-      log('Logged out successfully');
     }
 
-    // File Functions
-    async function uploadFile() {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        showAlert('Please login first', 'error');
-        return;
-      }
-
-      const file = document.getElementById('file-input').files[0];
-      if (!file) {
-        showAlert('Please select a file', 'error');
-        return;
-      }
-
-      const spinner = document.getElementById('upload-spinner');
-      spinner.style.display = 'inline-block';
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      try {
-        const res = await fetch(`${API_BASE}/upload`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}` },
-          body: formData
-        });
-
-        const data = await res.json();
-        log(data);
-
-        if (res.ok) {
-          showAlert('File uploaded successfully!');
-          document.getElementById('file-input').value = '';
-          document.getElementById('selected-file').textContent = '';
-          loadMyFiles();
-        } else {
-          showAlert(data.error || 'Upload failed', 'error');
-        }
-      } catch (err) {
-        showAlert('Network error', 'error');
-        log({ error: err.message });
-      }
-
-      spinner.style.display = 'none';
+    // ==================== DASHBOARD ====================
+    function initDashboard() {
+      const username = localStorage.getItem('username');
+      document.getElementById('nav-username').textContent = username;
+      showPage('dashboard-page');
+      loadStats();
+      loadMyFiles();
+      loadPeers();
     }
 
-    async function loadMyFiles() {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        return;
-      }
-
-      try {
-        const res = await fetch(`${API_BASE}/my-files`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        const data = await res.json();
-        log(data);
-
-        const list = document.getElementById('files-list');
-        list.innerHTML = '';
-
-        if (data.files && data.files.length > 0) {
-          data.files.forEach(f => {
-            const li = document.createElement('li');
-            li.className = 'file-item';
-            li.innerHTML = `
-              <div class="file-info">
-                <div class="file-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 24 24">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                  </svg>
-                </div>
-                <div class="file-details">
-                  <h4>${f.filename}</h4>
-                  <span>${formatBytes(f.file_size)} - ${f.chunk_count} chunks</span>
-                </div>
-              </div>
-              <div class="file-actions">
-                <button class="btn-download" onclick="downloadFile('${f.file_id}', '${f.filename}')">Download</button>
-              </div>
-            `;
-            list.appendChild(li);
-          });
-        } else {
-          list.innerHTML = `
-            <li class="empty-state">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
-              </svg>
-              <p>No files yet. Upload your first file!</p>
-            </li>
-          `;
-        }
-      } catch (err) {
-        log({ error: err.message });
-      }
-    }
-
-    async function downloadFile(fileId, filename) {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        showAlert('Please login first', 'error');
-        return;
-      }
-
-      try {
-        log(`Downloading ${filename}...`);
-        const res = await fetch(`${API_BASE}/download/${fileId}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (!res.ok) {
-          const data = await res.json();
-          showAlert(data.error || 'Download failed', 'error');
-          return;
-        }
-
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
-        URL.revokeObjectURL(url);
-        showAlert('Download started!');
-        log(`Downloaded ${filename}`);
-      } catch (err) {
-        showAlert('Download failed', 'error');
-        log({ error: err.message });
-      }
-    }
-
-    // Stats Functions
     async function loadStats() {
       try {
         const [peersRes, statsRes] = await Promise.all([
@@ -881,28 +745,233 @@
         document.getElementById('stat-blocks').textContent = stats.block_count || 0;
         document.getElementById('stat-files').textContent = stats.file_count || 0;
         document.getElementById('stat-size').textContent = formatBytes(stats.total_size || 0);
-
-        log({ peers: peers.count, blocks: stats.block_count, files: stats.file_count });
       } catch (err) {
-        log({ error: err.message });
+        log('Failed to load stats', 'error');
       }
     }
 
-    // Utility
+    // ==================== FILES ====================
+    function handleFileSelect(input) {
+      const fileName = input.files[0]?.name || '';
+      document.getElementById('selected-file').textContent = fileName;
+    }
+
+    // Drag and drop
+    document.addEventListener('DOMContentLoaded', () => {
+      const uploadZone = document.getElementById('upload-zone');
+      if (uploadZone) {
+        uploadZone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          uploadZone.classList.add('dragover');
+        });
+        uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+        uploadZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          uploadZone.classList.remove('dragover');
+          if (e.dataTransfer.files.length) {
+            document.getElementById('file-input').files = e.dataTransfer.files;
+            handleFileSelect(document.getElementById('file-input'));
+          }
+        });
+      }
+    });
+
+    async function uploadFile() {
+      const token = localStorage.getItem('token');
+      const password = localStorage.getItem('password');
+
+      if (!token) {
+        showAlert('Please login first', 'error');
+        return;
+      }
+
+      const file = document.getElementById('file-input').files[0];
+      if (!file) {
+        showAlert('Please select a file', 'error');
+        return;
+      }
+
+      const spinner = document.getElementById('upload-spinner');
+      spinner.style.display = 'inline-block';
+      log(`Uploading ${file.name}...`);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res = await fetch(`${API_BASE}/upload`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'X-User-Password': password
+          },
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          showAlert('File uploaded successfully!');
+          log(`Uploaded: ${file.name} (${data.chunk_count} chunks)`, 'success');
+          document.getElementById('file-input').value = '';
+          document.getElementById('selected-file').textContent = '';
+          loadMyFiles();
+          loadStats();
+        } else {
+          showAlert(data.error || 'Upload failed', 'error');
+          log(data.error || 'Upload failed', 'error');
+        }
+      } catch (err) {
+        showAlert('Network error', 'error');
+        log('Upload failed: network error', 'error');
+      }
+
+      spinner.style.display = 'none';
+    }
+
+    async function loadMyFiles() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/my-files`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await res.json();
+        const list = document.getElementById('files-list');
+        list.innerHTML = '';
+
+        if (data.files && data.files.length > 0) {
+          document.getElementById('stat-files').textContent = data.files.length;
+
+          data.files.forEach(f => {
+            const li = document.createElement('li');
+            li.className = 'file-item';
+            li.innerHTML = `
+              <div class="file-info">
+                <div class="file-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="file-name">${f.filename}</div>
+                  <div class="file-meta">${formatBytes(f.file_size)} &bull; ${f.chunk_count} chunks</div>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="downloadFile('${f.file_id}', '${f.filename}')">Download</button>
+            `;
+            list.appendChild(li);
+          });
+        } else {
+          list.innerHTML = `
+            <li class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+              </svg>
+              <p>No files yet. Upload your first file!</p>
+            </li>
+          `;
+        }
+      } catch (err) {
+        log('Failed to load files', 'error');
+      }
+    }
+
+    async function downloadFile(fileId, filename) {
+      const token = localStorage.getItem('token');
+      const password = localStorage.getItem('password');
+
+      if (!token) {
+        showAlert('Please login first', 'error');
+        return;
+      }
+
+      log(`Downloading ${filename}...`);
+
+      try {
+        const res = await fetch(`${API_BASE}/download/${fileId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'X-User-Password': password
+          }
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          showAlert(data.error || 'Download failed', 'error');
+          log(data.error || 'Download failed', 'error');
+          return;
+        }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        showAlert('Download started!');
+        log(`Downloaded: ${filename}`, 'success');
+      } catch (err) {
+        showAlert('Download failed', 'error');
+        log('Download failed: network error', 'error');
+      }
+    }
+
+    // ==================== PEERS ====================
+    async function loadPeers() {
+      try {
+        const res = await fetch(`${API_BASE}/network/peers`);
+        const data = await res.json();
+        const list = document.getElementById('peers-list');
+
+        if (data.peers && data.peers.length > 0) {
+          list.innerHTML = data.peers.map(p => `
+            <div class="peer-item">
+              <div class="peer-status"></div>
+              <div class="peer-info">
+                <div class="peer-id">${p.node_id ? p.node_id.substring(0, 12) + '...' : 'Unknown'}</div>
+                <div class="peer-capacity">${p.capacity_gb || '?'} GB capacity</div>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          list.innerHTML = '<div class="empty-state"><p>No active nodes</p></div>';
+        }
+      } catch (err) {
+        log('Failed to load peers', 'error');
+      }
+    }
+
+    // ==================== NODE DOWNLOAD ====================
+    function downloadNodePackage() {
+      log('Downloading node software...');
+      window.location.href = `${API_BASE}/download-node`;
+      showAlert('Download started!');
+    }
+
+    // ==================== UTILITY ====================
     function formatBytes(bytes) {
-      if (bytes === 0) return '0 B';
+      if (!bytes || bytes === 0) return '0 B';
       const k = 1024;
       const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
       const i = Math.floor(Math.log(bytes) / Math.log(k));
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
-    // Initialize
-    updateUserStatus();
-    loadStats();
-    if (localStorage.getItem('token')) {
-      loadMyFiles();
-    }
+    // ==================== INIT ====================
+    (function init() {
+      const token = localStorage.getItem('token');
+      const username = localStorage.getItem('username');
+
+      if (token && username) {
+        initDashboard();
+      } else {
+        showPage('login-page');
+      }
+    })();
   </script>
 
 </body>
