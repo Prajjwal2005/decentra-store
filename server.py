@@ -280,18 +280,18 @@ def upload_file():
     try:
         file_data = file.read()
         filename = file.filename
-        
+
         file_key = crypto.generate_file_key()
-        chunks = list(chunker.chunk_data(file_data, CHUNK_SIZE))
-        chunk_hashes = [c[1] for c in chunks]
+        chunks = list(chunker.chunk_bytes(file_data, CHUNK_SIZE))
+        chunk_hashes = [c[2] for c in chunks]  # (index, bytes, hash)
         merkle_root = chunker.compute_merkle_root(chunk_hashes)
-        
+
         chunk_assignments = []
         replication = min(REPLICATION_FACTOR, len(peers))
-        
-        for idx, (chunk_data, chunk_hash) in enumerate(chunks):
-            encrypted = crypto.encrypt_chunk(chunk_data, file_key)
-            encrypted_hash = chunker.compute_hash(encrypted)
+
+        for idx, chunk_bytes_data, chunk_hash in chunks:
+            encrypted = crypto.encrypt_chunk(chunk_bytes_data, file_key)
+            encrypted_hash = chunker.sha256_bytes(encrypted)
             
             assigned_peers = []
             for peer in peers[:replication]:

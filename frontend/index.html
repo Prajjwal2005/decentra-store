@@ -812,7 +812,7 @@
 
         if (res.ok) {
           showAlert('File uploaded successfully!');
-          log(`Uploaded: ${file.name} (${data.chunk_count} chunks)`, 'success');
+          log(`Uploaded: ${file.name} (${data.chunks} chunks)`, 'success');
           document.getElementById('file-input').value = '';
           document.getElementById('selected-file').textContent = '';
           loadMyFiles();
