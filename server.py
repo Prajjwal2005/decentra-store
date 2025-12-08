@@ -484,7 +484,8 @@ def upload_file():
                 "nodes": assigned_nodes  # Changed from 'peers' to 'nodes'
             })
 
-        user_key = crypto.derive_key_from_password(user_password, g.current_user.key_salt)
+        key_salt = base64.b64decode(g.current_user.key_salt)
+        user_key, _ = crypto.derive_key_from_password(user_password, key_salt)
         encrypted_file_key = crypto.encrypt_file_key(file_key, user_key)
 
         file_id = str(uuid.uuid4())
@@ -536,7 +537,8 @@ def download_file(file_id):
         return jsonify({"error": "Access denied"}), 403
 
     try:
-        user_key = crypto.derive_key_from_password(user_password, g.current_user.key_salt)
+        key_salt = base64.b64decode(g.current_user.key_salt)
+        user_key, _ = crypto.derive_key_from_password(user_password, key_salt)
         file_key = crypto.decrypt_file_key(file_meta["encrypted_file_key"], user_key)
 
         chunks_data = []
