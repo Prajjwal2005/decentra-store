@@ -487,6 +487,7 @@ def upload_file():
         key_salt = base64.b64decode(g.current_user.key_salt)
         user_key, _ = crypto.derive_key_from_password(user_password, key_salt)
         encrypted_file_key = crypto.encrypt_file_key(file_key, user_key)
+        encrypted_file_key_b64 = base64.b64encode(encrypted_file_key).decode('utf-8')
 
         file_id = str(uuid.uuid4())
 
@@ -496,7 +497,7 @@ def upload_file():
             "owner_id": g.current_user.id,
             "size": len(file_data),
             "merkle_root": merkle_root,
-            "encrypted_file_key": encrypted_file_key,
+            "encrypted_file_key": encrypted_file_key_b64,
             "chunks": chunk_assignments,
             "uploaded_at": time.time()
         }
@@ -539,7 +540,8 @@ def download_file(file_id):
     try:
         key_salt = base64.b64decode(g.current_user.key_salt)
         user_key, _ = crypto.derive_key_from_password(user_password, key_salt)
-        file_key = crypto.decrypt_file_key(file_meta["encrypted_file_key"], user_key)
+        encrypted_file_key = base64.b64decode(file_meta["encrypted_file_key"])
+        file_key = crypto.decrypt_file_key(encrypted_file_key, user_key)
 
         chunks_data = []
         for chunk_info in sorted(file_meta["chunks"], key=lambda x: x["index"]):
