@@ -46,7 +46,7 @@
   <pre id="output"></pre>
 
   <script>
-    const API_BASE = "https://web-production-dcddc.up.railway.app/app";
+    const API_BASE = "https://web-production-dcddc.up.railway.app";
 
     function show(msg) {
       document.getElementById("output").textContent = typeof msg === "string" ? msg : JSON.stringify(msg, null, 2);
@@ -131,7 +131,7 @@
 
         const btn = document.createElement("button");
         btn.textContent = "Download";
-        btn.onclick = () => downloadFile(f.id);
+        btn.onclick = () => downloadFile(f.file_id);
 
         li.appendChild(btn);
         list.appendChild(li);
