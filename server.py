@@ -609,18 +609,64 @@ def blockchain_stats():
 
 @app.route("/blockchain/blocks", methods=["GET"])
 def blockchain_blocks():
-    limit = int(request.args.get("limit", 10))
+    """Get all blockchain blocks (public explorer)"""
+    limit = int(request.args.get("limit", 50))
+    offset = int(request.args.get("offset", 0))
+
+    # Get blocks in reverse order (newest first)
+    all_blocks = list(reversed(blockchain.chain))
+    paginated = all_blocks[offset:offset + limit]
+
     blocks = []
-    for block in blockchain.chain[-limit:]:
+    for block in paginated:
         data = block.get("data", {})
         blocks.append({
             "index": block.get("index"),
+            "hash": block.get("hash", "")[:16] + "..." if block.get("hash") else "",
+            "previous_hash": block.get("previous_hash", "")[:16] + "..." if block.get("previous_hash") else "",
             "timestamp": block.get("timestamp"),
             "file_id": data.get("file_id"),
-            "filename": data.get("filename", "N/A"),
+            "filename": data.get("filename", "Genesis Block" if block.get("index") == 0 else "N/A"),
             "size": data.get("size", 0),
+            "chunks": len(data.get("chunks", [])),
+            "owner_id": data.get("owner_id"),
+            "merkle_root": data.get("merkle_root", "")[:16] + "..." if data.get("merkle_root") else "",
         })
-    return jsonify({"blocks": blocks})
+    return jsonify({
+        "blocks": blocks,
+        "total": len(blockchain.chain),
+        "offset": offset,
+        "limit": limit
+    })
+
+@app.route("/blockchain/my-blocks", methods=["GET"])
+@auth.require_token
+def my_blockchain_blocks():
+    """Get blocks created by the current user"""
+    limit = int(request.args.get("limit", 50))
+
+    user_blocks = []
+    for block in reversed(blockchain.chain):
+        data = block.get("data", {})
+        if data.get("owner_id") == g.current_user.id:
+            user_blocks.append({
+                "index": block.get("index"),
+                "hash": block.get("hash", "")[:16] + "..." if block.get("hash") else "",
+                "previous_hash": block.get("previous_hash", "")[:16] + "..." if block.get("previous_hash") else "",
+                "timestamp": block.get("timestamp"),
+                "file_id": data.get("file_id"),
+                "filename": data.get("filename", "N/A"),
+                "size": data.get("size", 0),
+                "chunks": len(data.get("chunks", [])),
+                "merkle_root": data.get("merkle_root", "")[:16] + "..." if data.get("merkle_root") else "",
+            })
+            if len(user_blocks) >= limit:
+                break
+
+    return jsonify({
+        "blocks": user_blocks,
+        "total": len(user_blocks)
+    })
 
 # Node package download
 @app.route("/download-node", methods=["GET"])

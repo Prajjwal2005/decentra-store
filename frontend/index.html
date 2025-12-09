@@ -412,6 +412,115 @@
     .log-success { color: #3fb950; }
     .log-error { color: #f85149; }
     .log-info { color: #58a6ff; }
+
+    /* Dashboard Tabs */
+    .dashboard-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #30363d;
+      padding-bottom: 12px;
+    }
+
+    .dashboard-tabs button {
+      padding: 10px 20px;
+      border: none;
+      background: transparent;
+      color: #8b949e;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dashboard-tabs button:hover { color: #c9d1d9; background: rgba(88, 166, 255, 0.1); }
+    .dashboard-tabs button.active { color: #58a6ff; background: rgba(88, 166, 255, 0.15); border-bottom: 2px solid #58a6ff; }
+    .dashboard-tabs button svg { width: 18px; height: 18px; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Blockchain Explorer */
+    .blockchain-explorer { max-height: 600px; overflow-y: auto; }
+
+    .block-item {
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.2s;
+    }
+
+    .block-item:hover { border-color: #58a6ff; }
+
+    .block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .block-index {
+      background: linear-gradient(135deg, #1f6feb, #58a6ff);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .block-time { color: #8b949e; font-size: 0.85rem; }
+
+    .block-details { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+
+    @media (max-width: 600px) {
+      .block-details { grid-template-columns: 1fr; }
+    }
+
+    .block-field {
+      background: #161b22;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+
+    .block-field-label { font-size: 0.75rem; color: #8b949e; margin-bottom: 2px; }
+    .block-field-value { font-family: monospace; font-size: 0.85rem; color: #c9d1d9; word-break: break-all; }
+
+    .block-file-name {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, rgba(31, 111, 235, 0.2), rgba(88, 166, 255, 0.1));
+      border: 1px solid rgba(88, 166, 255, 0.3);
+    }
+
+    .block-file-name .block-field-value { color: #58a6ff; font-weight: 500; }
+
+    .genesis-block { border-color: #3fb950; }
+    .genesis-block .block-index { background: linear-gradient(135deg, #238636, #3fb950); }
+
+    .explorer-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .explorer-tabs button {
+      padding: 8px 16px;
+      border: 1px solid #30363d;
+      background: transparent;
+      color: #8b949e;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .explorer-tabs button:hover { border-color: #58a6ff; color: #c9d1d9; }
+    .explorer-tabs button.active { background: #1f6feb; border-color: #1f6feb; color: #fff; }
   </style>
 </head>
 <body>
@@ -504,6 +613,24 @@
         </div>
       </div>
 
+      <!-- Dashboard Tabs -->
+      <div class="dashboard-tabs">
+        <button class="active" onclick="switchDashboardTab('files')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+          </svg>
+          Files
+        </button>
+        <button onclick="switchDashboardTab('explorer')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          Blockchain Explorer
+        </button>
+      </div>
+
+      <!-- Files Tab -->
+      <div class="tab-content active" id="tab-files">
       <div class="dashboard-grid">
         <!-- Main Column -->
         <div class="main-column">
@@ -608,6 +735,37 @@
           </div>
         </div>
       </div>
+      </div><!-- End Files Tab -->
+
+      <!-- Blockchain Explorer Tab -->
+      <div class="tab-content" id="tab-explorer">
+        <div class="card">
+          <div class="card-header">
+            <h2>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+              Blockchain Explorer
+            </h2>
+            <button class="btn btn-outline btn-sm" onclick="loadBlockchain()">Refresh</button>
+          </div>
+
+          <div class="explorer-tabs">
+            <button class="active" onclick="switchExplorerTab('all')">All Blocks</button>
+            <button onclick="switchExplorerTab('mine')">My Blocks</button>
+          </div>
+
+          <div class="blockchain-explorer" id="blockchain-list">
+            <div class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+              <p>Loading blockchain...</p>
+            </div>
+          </div>
+        </div>
+      </div><!-- End Explorer Tab -->
+
     </div>
   </div>
 
@@ -950,6 +1108,117 @@
       log('Downloading node software...');
       window.location.href = `${API_BASE}/download-node`;
       showAlert('Download started!');
+    }
+
+    // ==================== DASHBOARD TABS ====================
+    function switchDashboardTab(tab) {
+      document.querySelectorAll('.dashboard-tabs button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      if (tab === 'files') {
+        document.querySelector('.dashboard-tabs button:first-child').classList.add('active');
+        document.getElementById('tab-files').classList.add('active');
+      } else {
+        document.querySelector('.dashboard-tabs button:last-child').classList.add('active');
+        document.getElementById('tab-explorer').classList.add('active');
+        loadBlockchain();
+      }
+    }
+
+    // ==================== BLOCKCHAIN EXPLORER ====================
+    let currentExplorerTab = 'all';
+
+    function switchExplorerTab(tab) {
+      currentExplorerTab = tab;
+      document.querySelectorAll('.explorer-tabs button').forEach(btn => btn.classList.remove('active'));
+      if (tab === 'all') {
+        document.querySelector('.explorer-tabs button:first-child').classList.add('active');
+      } else {
+        document.querySelector('.explorer-tabs button:last-child').classList.add('active');
+      }
+      loadBlockchain();
+    }
+
+    async function loadBlockchain() {
+      const token = localStorage.getItem('token');
+      const list = document.getElementById('blockchain-list');
+
+      list.innerHTML = '<div class="empty-state"><p>Loading blockchain...</p></div>';
+
+      try {
+        const endpoint = currentExplorerTab === 'mine'
+          ? `${API_BASE}/blockchain/my-blocks`
+          : `${API_BASE}/blockchain/blocks`;
+
+        const headers = currentExplorerTab === 'mine'
+          ? { 'Authorization': `Bearer ${token}` }
+          : {};
+
+        const res = await fetch(endpoint, { headers });
+        const data = await res.json();
+
+        if (data.blocks && data.blocks.length > 0) {
+          list.innerHTML = data.blocks.map(block => {
+            const isGenesis = block.index === 0;
+            const timestamp = block.timestamp
+              ? new Date(block.timestamp * 1000).toLocaleString()
+              : 'N/A';
+
+            return `
+              <div class="block-item ${isGenesis ? 'genesis-block' : ''}">
+                <div class="block-header">
+                  <span class="block-index">Block #${block.index}</span>
+                  <span class="block-time">${timestamp}</span>
+                </div>
+                <div class="block-details">
+                  <div class="block-field block-file-name">
+                    <div class="block-field-label">File</div>
+                    <div class="block-field-value">${block.filename || 'Genesis Block'}</div>
+                  </div>
+                  <div class="block-field">
+                    <div class="block-field-label">Hash</div>
+                    <div class="block-field-value">${block.hash || 'N/A'}</div>
+                  </div>
+                  <div class="block-field">
+                    <div class="block-field-label">Previous Hash</div>
+                    <div class="block-field-value">${block.previous_hash || 'None (Genesis)'}</div>
+                  </div>
+                  ${!isGenesis ? `
+                  <div class="block-field">
+                    <div class="block-field-label">Size</div>
+                    <div class="block-field-value">${formatBytes(block.size)}</div>
+                  </div>
+                  <div class="block-field">
+                    <div class="block-field-label">Chunks</div>
+                    <div class="block-field-value">${block.chunks || 0}</div>
+                  </div>
+                  <div class="block-field">
+                    <div class="block-field-label">Merkle Root</div>
+                    <div class="block-field-value">${block.merkle_root || 'N/A'}</div>
+                  </div>
+                  <div class="block-field">
+                    <div class="block-field-label">File ID</div>
+                    <div class="block-field-value">${block.file_id || 'N/A'}</div>
+                  </div>
+                  ` : ''}
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          list.innerHTML = `
+            <div class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+              <p>${currentExplorerTab === 'mine' ? 'You have no blocks yet. Upload a file to create your first block!' : 'No blocks in the blockchain yet.'}</p>
+            </div>
+          `;
+        }
+      } catch (err) {
+        log('Failed to load blockchain', 'error');
+        list.innerHTML = '<div class="empty-state"><p>Failed to load blockchain</p></div>';
+      }
     }
 
     // ==================== UTILITY ====================
