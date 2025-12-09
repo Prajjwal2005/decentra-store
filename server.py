@@ -733,9 +733,24 @@ def delete_file(file_id):
 # Blockchain explorer
 @app.route("/blockchain/stats", methods=["GET"])
 def blockchain_stats():
+    # Get deleted file IDs
+    deleted_file_ids = set()
+    for block in blockchain.chain:
+        data = block.get("data", {})
+        if data.get("action") == "delete":
+            deleted_file_ids.add(data.get("file_id"))
+
+    # Count only active (non-deleted) files
+    active_files = [
+        b for b in blockchain.chain
+        if b.get("data", {}).get("file_id") and
+           b.get("data", {}).get("action") != "delete" and
+           b.get("data", {}).get("file_id") not in deleted_file_ids
+    ]
+
     return jsonify({
         "total_blocks": len(blockchain.chain),
-        "total_files": len([b for b in blockchain.chain if b.get("data", {}).get("file_id")])
+        "total_files": len(active_files)
     })
 
 @app.route("/blockchain/blocks", methods=["GET"])
