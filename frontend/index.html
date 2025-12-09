@@ -46,10 +46,19 @@
   <pre id="output"></pre>
 
   <script>
-    const API_BASE = "https://web-production-dcddc.up.railway.app/app";
+    // Use same origin for API calls (works for both dev and production)
+    const API_BASE = window.location.origin;
 
     function show(msg) {
       document.getElementById("output").textContent = typeof msg === "string" ? msg : JSON.stringify(msg, null, 2);
+    }
+
+    function formatSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
     async function handleLogin() {
@@ -127,13 +136,21 @@
 
       data.files?.forEach(f => {
         const li = document.createElement("li");
-        li.textContent = f.filename + " ";
+        li.textContent = f.filename + " (" + formatSize(f.size) + ") ";
 
-        const btn = document.createElement("button");
-        btn.textContent = "Download";
-        btn.onclick = () => downloadFile(f.id);
+        const downloadBtn = document.createElement("button");
+        downloadBtn.textContent = "Download";
+        downloadBtn.onclick = () => downloadFile(f.file_id);
 
-        li.appendChild(btn);
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.style.marginLeft = "5px";
+        deleteBtn.style.backgroundColor = "#dc3545";
+        deleteBtn.style.color = "white";
+        deleteBtn.onclick = () => deleteFile(f.file_id, f.filename);
+
+        li.appendChild(downloadBtn);
+        li.appendChild(deleteBtn);
         list.appendChild(li);
       });
     }
@@ -152,6 +169,28 @@
       a.href = url;
       a.download = "file";
       a.click();
+    }
+
+    async function deleteFile(fileId, filename) {
+      if (!confirm(`Are you sure you want to delete "${filename}"?`)) return;
+
+      const token = localStorage.getItem("token");
+      if (!token) return alert("Login first");
+
+      const res = await fetch(`${API_BASE}/delete/${fileId}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      const data = await res.json();
+      show(data);
+
+      if (res.ok) {
+        alert("File deleted successfully");
+        loadMyFiles(); // Refresh the file list
+      } else {
+        alert("Delete failed: " + data.error);
+      }
     }
 
     async function loadPeers() {

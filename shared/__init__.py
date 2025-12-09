@@ -14,7 +14,11 @@ from .crypto import (
 
 from .chunker import (
     chunk_file,
+    chunk_data,
+    chunk_bytes,
+    sha256_bytes,
     compute_merkle_root,
+    compute_hash,
     verify_chunk_hash,
     reassemble_chunks,
 )
@@ -29,7 +33,11 @@ __all__ = [
     "encrypt_file_key",
     "decrypt_file_key",
     "chunk_file",
+    "chunk_data",
+    "chunk_bytes",
+    "sha256_bytes",
     "compute_merkle_root",
+    "compute_hash",
     "verify_chunk_hash",
     "reassemble_chunks",
     "SimpleBlockchain",

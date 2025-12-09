@@ -10,6 +10,8 @@ import time
 import threading
 import logging
 import uuid
+import re
+import base64
 from pathlib import Path
 
 # Add project root to path
@@ -17,6 +19,8 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from flask import Flask, request, jsonify, send_from_directory, Response, g
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 # Import config
 from config import NODE_TTL, CHUNK_SIZE, REPLICATION_FACTOR
@@ -40,12 +44,27 @@ LOG = logging.getLogger("decentrastore")
 # Flask App
 # =============================================================================
 app = Flask(__name__, static_folder="frontend")
-CORS(app)
+
+# CORS - restrict to same origin in production, allow specific origins via env
+ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "*").split(",")
+CORS(app, origins=ALLOWED_ORIGINS, supports_credentials=True)
+
+# Rate limiting
+limiter = Limiter(
+    key_func=get_remote_address,
+    app=app,
+    default_limits=["200 per minute", "1000 per hour"],
+    storage_uri="memory://"
+)
 
 # Configuration
 PORT = int(os.environ.get("PORT", 5000))
 DATA_DIR = Path(os.environ.get("DATA_DIR", "./data"))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+# Max upload size (100 MB default)
+MAX_UPLOAD_SIZE = int(os.environ.get("MAX_UPLOAD_SIZE", 100 * 1024 * 1024))
+app.config['MAX_CONTENT_LENGTH'] = MAX_UPLOAD_SIZE
 
 # Initialize database
 init_db()
@@ -160,20 +179,38 @@ def serve_static(filename):
 
 # Auth endpoints
 @app.route("/auth/register", methods=["POST"])
+@limiter.limit("5 per minute")  # Prevent registration spam
 def auth_register():
     data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON body"}), 400
+
     username = data.get("username", "").strip()
     password = data.get("password", "")
-    
+
     if not username or not password:
         return jsonify({"error": "Username and password required"}), 400
-    if len(password) < 6:
-        return jsonify({"error": "Password must be at least 6 characters"}), 400
-    
+
+    # Username validation
+    if len(username) < 3 or len(username) > 32:
+        return jsonify({"error": "Username must be 3-32 characters"}), 400
+    if not re.match(r'^[a-zA-Z0-9_]+$', username):
+        return jsonify({"error": "Username can only contain letters, numbers, and underscores"}), 400
+
+    # Password strength requirements
+    if len(password) < 8:
+        return jsonify({"error": "Password must be at least 8 characters"}), 400
+    if not re.search(r'[A-Z]', password):
+        return jsonify({"error": "Password must contain at least one uppercase letter"}), 400
+    if not re.search(r'[a-z]', password):
+        return jsonify({"error": "Password must contain at least one lowercase letter"}), 400
+    if not re.search(r'[0-9]', password):
+        return jsonify({"error": "Password must contain at least one number"}), 400
+
     user, error = auth.register_user(username, password)
     if error:
         return jsonify({"error": error}), 400
-    
+
     # Generate token for auto-login after registration
     token = auth.generate_token(user.id, user.username)
     return jsonify({
@@ -184,15 +221,22 @@ def auth_register():
     })
 
 @app.route("/auth/login", methods=["POST"])
+@limiter.limit("10 per minute")  # Prevent brute force attacks
 def auth_login():
     data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON body"}), 400
+
     username = data.get("username", "").strip()
     password = data.get("password", "")
-    
+
+    if not username or not password:
+        return jsonify({"error": "Username and password required"}), 400
+
     token, user, error = auth.login_user(username, password)
     if error:
         return jsonify({"error": error}), 401
-    
+
     return jsonify({
         "status": "success",
         "token": token,
@@ -251,20 +295,21 @@ def stats():
 # File upload
 @app.route("/upload", methods=["POST"])
 @auth.login_required
+@limiter.limit("10 per minute")  # Prevent upload spam
 def upload_file():
     import requests as req
-    
+
     if "file" not in request.files:
         return jsonify({"error": "No file provided"}), 400
-    
+
     file = request.files["file"]
     if not file.filename:
         return jsonify({"error": "No filename"}), 400
-    
+
     user_password = request.headers.get("X-User-Password")
     if not user_password:
         return jsonify({"error": "Password required for encryption"}), 400
-    
+
     # Get active peers
     with PEERS_LOCK:
         now = time.time()
@@ -273,31 +318,31 @@ def upload_file():
             for p in PEERS.values()
             if (now - p["last_heartbeat"]) <= TTL
         ]
-    
+
     if len(peers) < 1:
         return jsonify({"error": "No storage nodes available"}), 503
-    
+
     try:
         file_data = file.read()
         filename = file.filename
-        
+
         file_key = crypto.generate_file_key()
         chunks = list(chunker.chunk_data(file_data, CHUNK_SIZE))
         chunk_hashes = [c[1] for c in chunks]
         merkle_root = chunker.compute_merkle_root(chunk_hashes)
-        
+
         chunk_assignments = []
         replication = min(REPLICATION_FACTOR, len(peers))
-        
+
         for idx, (chunk_data, chunk_hash) in enumerate(chunks):
             encrypted = crypto.encrypt_chunk(chunk_data, file_key)
             encrypted_hash = chunker.compute_hash(encrypted)
-            
+
             assigned_peers = []
             for peer in peers[:replication]:
                 try:
                     url = f"http://{peer['ip']}:{peer['port']}/store"
-                    resp = req.post(url, 
+                    resp = req.post(url,
                         files={"file": encrypted},
                         data={"chunk_hash": encrypted_hash},
                         timeout=30
@@ -308,33 +353,37 @@ def upload_file():
                             "ip": peer["ip"],
                             "port": peer["port"]
                         })
-                except Exception as e:
+                except (req.RequestException, ConnectionError, TimeoutError) as e:
                     LOG.error(f"Failed to store chunk on {peer['node_id']}: {e}")
-            
+
             chunk_assignments.append({
                 "index": idx,
                 "hash": chunk_hash,
                 "encrypted_hash": encrypted_hash,
                 "peers": assigned_peers
             })
-        
-        user_key = crypto.derive_key_from_password(user_password, g.current_user.key_salt)
+
+        # Decode salt from base64 before deriving key
+        user_salt = base64.b64decode(g.current_user.key_salt)
+        user_key = crypto.derive_key_from_password(user_password, user_salt)
         encrypted_file_key = crypto.encrypt_file_key(file_key, user_key)
-        
+        # Base64 encode the encrypted file key for JSON storage
+        encrypted_file_key_b64 = base64.b64encode(encrypted_file_key).decode('utf-8')
+
         file_id = str(uuid.uuid4())
-        
+
         metadata = {
             "file_id": file_id,
             "filename": filename,
             "owner_id": g.current_user.id,
             "size": len(file_data),
             "merkle_root": merkle_root,
-            "encrypted_file_key": encrypted_file_key,
+            "encrypted_file_key": encrypted_file_key_b64,
             "chunks": chunk_assignments,
             "uploaded_at": time.time()
         }
         blockchain.add_block(metadata)
-        
+
         return jsonify({
             "status": "success",
             "file_id": file_id,
@@ -342,70 +391,104 @@ def upload_file():
             "size": len(file_data),
             "chunks": len(chunks)
         })
-        
-    except Exception as e:
-        LOG.error(f"Upload error: {e}")
-        return jsonify({"error": str(e)}), 500
+
+    except (ValueError, TypeError) as e:
+        LOG.error(f"Upload validation error: {e}")
+        return jsonify({"error": "Invalid data format"}), 400
+    except (OSError, IOError) as e:
+        LOG.error(f"Upload I/O error: {e}")
+        return jsonify({"error": "File storage error"}), 500
 
 # File download
 @app.route("/download/<file_id>", methods=["GET"])
 @auth.login_required
 def download_file(file_id):
     import requests as req
-    
+
     user_password = request.headers.get("X-User-Password")
     if not user_password:
         return jsonify({"error": "Password required"}), 400
-    
+
     file_meta = None
     for block in blockchain.chain:
         if block.get("data", {}).get("file_id") == file_id:
             file_meta = block["data"]
             break
-    
+
     if not file_meta:
         return jsonify({"error": "File not found"}), 404
-    
+
     if file_meta.get("owner_id") != g.current_user.id:
         return jsonify({"error": "Access denied"}), 403
-    
+
     try:
-        user_key = crypto.derive_key_from_password(user_password, g.current_user.key_salt)
-        file_key = crypto.decrypt_file_key(file_meta["encrypted_file_key"], user_key)
-        
+        # Decode salt from base64 before deriving key
+        user_salt = base64.b64decode(g.current_user.key_salt)
+        user_key = crypto.derive_key_from_password(user_password, user_salt)
+        # Decode the encrypted file key from base64
+        encrypted_file_key = base64.b64decode(file_meta["encrypted_file_key"])
+        file_key = crypto.decrypt_file_key(encrypted_file_key, user_key)
+
         chunks_data = []
         for chunk_info in sorted(file_meta["chunks"], key=lambda x: x["index"]):
             encrypted_hash = chunk_info["encrypted_hash"]
-            
+            original_hash = chunk_info["hash"]
+
             for peer in chunk_info["peers"]:
                 try:
                     url = f"http://{peer['ip']}:{peer['port']}/retrieve/{encrypted_hash}"
                     resp = req.get(url, timeout=30)
                     if resp.status_code == 200:
                         decrypted = crypto.decrypt_chunk(resp.content, file_key)
-                        chunks_data.append((chunk_info["index"], decrypted))
+                        chunks_data.append((chunk_info["index"], decrypted, original_hash))
                         break
-                except:
+                except (req.RequestException, ConnectionError, TimeoutError) as e:
+                    LOG.warning(f"Failed to retrieve chunk from {peer['node_id']}: {e}")
                     continue
-        
+
+        if len(chunks_data) != len(file_meta["chunks"]):
+            return jsonify({"error": "Could not retrieve all chunks"}), 500
+
+        # Verify merkle root for file integrity
+        chunk_hashes = [chunker.sha256_bytes(c[1]) for c in sorted(chunks_data, key=lambda x: x[0])]
+        expected_merkle_root = file_meta.get("merkle_root", "")
+        if expected_merkle_root:
+            computed_merkle_root = chunker.compute_merkle_root(chunk_hashes)
+            if computed_merkle_root != expected_merkle_root:
+                LOG.error(f"Merkle root verification failed for file {file_id}")
+                return jsonify({"error": "File integrity check failed - data may be corrupted"}), 500
+
         chunks_data.sort(key=lambda x: x[0])
         file_data = b"".join([c[1] for c in chunks_data])
-        
+
         return Response(
             file_data,
             mimetype="application/octet-stream",
             headers={"Content-Disposition": f"attachment; filename={file_meta['filename']}"}
         )
-        
-    except Exception as e:
-        LOG.error(f"Download error: {e}")
-        return jsonify({"error": str(e)}), 500
+
+    except (ValueError, TypeError) as e:
+        LOG.error(f"Download decryption error: {e}")
+        return jsonify({"error": "Decryption failed - wrong password?"}), 400
+    except (OSError, IOError) as e:
+        LOG.error(f"Download I/O error: {e}")
+        return jsonify({"error": "File retrieval error"}), 500
 
 # My files
 @app.route("/my-files", methods=["GET"])
 @auth.login_required
 def my_files():
     files = blockchain.get_user_files(g.current_user.id)
+    # Check for deleted files by looking for deletion records
+    deleted_file_ids = set()
+    for block in blockchain.chain:
+        data = block.get("data", {})
+        if data.get("action") == "delete":
+            deleted_file_ids.add(data.get("file_id"))
+
+    # Filter out deleted files
+    active_files = [f for f in files if f["file_id"] not in deleted_file_ids]
+
     return jsonify({
         "files": [
             {
@@ -415,9 +498,71 @@ def my_files():
                 "uploaded_at": f["uploaded_at"],
                 "chunks": len(f["chunks"])
             }
-            for f in files
+            for f in active_files
         ]
     })
+
+
+# File deletion - marks file as deleted in blockchain
+@app.route("/delete/<file_id>", methods=["DELETE"])
+@auth.login_required
+def delete_file(file_id):
+    import requests as req
+
+    # Find the file in blockchain
+    file_meta = None
+    for block in blockchain.chain:
+        if block.get("data", {}).get("file_id") == file_id:
+            file_meta = block["data"]
+            break
+
+    if not file_meta:
+        return jsonify({"error": "File not found"}), 404
+
+    if file_meta.get("owner_id") != g.current_user.id:
+        return jsonify({"error": "Access denied"}), 403
+
+    # Check if already deleted
+    if file_meta.get("deleted"):
+        return jsonify({"error": "File already deleted"}), 400
+
+    try:
+        # Try to delete chunks from storage nodes
+        deleted_chunks = 0
+        for chunk_info in file_meta.get("chunks", []):
+            encrypted_hash = chunk_info["encrypted_hash"]
+            for peer in chunk_info.get("peers", []):
+                try:
+                    url = f"http://{peer['ip']}:{peer['port']}/delete/{encrypted_hash}"
+                    resp = req.delete(url, timeout=10)
+                    if resp.status_code == 200:
+                        deleted_chunks += 1
+                        break
+                except (req.RequestException, ConnectionError, TimeoutError) as e:
+                    LOG.warning(f"Failed to delete chunk from {peer.get('node_id', 'unknown')}: {e}")
+                    continue
+
+        # Add deletion record to blockchain
+        deletion_metadata = {
+            "file_id": file_id,
+            "owner_id": g.current_user.id,
+            "action": "delete",
+            "original_filename": file_meta.get("filename"),
+            "deleted_at": time.time(),
+            "chunks_deleted": deleted_chunks
+        }
+        blockchain.add_block(deletion_metadata)
+
+        return jsonify({
+            "status": "success",
+            "file_id": file_id,
+            "message": f"File deleted, {deleted_chunks} chunk(s) removed from storage"
+        })
+
+    except (ValueError, TypeError) as e:
+        LOG.error(f"Delete error: {e}")
+        return jsonify({"error": "Deletion failed"}), 500
+
 
 # Blockchain explorer
 @app.route("/blockchain/stats", methods=["GET"])

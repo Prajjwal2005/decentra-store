@@ -72,6 +72,20 @@ def chunk_bytes(data: bytes, chunk_size: int = CHUNK_SIZE) -> Generator[Tuple[in
     return chunk_file(file_obj=io.BytesIO(data), chunk_size=chunk_size)
 
 
+def chunk_data(data: bytes, chunk_size: int = CHUNK_SIZE) -> Generator[Tuple[bytes, str], None, None]:
+    """
+    Split bytes into chunks and yield (chunk_bytes, chunk_hash).
+    This is an alias for compatibility, returns (data, hash) tuples without index.
+    """
+    for idx, chunk, chunk_hash in chunk_bytes(data, chunk_size):
+        yield (chunk, chunk_hash)
+
+
+def compute_hash(data: bytes) -> str:
+    """Alias for sha256_bytes for compatibility."""
+    return sha256_bytes(data)
+
+
 def compute_merkle_root(chunk_hashes: List[str]) -> str:
     """
     Compute Merkle root from a list of chunk hashes.
