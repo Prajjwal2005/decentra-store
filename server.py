@@ -640,7 +640,7 @@ def blockchain_blocks():
     })
 
 @app.route("/blockchain/my-blocks", methods=["GET"])
-@auth.require_token
+@auth.login_required
 def my_blockchain_blocks():
     """Get blocks created by the current user"""
     limit = int(request.args.get("limit", 50))
