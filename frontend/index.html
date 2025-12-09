@@ -313,6 +313,7 @@
     .file-icon svg { width: 18px; height: 18px; color: #fff; }
     .file-name { font-weight: 500; color: #c9d1d9; }
     .file-meta { font-size: 0.8rem; color: #8b949e; }
+    .file-actions { display: flex; gap: 8px; }
 
     .btn-sm {
       padding: 6px 12px;
@@ -770,7 +771,8 @@
   </div>
 
   <script>
-    const API_BASE = "https://web-production-dcddc.up.railway.app";
+    // Use same origin for API calls (works for both dev and production)
+    const API_BASE = window.location.origin;
 
     // ==================== UI HELPERS ====================
     function showAlert(message, type = 'success') {
@@ -1018,7 +1020,10 @@
                   <div class="file-meta">${formatBytes(f.size)} &bull; ${f.chunks} chunks</div>
                 </div>
               </div>
-              <button class="btn btn-primary btn-sm" onclick="downloadFile('${f.file_id}', '${f.filename}')">Download</button>
+              <div class="file-actions">
+                <button class="btn btn-primary btn-sm" onclick="downloadFile('${f.file_id}', '${f.filename}')">Download</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteFile('${f.file_id}', '${f.filename}')">Delete</button>
+              </div>
             `;
             list.appendChild(li);
           });
@@ -1075,6 +1080,44 @@
       } catch (err) {
         showAlert('Download failed', 'error');
         log('Download failed: network error', 'error');
+      }
+    }
+
+    async function deleteFile(fileId, filename) {
+      if (!confirm(`Are you sure you want to delete "${filename}"? This action cannot be undone.`)) {
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showAlert('Please login first', 'error');
+        return;
+      }
+
+      log(`Deleting ${filename}...`);
+
+      try {
+        const res = await fetch(`${API_BASE}/delete/${fileId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          showAlert('File deleted successfully!');
+          log(`Deleted: ${filename}`, 'success');
+          loadMyFiles(); // Refresh file list
+          loadStats();   // Refresh stats
+        } else {
+          showAlert(data.error || 'Delete failed', 'error');
+          log(data.error || 'Delete failed', 'error');
+        }
+      } catch (err) {
+        showAlert('Delete failed', 'error');
+        log('Delete failed: network error', 'error');
       }
     }
 

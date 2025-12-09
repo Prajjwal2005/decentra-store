@@ -22,6 +22,8 @@ sys.path.insert(0, str(Path(__file__).parent))
 from flask import Flask, request, jsonify, send_from_directory, Response, g
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 # Import config
 from config import NODE_TTL, CHUNK_SIZE, REPLICATION_FACTOR
@@ -45,8 +47,25 @@ LOG = logging.getLogger("decentrastore")
 # Flask App with SocketIO
 # =============================================================================
 app = Flask(__name__, static_folder="frontend")
-CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+
+# CORS - restrict to same origin in production, allow all in dev
+ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "*").split(",")
+CORS(app, origins=ALLOWED_ORIGINS, supports_credentials=True)
+
+# Rate limiting
+limiter = Limiter(
+    key_func=get_remote_address,
+    app=app,
+    default_limits=["200 per minute", "1000 per hour"],
+    storage_uri="memory://"
+)
+
+# WebSocket
+socketio = SocketIO(app, cors_allowed_origins=ALLOWED_ORIGINS, async_mode='threading')
+
+# Max upload size (100 MB default)
+MAX_UPLOAD_SIZE = int(os.environ.get("MAX_UPLOAD_SIZE", 100 * 1024 * 1024))
+app.config['MAX_CONTENT_LENGTH'] = MAX_UPLOAD_SIZE
 
 # Configuration
 PORT = int(os.environ.get("PORT", 5000))
@@ -330,15 +349,38 @@ def serve_static(filename):
 
 # Auth endpoints
 @app.route("/auth/register", methods=["POST"])
+@limiter.limit("5 per minute")  # Prevent registration spam
 def auth_register():
     data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON body"}), 400
+
     username = data.get("username", "").strip()
     password = data.get("password", "")
 
+    # Input validation
     if not username or not password:
         return jsonify({"error": "Username and password required"}), 400
-    if len(password) < 6:
-        return jsonify({"error": "Password must be at least 6 characters"}), 400
+
+    # Username validation
+    if len(username) < 3:
+        return jsonify({"error": "Username must be at least 3 characters"}), 400
+    if len(username) > 50:
+        return jsonify({"error": "Username must be less than 50 characters"}), 400
+    if not username.replace("_", "").replace("-", "").isalnum():
+        return jsonify({"error": "Username can only contain letters, numbers, underscores, and hyphens"}), 400
+
+    # Password strength validation
+    if len(password) < 8:
+        return jsonify({"error": "Password must be at least 8 characters"}), 400
+    if len(password) > 128:
+        return jsonify({"error": "Password must be less than 128 characters"}), 400
+    if not any(c.isupper() for c in password):
+        return jsonify({"error": "Password must contain at least one uppercase letter"}), 400
+    if not any(c.islower() for c in password):
+        return jsonify({"error": "Password must contain at least one lowercase letter"}), 400
+    if not any(c.isdigit() for c in password):
+        return jsonify({"error": "Password must contain at least one number"}), 400
 
     user, error = auth.register_user(username, password)
     if error:
@@ -354,8 +396,12 @@ def auth_register():
     })
 
 @app.route("/auth/login", methods=["POST"])
+@limiter.limit("10 per minute")  # Prevent brute force attacks
 def auth_login():
     data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON body"}), 400
+
     username = data.get("username", "").strip()
     password = data.get("password", "")
 
@@ -430,6 +476,7 @@ def stats():
 
 # File upload - now uses WebSocket for chunk distribution
 @app.route("/upload", methods=["POST"])
+@limiter.limit("10 per minute")  # Prevent upload spam
 @auth.login_required
 def upload_file():
     if "file" not in request.files:
@@ -567,6 +614,14 @@ def download_file(file_id):
                 return jsonify({"error": f"Failed to retrieve chunk {chunk_info['index']}"}), 500
 
         chunks_data.sort(key=lambda x: x[0])
+
+        # Verify merkle root for file integrity
+        chunk_hashes = [chunker.sha256_bytes(c[1]) for c in chunks_data]
+        expected_merkle_root = file_meta.get("merkle_root", "")
+        if expected_merkle_root and not chunker.verify_merkle_root(chunk_hashes, expected_merkle_root):
+            LOG.error(f"Merkle root verification failed for file {file_id}")
+            return jsonify({"error": "File integrity check failed - data may be corrupted"}), 500
+
         file_data = b"".join([c[1] for c in chunks_data])
 
         return Response(
@@ -586,6 +641,17 @@ def download_file(file_id):
 @auth.login_required
 def my_files():
     files = blockchain.get_user_files(g.current_user.id)
+
+    # Check for deleted files by looking for deletion records
+    deleted_file_ids = set()
+    for block in blockchain.chain:
+        data = block.get("data", {})
+        if data.get("action") == "delete":
+            deleted_file_ids.add(data.get("file_id"))
+
+    # Filter out deleted files
+    active_files = [f for f in files if f["file_id"] not in deleted_file_ids]
+
     return jsonify({
         "files": [
             {
@@ -595,9 +661,74 @@ def my_files():
                 "uploaded_at": f["uploaded_at"],
                 "chunks": len(f["chunks"])
             }
-            for f in files
+            for f in active_files
         ]
     })
+
+
+# File deletion - marks file as deleted in blockchain
+@app.route("/delete/<file_id>", methods=["DELETE"])
+@auth.login_required
+def delete_file(file_id):
+    # Find the file in blockchain
+    file_meta = None
+    for block in blockchain.chain:
+        if block.get("data", {}).get("file_id") == file_id:
+            file_meta = block["data"]
+            break
+
+    if not file_meta:
+        return jsonify({"error": "File not found"}), 404
+
+    if file_meta.get("owner_id") != g.current_user.id:
+        return jsonify({"error": "Access denied"}), 403
+
+    # Check if already deleted
+    for block in blockchain.chain:
+        data = block.get("data", {})
+        if data.get("action") == "delete" and data.get("file_id") == file_id:
+            return jsonify({"error": "File already deleted"}), 400
+
+    try:
+        # Try to delete chunks from storage nodes via WebSocket
+        deleted_chunks = 0
+        for chunk_info in file_meta.get("chunks", []):
+            encrypted_hash = chunk_info["encrypted_hash"]
+            for peer in chunk_info.get("peers", []):
+                node_id = peer.get("node_id")
+                if node_id:
+                    with NODES_LOCK:
+                        node_info = NODES.get(node_id)
+                        if node_info:
+                            try:
+                                socketio.emit('delete_chunk', {
+                                    'chunk_hash': encrypted_hash
+                                }, room=node_info['sid'])
+                                deleted_chunks += 1
+                            except Exception as e:
+                                LOG.warning(f"Failed to delete chunk from {node_id}: {e}")
+
+        # Add deletion record to blockchain
+        deletion_metadata = {
+            "file_id": file_id,
+            "owner_id": g.current_user.id,
+            "action": "delete",
+            "original_filename": file_meta.get("filename"),
+            "deleted_at": time.time(),
+            "chunks_deleted": deleted_chunks
+        }
+        blockchain.add_block(deletion_metadata)
+
+        return jsonify({
+            "status": "success",
+            "file_id": file_id,
+            "message": f"File deleted, {deleted_chunks} chunk(s) removal requested"
+        })
+
+    except Exception as e:
+        LOG.error(f"Delete error: {e}")
+        return jsonify({"error": "Deletion failed"}), 500
+
 
 # Blockchain explorer
 @app.route("/blockchain/stats", methods=["GET"])
