@@ -30,7 +30,19 @@ NODE_HEARTBEAT_INTERVAL = int(os.environ.get("NODE_HEARTBEAT_INTERVAL", 15))  # 
 NODE_TTL = int(os.environ.get("NODE_TTL", 60))  # seconds before node considered dead
 
 # Security
-SECRET_KEY = os.environ.get("SECRET_KEY", secrets.token_hex(32))
+# In production, SECRET_KEY MUST be set via environment variable
+# If not set, generate a random one (acceptable for development only)
+_secret_key = os.environ.get("SECRET_KEY")
+if not _secret_key:
+    import warnings
+    warnings.warn(
+        "SECRET_KEY not set in environment. Using random key. "
+        "This is insecure for production - tokens will invalidate on restart!",
+        RuntimeWarning
+    )
+    _secret_key = secrets.token_hex(32)
+SECRET_KEY = _secret_key
+
 JWT_EXPIRY_HOURS = int(os.environ.get("JWT_EXPIRY_HOURS", 24))
 BCRYPT_ROUNDS = int(os.environ.get("BCRYPT_ROUNDS", 12))
 

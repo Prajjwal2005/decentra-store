@@ -881,25 +881,28 @@ def unshare_file(file_id):
 
     # Find target user
     session = get_session()
-    target_user = session.query(User).filter_by(username=target_username).first()
-    if not target_user:
-        return jsonify({"error": "User not found"}), 404
+    try:
+        target_user = session.query(User).filter_by(username=target_username).first()
+        if not target_user:
+            return jsonify({"error": "User not found"}), 404
 
-    # Create unshare record
-    unshare_metadata = {
-        "file_id": file_id,
-        "owner_id": g.current_user.id,
-        "unshared_from": target_user.id,
-        "action": "unshare",
-        "unshared_at": time.time()
-    }
-    blockchain.add_block(unshare_metadata)
+        # Create unshare record
+        unshare_metadata = {
+            "file_id": file_id,
+            "owner_id": g.current_user.id,
+            "unshared_from": target_user.id,
+            "action": "unshare",
+            "unshared_at": time.time()
+        }
+        blockchain.add_block(unshare_metadata)
 
-    return jsonify({
-        "status": "success",
-        "file_id": file_id,
-        "unshared_from": target_username
-    })
+        return jsonify({
+            "status": "success",
+            "file_id": file_id,
+            "unshared_from": target_username
+        })
+    finally:
+        session.close()
 
 
 # File deletion - marks file as deleted in blockchain
@@ -930,8 +933,10 @@ def delete_file(file_id):
         deleted_chunks = 0
         for chunk_info in file_meta.get("chunks", []):
             encrypted_hash = chunk_info["encrypted_hash"]
-            for peer in chunk_info.get("peers", []):
-                node_id = peer.get("node_id")
+            # Support both "nodes" (new format) and "peers" (legacy format)
+            nodes_list = chunk_info.get("nodes", chunk_info.get("peers", []))
+            for node_entry in nodes_list:
+                node_id = node_entry.get("node_id")
                 if node_id:
                     with NODES_LOCK:
                         node_info = NODES.get(node_id)
