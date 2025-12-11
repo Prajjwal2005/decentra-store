@@ -652,6 +652,9 @@ def my_files():
     # Filter out deleted files
     active_files = [f for f in files if f["file_id"] not in deleted_file_ids]
 
+    # Calculate total storage used
+    total_size = sum(f["size"] for f in active_files)
+
     return jsonify({
         "files": [
             {
@@ -662,7 +665,201 @@ def my_files():
                 "chunks": len(f["chunks"])
             }
             for f in active_files
-        ]
+        ],
+        "total_size": total_size,
+        "file_count": len(active_files)
+    })
+
+
+# User storage stats
+@app.route("/storage/usage", methods=["GET"])
+@auth.login_required
+def storage_usage():
+    """Get storage usage statistics for current user."""
+    files = blockchain.get_user_files(g.current_user.id)
+
+    # Get deleted file IDs
+    deleted_file_ids = set()
+    for block in blockchain.chain:
+        data = block.get("data", {})
+        if data.get("action") == "delete":
+            deleted_file_ids.add(data.get("file_id"))
+
+    # Filter active files
+    active_files = [f for f in files if f["file_id"] not in deleted_file_ids]
+
+    total_size = sum(f["size"] for f in active_files)
+    total_chunks = sum(len(f["chunks"]) for f in active_files)
+
+    return jsonify({
+        "user_id": g.current_user.id,
+        "username": g.current_user.username,
+        "file_count": len(active_files),
+        "total_size": total_size,
+        "total_chunks": total_chunks,
+        "storage_limit": None,  # No limit implemented yet
+        "usage_percent": None   # Would be calculated if limit exists
+    })
+
+
+# File sharing
+@app.route("/share/<file_id>", methods=["POST"])
+@auth.login_required
+def share_file(file_id):
+    """Share a file with another user."""
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON body"}), 400
+
+    target_username = data.get("username", "").strip()
+    if not target_username:
+        return jsonify({"error": "Username required"}), 400
+
+    # Find the file
+    file_meta = None
+    for block in blockchain.chain:
+        if block.get("data", {}).get("file_id") == file_id:
+            file_meta = block["data"]
+            break
+
+    if not file_meta:
+        return jsonify({"error": "File not found"}), 404
+
+    if file_meta.get("owner_id") != g.current_user.id:
+        return jsonify({"error": "Only file owner can share"}), 403
+
+    # Check if file is deleted
+    for block in blockchain.chain:
+        block_data = block.get("data", {})
+        if block_data.get("action") == "delete" and block_data.get("file_id") == file_id:
+            return jsonify({"error": "Cannot share deleted file"}), 400
+
+    # Find target user
+    session = get_session()
+    target_user = session.query(User).filter_by(username=target_username).first()
+    if not target_user:
+        return jsonify({"error": "User not found"}), 404
+
+    if target_user.id == g.current_user.id:
+        return jsonify({"error": "Cannot share with yourself"}), 400
+
+    # Check if already shared
+    for block in blockchain.chain:
+        block_data = block.get("data", {})
+        if (block_data.get("action") == "share" and
+            block_data.get("file_id") == file_id and
+            block_data.get("shared_with") == target_user.id):
+            return jsonify({"error": "Already shared with this user"}), 400
+
+    # Create share record in blockchain
+    share_metadata = {
+        "file_id": file_id,
+        "owner_id": g.current_user.id,
+        "shared_with": target_user.id,
+        "shared_with_username": target_username,
+        "action": "share",
+        "filename": file_meta.get("filename"),
+        "size": file_meta.get("size"),
+        "shared_at": time.time()
+    }
+    blockchain.add_block(share_metadata)
+
+    return jsonify({
+        "status": "success",
+        "file_id": file_id,
+        "shared_with": target_username,
+        "message": f"File shared with {target_username}"
+    })
+
+
+@app.route("/shared-with-me", methods=["GET"])
+@auth.login_required
+def shared_with_me():
+    """Get files shared with current user."""
+    shared_files = []
+
+    # Get all share records for this user
+    for block in blockchain.chain:
+        data = block.get("data", {})
+        if data.get("action") == "share" and data.get("shared_with") == g.current_user.id:
+            # Check if file was later unshared or deleted
+            file_id = data.get("file_id")
+
+            # Check for unshare
+            is_unshared = False
+            for b in blockchain.chain:
+                bd = b.get("data", {})
+                if (bd.get("action") == "unshare" and
+                    bd.get("file_id") == file_id and
+                    bd.get("unshared_from") == g.current_user.id):
+                    is_unshared = True
+                    break
+
+            # Check for delete
+            is_deleted = False
+            for b in blockchain.chain:
+                bd = b.get("data", {})
+                if bd.get("action") == "delete" and bd.get("file_id") == file_id:
+                    is_deleted = True
+                    break
+
+            if not is_unshared and not is_deleted:
+                shared_files.append({
+                    "file_id": file_id,
+                    "filename": data.get("filename"),
+                    "size": data.get("size"),
+                    "shared_by": data.get("owner_id"),
+                    "shared_at": data.get("shared_at")
+                })
+
+    return jsonify({"files": shared_files, "count": len(shared_files)})
+
+
+@app.route("/unshare/<file_id>", methods=["POST"])
+@auth.login_required
+def unshare_file(file_id):
+    """Revoke file sharing from a user."""
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON body"}), 400
+
+    target_username = data.get("username", "").strip()
+    if not target_username:
+        return jsonify({"error": "Username required"}), 400
+
+    # Find the file
+    file_meta = None
+    for block in blockchain.chain:
+        if block.get("data", {}).get("file_id") == file_id:
+            file_meta = block["data"]
+            break
+
+    if not file_meta:
+        return jsonify({"error": "File not found"}), 404
+
+    if file_meta.get("owner_id") != g.current_user.id:
+        return jsonify({"error": "Only file owner can unshare"}), 403
+
+    # Find target user
+    session = get_session()
+    target_user = session.query(User).filter_by(username=target_username).first()
+    if not target_user:
+        return jsonify({"error": "User not found"}), 404
+
+    # Create unshare record
+    unshare_metadata = {
+        "file_id": file_id,
+        "owner_id": g.current_user.id,
+        "unshared_from": target_user.id,
+        "action": "unshare",
+        "unshared_at": time.time()
+    }
+    blockchain.add_block(unshare_metadata)
+
+    return jsonify({
+        "status": "success",
+        "file_id": file_id,
+        "unshared_from": target_username
     })
 
 
