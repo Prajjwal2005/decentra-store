@@ -409,12 +409,51 @@ def auth_login():
     if error:
         return jsonify({"error": error}), 401
 
+    # Generate token pair (access + refresh)
+    tokens = auth.generate_token_pair(user.id, user.username)
+
     return jsonify({
         "status": "success",
-        "token": token,
+        "token": tokens["access_token"],  # For backwards compatibility
+        "access_token": tokens["access_token"],
+        "refresh_token": tokens["refresh_token"],
+        "expires_in": tokens["expires_in"],
         "user_id": user.id,
         "username": user.username
     })
+
+
+@app.route("/auth/refresh", methods=["POST"])
+@limiter.limit("30 per minute")
+def auth_refresh():
+    """Refresh access token using refresh token."""
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON body"}), 400
+
+    refresh_token = data.get("refresh_token")
+    if not refresh_token:
+        return jsonify({"error": "Refresh token required"}), 400
+
+    payload = auth.decode_token(refresh_token)
+    if not payload:
+        return jsonify({"error": "Invalid or expired refresh token"}), 401
+
+    if payload.get("type") != "refresh":
+        return jsonify({"error": "Invalid token type"}), 401
+
+    # Verify user still exists
+    session = get_session()
+    try:
+        user = session.query(User).filter_by(id=payload["user_id"]).first()
+        if not user or not getattr(user, "is_active", True):
+            return jsonify({"error": "User not found or inactive"}), 401
+
+        tokens = auth.generate_token_pair(user.id, user.username)
+        return jsonify(tokens)
+    finally:
+        session.close()
+
 
 @app.route("/auth/me", methods=["GET"])
 @auth.login_required

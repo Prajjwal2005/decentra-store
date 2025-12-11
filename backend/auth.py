@@ -43,15 +43,33 @@ def verify_password(password: str, hashed: str) -> bool:
     return bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8"))
 
 
-def generate_token(user_id: str, username: str) -> str:
+def generate_token(user_id: str, username: str, token_type: str = "access") -> str:
     """Generate JWT token for authenticated user."""
+    if token_type == "refresh":
+        # Refresh tokens last 7 days
+        expiry = timedelta(days=7)
+    else:
+        # Access tokens use configured expiry
+        expiry = timedelta(hours=JWT_EXPIRY_HOURS)
+
     payload = {
         "user_id": str(user_id),
         "username": username,
+        "type": token_type,
         "iat": datetime.utcnow(),
-        "exp": datetime.utcnow() + timedelta(hours=JWT_EXPIRY_HOURS),
+        "exp": datetime.utcnow() + expiry,
     }
     return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+
+
+def generate_token_pair(user_id: str, username: str) -> dict:
+    """Generate both access and refresh tokens."""
+    return {
+        "access_token": generate_token(user_id, username, "access"),
+        "refresh_token": generate_token(user_id, username, "refresh"),
+        "token_type": "Bearer",
+        "expires_in": JWT_EXPIRY_HOURS * 3600  # seconds
+    }
 
 
 def decode_token(token: str) -> Optional[dict]:
@@ -332,6 +350,39 @@ def change_password_route():
         return jsonify({"error": err}), 400
 
     return jsonify({"message": "Password updated successfully"}), 200
+
+
+@auth_bp.route("/refresh", methods=["POST"])
+def refresh_token_route():
+    """Refresh access token using refresh token."""
+    data = _parse_json_or_form()
+    refresh_token = data.get("refresh_token")
+
+    if not refresh_token:
+        return jsonify({"error": "Refresh token required"}), 400
+
+    payload = decode_token(refresh_token)
+    if not payload:
+        return jsonify({"error": "Invalid or expired refresh token"}), 401
+
+    # Verify it's a refresh token
+    if payload.get("type") != "refresh":
+        return jsonify({"error": "Invalid token type"}), 401
+
+    # Verify user still exists and is active
+    session = get_session()
+    try:
+        user = session.query(User).filter_by(id=payload["user_id"]).first()
+        if not user or not getattr(user, "is_active", True):
+            return jsonify({"error": "User not found or inactive"}), 401
+
+        # Generate new token pair
+        tokens = generate_token_pair(user.id, user.username)
+        return jsonify(tokens), 200
+
+    finally:
+        session.close()
+
 
 # -------------------------
 # Blueprint registration note
