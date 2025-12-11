@@ -622,6 +622,12 @@
           </svg>
           Files
         </button>
+        <button onclick="switchDashboardTab('shared')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+          </svg>
+          Shared
+        </button>
         <button onclick="switchDashboardTab('explorer')">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -737,6 +743,53 @@
         </div>
       </div>
       </div><!-- End Files Tab -->
+
+      <!-- Shared Files Tab -->
+      <div class="tab-content" id="tab-shared">
+        <div class="dashboard-grid">
+          <div class="main-column">
+            <!-- Files Shared With Me -->
+            <div class="card" style="margin-bottom: 24px;">
+              <div class="card-header">
+                <h2>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" />
+                  </svg>
+                  Shared With Me
+                </h2>
+                <button class="btn btn-outline btn-sm" onclick="loadSharedWithMe()">Refresh</button>
+              </div>
+              <ul class="files-list" id="shared-files-list">
+                <li class="empty-state">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                  <p>No files have been shared with you yet.</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <div class="sidebar">
+            <div class="card">
+              <div class="card-header">
+                <h2>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  About Sharing
+                </h2>
+              </div>
+              <div style="color: #8b949e; font-size: 0.9rem; line-height: 1.6;">
+                <p style="margin-bottom: 12px;">Share your files securely with other DecentraStore users.</p>
+                <p style="margin-bottom: 12px;">To share a file, go to your Files tab and click the Share button next to any file.</p>
+                <p>Files shared with you will appear in this tab.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- End Shared Tab -->
 
       <!-- Blockchain Explorer Tab -->
       <div class="tab-content" id="tab-explorer">
@@ -1022,6 +1075,7 @@
               </div>
               <div class="file-actions">
                 <button class="btn btn-primary btn-sm" onclick="downloadFile('${f.file_id}', '${f.filename}')">Download</button>
+                <button class="btn btn-outline btn-sm" onclick="showShareDialog('${f.file_id}', '${f.filename}')">Share</button>
                 <button class="btn btn-danger btn-sm" onclick="deleteFile('${f.file_id}', '${f.filename}')">Delete</button>
               </div>
             `;
@@ -1121,6 +1175,105 @@
       }
     }
 
+    // ==================== FILE SHARING ====================
+    function showShareDialog(fileId, filename) {
+      const username = prompt(`Share "${filename}" with user:\n\nEnter their username:`);
+      if (username && username.trim()) {
+        shareFile(fileId, filename, username.trim());
+      }
+    }
+
+    async function shareFile(fileId, filename, targetUsername) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showAlert('Please login first', 'error');
+        return;
+      }
+
+      log(`Sharing ${filename} with ${targetUsername}...`);
+
+      try {
+        const res = await fetch(`${API_BASE}/share/${fileId}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username: targetUsername })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          showAlert(`File shared with ${targetUsername}!`);
+          log(`Shared: ${filename} with ${targetUsername}`, 'success');
+        } else {
+          showAlert(data.error || 'Share failed', 'error');
+          log(data.error || 'Share failed', 'error');
+        }
+      } catch (err) {
+        showAlert('Share failed', 'error');
+        log('Share failed: network error', 'error');
+      }
+    }
+
+    async function loadSharedWithMe() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/shared-with-me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await res.json();
+        const list = document.getElementById('shared-files-list');
+        list.innerHTML = '';
+
+        if (data.files && data.files.length > 0) {
+          data.files.forEach(f => {
+            const li = document.createElement('li');
+            li.className = 'file-item';
+            const sharedDate = new Date(f.shared_at * 1000).toLocaleDateString();
+            li.innerHTML = `
+              <div class="file-info">
+                <div class="file-icon" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="file-name">${f.filename}</div>
+                  <div class="file-meta">${formatBytes(f.size)} &bull; Shared on ${sharedDate}</div>
+                </div>
+              </div>
+              <div class="file-actions">
+                <button class="btn btn-primary btn-sm" onclick="downloadSharedFile('${f.file_id}', '${f.filename}')">Download</button>
+              </div>
+            `;
+            list.appendChild(li);
+          });
+        } else {
+          list.innerHTML = `
+            <li class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+              <p>No files have been shared with you yet.</p>
+            </li>
+          `;
+        }
+      } catch (err) {
+        log('Failed to load shared files', 'error');
+      }
+    }
+
+    async function downloadSharedFile(fileId, filename) {
+      // For now, shared files need the owner's decryption - this would need key sharing
+      showAlert('Shared file download requires key exchange (coming soon)', 'info');
+      log('Shared file download not yet implemented - requires key sharing', 'info');
+    }
+
     // ==================== PEERS ====================
     async function loadPeers() {
       try {
@@ -1158,11 +1311,16 @@
       document.querySelectorAll('.dashboard-tabs button').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
+      const buttons = document.querySelectorAll('.dashboard-tabs button');
       if (tab === 'files') {
-        document.querySelector('.dashboard-tabs button:first-child').classList.add('active');
+        buttons[0].classList.add('active');
         document.getElementById('tab-files').classList.add('active');
-      } else {
-        document.querySelector('.dashboard-tabs button:last-child').classList.add('active');
+      } else if (tab === 'shared') {
+        buttons[1].classList.add('active');
+        document.getElementById('tab-shared').classList.add('active');
+        loadSharedWithMe();
+      } else if (tab === 'explorer') {
+        buttons[2].classList.add('active');
         document.getElementById('tab-explorer').classList.add('active');
         loadBlockchain();
       }
