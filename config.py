@@ -2,11 +2,29 @@
 """
 Central configuration for DecentraStore.
 Can be overridden via environment variables.
+
+PRODUCTION DEPLOYMENT (Railway/Render/Heroku):
+Required environment variables:
+  - SECRET_KEY: A secure random string (use: python -c "import secrets; print(secrets.token_hex(32))")
+  - DATABASE_URL: PostgreSQL connection string (provided by Railway PostgreSQL addon)
+
+Optional environment variables:
+  - ALLOWED_ORIGINS: Comma-separated list of allowed CORS origins (default: *)
+  - MAX_UPLOAD_SIZE: Maximum file upload size in bytes (default: 104857600 = 100MB)
+  - JWT_EXPIRY_HOURS: JWT token expiry in hours (default: 24)
+  - REPLICATION: Number of chunk copies across nodes (default: 3)
+  - NODE_TTL: Seconds before node considered offline (default: 60)
 """
 
 import os
 import secrets
 from pathlib import Path
+
+# Detect production environment (Railway, Render, Heroku, etc.)
+IS_PRODUCTION = bool(os.environ.get("RAILWAY_ENVIRONMENT") or
+                     os.environ.get("RENDER") or
+                     os.environ.get("DYNO") or
+                     os.environ.get("PRODUCTION"))
 
 # Base directories
 BASE_DIR = Path(__file__).resolve().parent
@@ -34,12 +52,14 @@ NODE_TTL = int(os.environ.get("NODE_TTL", 60))  # seconds before node considered
 # If not set, generate a random one (acceptable for development only)
 _secret_key = os.environ.get("SECRET_KEY")
 if not _secret_key:
-    import warnings
-    warnings.warn(
-        "SECRET_KEY not set in environment. Using random key. "
-        "This is insecure for production - tokens will invalidate on restart!",
-        RuntimeWarning
-    )
+    if IS_PRODUCTION:
+        import warnings
+        warnings.warn(
+            "CRITICAL: SECRET_KEY not set in production! "
+            "JWT tokens will invalidate on every restart. "
+            "Set SECRET_KEY in Railway environment variables.",
+            RuntimeWarning
+        )
     _secret_key = secrets.token_hex(32)
 SECRET_KEY = _secret_key
 

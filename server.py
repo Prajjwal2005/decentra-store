@@ -60,8 +60,8 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# WebSocket
-socketio = SocketIO(app, cors_allowed_origins=ALLOWED_ORIGINS, async_mode='threading')
+# WebSocket - use 'gevent' mode for production with gunicorn gevent worker
+socketio = SocketIO(app, cors_allowed_origins=ALLOWED_ORIGINS, async_mode='gevent')
 
 # Max upload size (100 MB default)
 MAX_UPLOAD_SIZE = int(os.environ.get("MAX_UPLOAD_SIZE", 100 * 1024 * 1024))
