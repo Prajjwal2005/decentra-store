@@ -26,12 +26,15 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 # Import config
-from config import NODE_TTL, CHUNK_SIZE, REPLICATION_FACTOR
+from config import (
+    NODE_TTL, CHUNK_SIZE, REPLICATION_FACTOR,
+    CONSENSUS_MIN_CONFIRMATIONS, CONSENSUS_QUORUM_PERCENT, CONSENSUS_TIMEOUT
+)
 
 # Import backend modules
 from backend import auth, uploader
 from backend.models import init_db, get_session, User
-from shared.blockchain import SimpleBlockchain
+from shared.blockchain import SimpleBlockchain, BlockStatus
 from shared import crypto, chunker
 
 # =============================================================================
@@ -547,6 +550,9 @@ def upload_file():
         chunk_assignments = []
         replication = min(REPLICATION_FACTOR, len(nodes))
 
+        # Track confirmations for consensus
+        node_confirmations = {}  # node_id -> list of chunk hashes stored
+
         for idx, chunk_bytes_data, chunk_hash in chunks:
             encrypted = crypto.encrypt_chunk(chunk_bytes_data, file_key)
             encrypted_hash = chunker.sha256_bytes(encrypted)
@@ -559,6 +565,10 @@ def upload_file():
                 success = send_chunk_to_node(node_id, encrypted, encrypted_hash)
                 if success:
                     assigned_nodes.append({"node_id": node_id})
+                    # Track confirmation
+                    if node_id not in node_confirmations:
+                        node_confirmations[node_id] = []
+                    node_confirmations[node_id].append(encrypted_hash)
                     LOG.info(f"Chunk {idx} stored on {node_id}")
                 else:
                     LOG.error(f"Failed to store chunk {idx} on {node_id}")
@@ -567,7 +577,7 @@ def upload_file():
                 "index": idx,
                 "hash": chunk_hash,
                 "encrypted_hash": encrypted_hash,
-                "nodes": assigned_nodes  # Changed from 'peers' to 'nodes'
+                "nodes": assigned_nodes
             })
 
         key_salt = base64.b64decode(g.current_user.key_salt)
@@ -576,6 +586,17 @@ def upload_file():
         encrypted_file_key_b64 = base64.b64encode(encrypted_file_key).decode('utf-8')
 
         file_id = str(uuid.uuid4())
+
+        # Build initial confirmations from successful storage
+        initial_confirmations = [
+            {
+                "node_id": node_id,
+                "chunk_hashes": chunk_hashes,
+                "timestamp": int(time.time()),
+                "signature": None  # Could add node signatures in future
+            }
+            for node_id, chunk_hashes in node_confirmations.items()
+        ]
 
         metadata = {
             "file_id": file_id,
@@ -587,14 +608,26 @@ def upload_file():
             "chunks": chunk_assignments,
             "uploaded_at": time.time()
         }
-        blockchain.add_block(metadata)
+
+        # Add block with consensus info
+        total_nodes = len(nodes)
+        block = blockchain.add_block(
+            metadata,
+            initial_confirmations=initial_confirmations,
+            total_nodes=total_nodes
+        )
 
         return jsonify({
             "status": "success",
             "file_id": file_id,
             "filename": filename,
             "size": len(file_data),
-            "chunks": len(chunks)
+            "chunks": len(chunks),
+            "consensus": {
+                "status": block.get("status", "pending"),
+                "confirmations": len(initial_confirmations),
+                "required": blockchain.calculate_required_confirmations(total_nodes)
+            }
         })
 
     except Exception as e:
@@ -701,7 +734,9 @@ def my_files():
                 "filename": f["filename"],
                 "size": f["size"],
                 "uploaded_at": f["uploaded_at"],
-                "chunks": len(f["chunks"])
+                "chunks": len(f["chunks"]),
+                "status": f.get("status", "confirmed"),
+                "confirmations": f.get("confirmations_count", 0)
             }
             for f in active_files
         ],
@@ -974,7 +1009,10 @@ def delete_file(file_id):
 # Blockchain explorer
 @app.route("/blockchain/stats", methods=["GET"])
 def blockchain_stats():
-    # Get deleted file IDs
+    # Use the enhanced stats from ConsensusBlockchain
+    stats = blockchain.get_stats()
+
+    # Get deleted file IDs for filtering
     deleted_file_ids = set()
     for block in blockchain.chain:
         data = block.get("data", {})
@@ -991,7 +1029,71 @@ def blockchain_stats():
 
     return jsonify({
         "total_blocks": len(blockchain.chain),
-        "total_files": len(active_files)
+        "total_files": len(active_files),
+        "pending_blocks": stats.get("pending_files", 0),
+        "confirmed_blocks": stats.get("confirmed_files", 0),
+        "total_confirmations": stats.get("total_confirmations", 0),
+        "consensus": stats.get("consensus_config", {})
+    })
+
+
+# Consensus endpoints
+@app.route("/consensus/status/<block_hash>", methods=["GET"])
+def get_consensus_status(block_hash):
+    """Get consensus status for a specific block."""
+    block = blockchain.get_block_by_hash(block_hash)
+    if not block:
+        return jsonify({"error": "Block not found"}), 404
+
+    total_nodes = len(get_active_nodes())
+    required = blockchain.calculate_required_confirmations(total_nodes)
+
+    return jsonify({
+        "block_hash": block_hash,
+        "status": block.get("status", "confirmed"),
+        "confirmations": block.get("confirmations", []),
+        "confirmations_count": len(block.get("confirmations", [])),
+        "required_confirmations": required,
+        "active_nodes": total_nodes
+    })
+
+
+@app.route("/consensus/pending", methods=["GET"])
+def get_pending_blocks():
+    """Get all blocks awaiting consensus."""
+    pending = blockchain.get_pending_blocks()
+    total_nodes = len(get_active_nodes())
+    required = blockchain.calculate_required_confirmations(total_nodes)
+
+    return jsonify({
+        "pending_blocks": [
+            {
+                "block_hash": b["hash"],
+                "block_index": b["index"],
+                "file_id": b.get("data", {}).get("file_id"),
+                "filename": b.get("data", {}).get("filename"),
+                "confirmations_count": len(b.get("confirmations", [])),
+                "required": required,
+                "timestamp": b["timestamp"]
+            }
+            for b in pending
+        ],
+        "count": len(pending),
+        "required_confirmations": required,
+        "active_nodes": total_nodes
+    })
+
+
+@app.route("/consensus/config", methods=["GET"])
+def get_consensus_config():
+    """Get current consensus configuration."""
+    total_nodes = len(get_active_nodes())
+    return jsonify({
+        "min_confirmations": CONSENSUS_MIN_CONFIRMATIONS,
+        "quorum_percent": CONSENSUS_QUORUM_PERCENT,
+        "timeout_seconds": CONSENSUS_TIMEOUT,
+        "active_nodes": total_nodes,
+        "current_required": blockchain.calculate_required_confirmations(total_nodes)
     })
 
 @app.route("/blockchain/blocks", methods=["GET"])

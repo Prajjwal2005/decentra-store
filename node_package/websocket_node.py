@@ -171,6 +171,72 @@ class StorageNode:
                     'chunk_data': None
                 })
 
+        @self.sio.on('delete_chunk')
+        def handle_delete_chunk(data):
+            """Server requests us to delete a chunk."""
+            chunk_hash = data.get('chunk_hash')
+
+            LOG.info(f"Deleting chunk: {chunk_hash[:16]}...")
+
+            try:
+                chunk_path = self.storage_dir / chunk_hash
+
+                if chunk_path.exists():
+                    chunk_path.unlink()
+                    LOG.info(f"Deleted chunk: {chunk_hash[:16]}...")
+                else:
+                    LOG.warning(f"Chunk not found for deletion: {chunk_hash[:16]}...")
+
+            except Exception as e:
+                LOG.error(f"Error deleting chunk: {e}")
+
+        @self.sio.on('verify_chunk')
+        def handle_verify_chunk(data):
+            """Server requests proof that we have a chunk (for consensus)."""
+            request_id = data.get('request_id')
+            chunk_hash = data.get('chunk_hash')
+
+            LOG.info(f"Verifying chunk: {chunk_hash[:16]}...")
+
+            try:
+                chunk_path = self.storage_dir / chunk_hash
+
+                if not chunk_path.exists():
+                    self.sio.emit('chunk_verified', {
+                        'node_id': self.node_id,
+                        'request_id': request_id,
+                        'exists': False,
+                        'chunk_hash': chunk_hash
+                    })
+                    return
+
+                # Read and verify hash
+                with open(chunk_path, 'rb') as f:
+                    chunk_data = f.read()
+
+                actual_hash = hashlib.sha256(chunk_data).hexdigest()
+                is_valid = actual_hash == chunk_hash
+
+                self.sio.emit('chunk_verified', {
+                    'node_id': self.node_id,
+                    'request_id': request_id,
+                    'exists': True,
+                    'valid': is_valid,
+                    'chunk_hash': chunk_hash,
+                    'size': len(chunk_data)
+                })
+
+                LOG.info(f"Verified chunk: {chunk_hash[:16]}... (valid={is_valid})")
+
+            except Exception as e:
+                LOG.error(f"Error verifying chunk: {e}")
+                self.sio.emit('chunk_verified', {
+                    'node_id': self.node_id,
+                    'request_id': request_id,
+                    'exists': False,
+                    'chunk_hash': chunk_hash
+                })
+
     def _heartbeat_loop(self):
         """Send periodic heartbeats to server."""
         while self._running:
