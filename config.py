@@ -89,6 +89,22 @@ TEMP_STORAGE.mkdir(parents=True, exist_ok=True)
 # Logging
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 
+# =============================================================================
+# Consensus Configuration (Proof of Storage + Quorum)
+# =============================================================================
+# Minimum nodes required to confirm storage before block is finalized
+CONSENSUS_MIN_CONFIRMATIONS = int(os.environ.get("CONSENSUS_MIN_CONFIRMATIONS", 1))
+
+# Percentage of nodes that must confirm (if more nodes available than minimum)
+# e.g., 0.67 means 2/3 of nodes must confirm
+CONSENSUS_QUORUM_PERCENT = float(os.environ.get("CONSENSUS_QUORUM_PERCENT", 0.67))
+
+# Timeout for waiting for node confirmations (seconds)
+CONSENSUS_TIMEOUT = int(os.environ.get("CONSENSUS_TIMEOUT", 60))
+
+# Whether to allow blocks without consensus (for single-node testing)
+CONSENSUS_ALLOW_PENDING = os.environ.get("CONSENSUS_ALLOW_PENDING", "true").lower() == "true"
+
 
 def get_node_storage_dir(node_id: str = None) -> Path:
     """Get storage directory for a node."""
