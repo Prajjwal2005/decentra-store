@@ -71,7 +71,7 @@ socketio = SocketIO(
     ping_timeout=60,
     ping_interval=25,
     logger=True,
-    engineio_logger=True
+    engineio_logger=False  # Disable to avoid base64 chunk spam
 )
 
 # Max upload size (100 MB default)

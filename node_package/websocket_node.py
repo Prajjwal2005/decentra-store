@@ -51,7 +51,7 @@ class StorageNode:
             reconnection_delay=1,
             reconnection_delay_max=30,
             logger=True,
-            engineio_logger=True,
+            engineio_logger=False,  # Disable to reduce log spam
             request_timeout=120,  # Increase request timeout
             http_session=None  # Use default session
         )
