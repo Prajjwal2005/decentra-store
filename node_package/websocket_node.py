@@ -44,14 +44,16 @@ class StorageNode:
         self.capacity_gb = capacity_gb
         self.storage_dir.mkdir(parents=True, exist_ok=True)
 
-        # Create SocketIO client
+        # Create SocketIO client with matching server timeouts
         self.sio = socketio.Client(
             reconnection=True,
             reconnection_attempts=0,  # Infinite
             reconnection_delay=1,
             reconnection_delay_max=30,
-            logger=False,
-            engineio_logger=False
+            logger=True,
+            engineio_logger=False,  # Disable to reduce log spam
+            request_timeout=120,  # Increase request timeout
+            http_session=None  # Use default session
         )
 
         self._setup_handlers()
@@ -81,6 +83,11 @@ class StorageNode:
         @self.sio.event
         def connect_error(data):
             LOG.error(f"Connection error: {data}")
+
+        @self.sio.on('test_ping')
+        def handle_test_ping(data):
+            """Test handler to verify room communication."""
+            LOG.info(f"✅ TEST PING RECEIVED: {data.get('message')}")
 
         @self.sio.on('store_chunk')
         def handle_store_chunk(data):

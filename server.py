@@ -14,7 +14,12 @@ import uuid
 import base64
 import json
 from pathlib import Path
-from queue import Queue, Empty
+try:
+    # Use gevent Queue for better async performance
+    from gevent.queue import Queue, Empty
+except ImportError:
+    # Fallback to standard Queue if gevent not available
+    from queue import Queue, Empty
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -64,7 +69,15 @@ limiter = Limiter(
 )
 
 # WebSocket - use 'gevent' mode for production with gunicorn gevent worker
-socketio = SocketIO(app, cors_allowed_origins=ALLOWED_ORIGINS, async_mode='gevent')
+socketio = SocketIO(
+    app,
+    cors_allowed_origins=ALLOWED_ORIGINS,
+    async_mode='gevent',
+    ping_timeout=60,
+    ping_interval=25,
+    logger=True,
+    engineio_logger=False  # Disable to avoid base64 chunk spam
+)
 
 # Max upload size (100 MB default)
 MAX_UPLOAD_SIZE = int(os.environ.get("MAX_UPLOAD_SIZE", 100 * 1024 * 1024))
@@ -123,6 +136,11 @@ def handle_node_register(data):
     join_room(f'node_{node_id}')
     LOG.info(f"Node {'registered' if is_new else 're-registered'} via WebSocket: {node_id}")
 
+    # Test: Send a ping to verify room communication works
+    room_name = f'node_{node_id}'
+    socketio.emit('test_ping', {'message': 'Room communication test'}, room=room_name)
+    LOG.info(f"Sent test_ping to room '{room_name}'")
+
     return {'status': 'registered', 'node_id': node_id}
 
 @socketio.on('node_heartbeat')
@@ -177,7 +195,7 @@ def get_active_nodes():
             if (now - info['last_seen']) <= TTL
         ]
 
-def send_chunk_to_node(node_id, chunk_data, chunk_hash, timeout=30):
+def send_chunk_to_node(node_id, chunk_data, chunk_hash, timeout=120):
     """Send chunk to node via WebSocket and wait for confirmation."""
     with NODES_LOCK:
         if node_id not in NODES:
@@ -189,20 +207,28 @@ def send_chunk_to_node(node_id, chunk_data, chunk_hash, timeout=30):
         node_info['response_queues'][request_id] = response_queue
         sid = node_info['sid']
 
+    start_time = time.time()
     try:
         # Send store request to node
+        room_name = f'node_{node_id}'
+        LOG.info(f"Emitting store_chunk to room '{room_name}' for node {node_id}, request_id={request_id}, size={len(chunk_data)} bytes")
         socketio.emit('store_chunk', {
             'request_id': request_id,
             'chunk_hash': chunk_hash,
             'chunk_data': base64.b64encode(chunk_data).decode('utf-8')
-        }, room=f'node_{node_id}')
+        }, room=room_name, namespace='/')
+        emit_time = time.time() - start_time
+        LOG.info(f"Emitted store_chunk in {emit_time:.3f}s, waiting for response...")
 
         # Wait for response
         try:
             response = response_queue.get(timeout=timeout)
+            total_time = time.time() - start_time
+            LOG.info(f"Received chunk_stored response in {total_time:.3f}s")
             return response.get('success', False)
         except Empty:
-            LOG.error(f"Timeout waiting for chunk store confirmation from {node_id}")
+            total_time = time.time() - start_time
+            LOG.error(f"Timeout ({total_time:.1f}s) waiting for chunk store confirmation from {node_id}")
             return False
     finally:
         # Cleanup
@@ -227,7 +253,7 @@ def retrieve_chunk_from_node(node_id, chunk_hash, timeout=30):
         socketio.emit('retrieve_chunk', {
             'request_id': request_id,
             'chunk_hash': chunk_hash
-        }, room=f'node_{node_id}')
+        }, room=f'node_{node_id}', namespace='/')
 
         # Wait for response
         try:
