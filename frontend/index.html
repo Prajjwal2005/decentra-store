@@ -1075,7 +1075,7 @@
                 </div>
                 <div>
                   <div class="file-name">${f.filename}</div>
-                  <div class="file-meta">${formatBytes(f.size)} &bull; ${f.chunks} chunks</div>
+                  <div class="file-meta">${formatBytes(f.file_size)} &bull; ${f.chunk_count} chunks</div>
                 </div>
               </div>
               <div class="file-actions">
@@ -1263,7 +1263,7 @@
                 </div>
                 <div>
                   <div class="file-name">${f.filename}</div>
-                  <div class="file-meta">${formatBytes(f.size)} &bull; Shared on ${sharedDate}</div>
+                  <div class="file-meta">From: ${f.owner} &bull; ${formatBytes(f.size)} &bull; Shared on ${sharedDate}</div>
                 </div>
               </div>
               <div class="file-actions">

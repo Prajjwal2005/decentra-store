@@ -565,23 +565,24 @@ def get_file_info(file_id: str):
 
 
 @app.route("/file/<file_id>", methods=["DELETE"])
+@app.route("/delete/<file_id>", methods=["DELETE"])  # Alias for frontend compatibility
 @login_required
 def delete_file(file_id: str):
     """
     Mark a file as deleted.
-    
+
     Note: This doesn't actually delete chunks from storage nodes.
     In production, you'd need a garbage collection mechanism.
     """
     user = g.current_user
     metadata = blockchain.get_file_metadata(file_id)
-    
+
     if not metadata:
         return jsonify({"error": "File not found"}), 404
-    
+
     if metadata.get("owner_id") != user.id:
         return jsonify({"error": "Access denied"}), 403
-    
+
     # Add deletion record to blockchain
     deletion_record = {
         "type": "deletion",
@@ -589,15 +590,140 @@ def delete_file(file_id: str):
         "owner_id": user.id,
         "timestamp": int(time.time()),
     }
-    
+
     block = blockchain.add_block(deletion_record)
-    
+
     LOG.info(f"File marked deleted: {file_id} by {user.username}")
-    
+
     return jsonify({
         "status": "deleted",
         "file_id": file_id,
         "block_index": block["index"],
+    })
+
+
+# =============================================================================
+# File Sharing (Simplified - without key re-encryption)
+# =============================================================================
+
+@app.route("/share/<file_id>", methods=["POST"])
+@login_required
+def share_file(file_id: str):
+    """
+    Share a file with another user.
+
+    Note: This is a simplified implementation that just marks the file as shared.
+    Full implementation would require re-encrypting the file key for the recipient.
+    """
+    user = g.current_user
+    data = request.get_json()
+    target_username = data.get("username", "").strip()
+
+    if not target_username:
+        return jsonify({"error": "Target username required"}), 400
+
+    # Verify file exists and user owns it
+    metadata = blockchain.get_file_metadata(file_id)
+    if not metadata:
+        return jsonify({"error": "File not found"}), 404
+
+    if metadata.get("owner_id") != user.id:
+        return jsonify({"error": "You can only share your own files"}), 403
+
+    # Verify target user exists
+    session = get_session()
+    try:
+        target_user = session.query(User).filter_by(username=target_username).first()
+        if not target_user:
+            return jsonify({"error": f"User '{target_username}' not found"}), 404
+
+        # Add share record to blockchain
+        share_record = {
+            "type": "share",
+            "file_id": file_id,
+            "owner_id": user.id,
+            "shared_with_id": target_user.id,
+            "shared_with_username": target_username,
+            "timestamp": int(time.time()),
+        }
+
+        block = blockchain.add_block(share_record)
+
+        LOG.info(f"File {file_id} shared by {user.username} with {target_username}")
+
+        return jsonify({
+            "status": "shared",
+            "file_id": file_id,
+            "shared_with": target_username,
+            "block_index": block["index"],
+        })
+    finally:
+        session.close()
+
+
+@app.route("/shared-with-me", methods=["GET"])
+@login_required
+def shared_with_me():
+    """
+    Get list of files shared with the current user.
+
+    Note: This is a simplified implementation. Downloads won't work without key sharing.
+    """
+    user = g.current_user
+
+    # Find share records for this user
+    shared_files = []
+    chain = blockchain.get_chain()
+
+    for block in chain:
+        data = block.get("data", {})
+        if data.get("type") == "share" and data.get("shared_with_id") == user.id:
+            # Get the original file metadata
+            file_id = data.get("file_id")
+            file_metadata = blockchain.get_file_metadata(file_id)
+
+            if file_metadata:
+                shared_files.append({
+                    "file_id": file_id,
+                    "filename": file_metadata.get("filename"),
+                    "size": file_metadata.get("file_size"),
+                    "shared_at": data.get("timestamp"),
+                    "owner": data.get("owner_username", "Unknown"),
+                })
+
+    return jsonify({
+        "files": shared_files,
+        "count": len(shared_files),
+    })
+
+
+@app.route("/blockchain/my-blocks", methods=["GET"])
+@login_required
+def my_blocks():
+    """Get blocks created by the current user."""
+    user = g.current_user
+    chain = blockchain.get_chain()
+
+    user_blocks = []
+    for block in chain:
+        data = block.get("data", {})
+        if data.get("owner_id") == user.id:
+            # Format block for frontend
+            user_blocks.append({
+                "index": block["index"],
+                "hash": block["hash"],
+                "previous_hash": block.get("prev_hash", ""),
+                "timestamp": block["timestamp"],
+                "filename": data.get("filename"),
+                "file_id": data.get("file_id"),
+                "size": data.get("file_size", 0),
+                "chunks": data.get("chunk_count", 0),
+                "merkle_root": data.get("merkle_root"),
+            })
+
+    return jsonify({
+        "blocks": user_blocks,
+        "total": len(user_blocks),
     })
 
 
