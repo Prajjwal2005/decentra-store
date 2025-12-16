@@ -64,7 +64,15 @@ limiter = Limiter(
 )
 
 # WebSocket - use 'gevent' mode for production with gunicorn gevent worker
-socketio = SocketIO(app, cors_allowed_origins=ALLOWED_ORIGINS, async_mode='gevent')
+socketio = SocketIO(
+    app,
+    cors_allowed_origins=ALLOWED_ORIGINS,
+    async_mode='gevent',
+    ping_timeout=60,
+    ping_interval=25,
+    logger=True,
+    engineio_logger=True
+)
 
 # Max upload size (100 MB default)
 MAX_UPLOAD_SIZE = int(os.environ.get("MAX_UPLOAD_SIZE", 100 * 1024 * 1024))
@@ -191,11 +199,14 @@ def send_chunk_to_node(node_id, chunk_data, chunk_hash, timeout=30):
 
     try:
         # Send store request to node
+        room_name = f'node_{node_id}'
+        LOG.info(f"Emitting store_chunk to room '{room_name}' for node {node_id}, request_id={request_id}")
         socketio.emit('store_chunk', {
             'request_id': request_id,
             'chunk_hash': chunk_hash,
             'chunk_data': base64.b64encode(chunk_data).decode('utf-8')
-        }, room=f'node_{node_id}')
+        }, room=room_name)
+        LOG.info(f"Emitted store_chunk, waiting for response...")
 
         # Wait for response
         try:
