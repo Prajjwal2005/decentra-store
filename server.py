@@ -131,6 +131,11 @@ def handle_node_register(data):
     join_room(f'node_{node_id}')
     LOG.info(f"Node {'registered' if is_new else 're-registered'} via WebSocket: {node_id}")
 
+    # Test: Send a ping to verify room communication works
+    room_name = f'node_{node_id}'
+    socketio.emit('test_ping', {'message': 'Room communication test'}, room=room_name)
+    LOG.info(f"Sent test_ping to room '{room_name}'")
+
     return {'status': 'registered', 'node_id': node_id}
 
 @socketio.on('node_heartbeat')

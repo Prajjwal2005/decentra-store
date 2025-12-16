@@ -84,6 +84,11 @@ class StorageNode:
         def connect_error(data):
             LOG.error(f"Connection error: {data}")
 
+        @self.sio.on('test_ping')
+        def handle_test_ping(data):
+            """Test handler to verify room communication."""
+            LOG.info(f"✅ TEST PING RECEIVED: {data.get('message')}")
+
         @self.sio.on('store_chunk')
         def handle_store_chunk(data):
             """Server requests us to store a chunk."""
