@@ -14,7 +14,12 @@ import uuid
 import base64
 import json
 from pathlib import Path
-from queue import Queue, Empty
+try:
+    # Use gevent Queue for better async performance
+    from gevent.queue import Queue, Empty
+except ImportError:
+    # Fallback to standard Queue if gevent not available
+    from queue import Queue, Empty
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -190,7 +195,7 @@ def get_active_nodes():
             if (now - info['last_seen']) <= TTL
         ]
 
-def send_chunk_to_node(node_id, chunk_data, chunk_hash, timeout=30):
+def send_chunk_to_node(node_id, chunk_data, chunk_hash, timeout=120):
     """Send chunk to node via WebSocket and wait for confirmation."""
     with NODES_LOCK:
         if node_id not in NODES:
@@ -202,23 +207,28 @@ def send_chunk_to_node(node_id, chunk_data, chunk_hash, timeout=30):
         node_info['response_queues'][request_id] = response_queue
         sid = node_info['sid']
 
+    start_time = time.time()
     try:
         # Send store request to node
         room_name = f'node_{node_id}'
-        LOG.info(f"Emitting store_chunk to room '{room_name}' for node {node_id}, request_id={request_id}")
+        LOG.info(f"Emitting store_chunk to room '{room_name}' for node {node_id}, request_id={request_id}, size={len(chunk_data)} bytes")
         socketio.emit('store_chunk', {
             'request_id': request_id,
             'chunk_hash': chunk_hash,
             'chunk_data': base64.b64encode(chunk_data).decode('utf-8')
         }, room=room_name, namespace='/')
-        LOG.info(f"Emitted store_chunk to namespace '/' room '{room_name}', waiting for response...")
+        emit_time = time.time() - start_time
+        LOG.info(f"Emitted store_chunk in {emit_time:.3f}s, waiting for response...")
 
         # Wait for response
         try:
             response = response_queue.get(timeout=timeout)
+            total_time = time.time() - start_time
+            LOG.info(f"Received chunk_stored response in {total_time:.3f}s")
             return response.get('success', False)
         except Empty:
-            LOG.error(f"Timeout waiting for chunk store confirmation from {node_id}")
+            total_time = time.time() - start_time
+            LOG.error(f"Timeout ({total_time:.1f}s) waiting for chunk store confirmation from {node_id}")
             return False
     finally:
         # Cleanup
