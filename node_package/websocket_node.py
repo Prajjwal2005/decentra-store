@@ -52,11 +52,8 @@ class StorageNode:
             reconnection_delay_max=30,
             logger=True,
             engineio_logger=True,
-            # Match server ping settings to prevent disconnects
-            engineio_options={
-                'ping_timeout': 60,
-                'ping_interval': 25
-            }
+            request_timeout=120,  # Increase request timeout
+            http_session=None  # Use default session
         )
 
         self._setup_handlers()
