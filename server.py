@@ -195,7 +195,7 @@ def send_chunk_to_node(node_id, chunk_data, chunk_hash, timeout=30):
             'request_id': request_id,
             'chunk_hash': chunk_hash,
             'chunk_data': base64.b64encode(chunk_data).decode('utf-8')
-        }, room=sid)
+        }, room=f'node_{node_id}')
 
         # Wait for response
         try:
@@ -227,7 +227,7 @@ def retrieve_chunk_from_node(node_id, chunk_hash, timeout=30):
         socketio.emit('retrieve_chunk', {
             'request_id': request_id,
             'chunk_hash': chunk_hash
-        }, room=sid)
+        }, room=f'node_{node_id}')
 
         # Wait for response
         try:
