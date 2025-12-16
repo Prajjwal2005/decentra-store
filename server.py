@@ -210,8 +210,8 @@ def send_chunk_to_node(node_id, chunk_data, chunk_hash, timeout=30):
             'request_id': request_id,
             'chunk_hash': chunk_hash,
             'chunk_data': base64.b64encode(chunk_data).decode('utf-8')
-        }, room=room_name)
-        LOG.info(f"Emitted store_chunk, waiting for response...")
+        }, room=room_name, namespace='/')
+        LOG.info(f"Emitted store_chunk to namespace '/' room '{room_name}', waiting for response...")
 
         # Wait for response
         try:
@@ -243,7 +243,7 @@ def retrieve_chunk_from_node(node_id, chunk_hash, timeout=30):
         socketio.emit('retrieve_chunk', {
             'request_id': request_id,
             'chunk_hash': chunk_hash
-        }, room=f'node_{node_id}')
+        }, room=f'node_{node_id}', namespace='/')
 
         # Wait for response
         try:
