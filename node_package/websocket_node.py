@@ -44,14 +44,19 @@ class StorageNode:
         self.capacity_gb = capacity_gb
         self.storage_dir.mkdir(parents=True, exist_ok=True)
 
-        # Create SocketIO client
+        # Create SocketIO client with matching server timeouts
         self.sio = socketio.Client(
             reconnection=True,
             reconnection_attempts=0,  # Infinite
             reconnection_delay=1,
             reconnection_delay_max=30,
-            logger=False,
-            engineio_logger=False
+            logger=True,
+            engineio_logger=True,
+            # Match server ping settings to prevent disconnects
+            engineio_options={
+                'ping_timeout': 60,
+                'ping_interval': 25
+            }
         )
 
         self._setup_handlers()
