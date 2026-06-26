@@ -1221,7 +1221,7 @@
       if (!token) return;
 
       try {
-        const res = await fetch(`${API_BASE}/my-files`, {
+        const res = await fetch(`${API_BASE}/files`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
