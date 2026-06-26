@@ -383,3 +383,29 @@ def fetch_chunk(
     
     LOG.error(f"Failed to fetch chunk {chunk_hash[:16]}... from any peer")
     return None
+
+def upload_chunk_to_node(node: Dict, chunk_hash: str, chunk_data: bytes) -> bool:
+    """Upload chunk to a node using its URL."""
+    url = f"{node['url'].rstrip('/')}/store"
+    session = _make_session(retries=2)
+    try:
+        files = {"file": (chunk_hash, chunk_data)}
+        data = {"chunk_hash": chunk_hash}
+        resp = session.post(url, files=files, data=data, timeout=UPLOAD_TIMEOUT)
+        resp.raise_for_status()
+        return True
+    except Exception as e:
+        LOG.warning(f"Failed to upload to node {node.get('node_id')}: {e}")
+        return False
+
+def download_chunk_from_node(node: Dict, chunk_hash: str) -> Optional[bytes]:
+    """Download chunk from a node using its URL."""
+    url = f"{node['url'].rstrip('/')}/retrieve/{chunk_hash}"
+    session = _make_session(retries=2)
+    try:
+        resp = session.get(url, timeout=PEER_TIMEOUT)
+        resp.raise_for_status()
+        return resp.content
+    except Exception as e:
+        LOG.warning(f"Failed to download from node {node.get('node_id')}: {e}")
+        return None
