@@ -394,7 +394,12 @@ def upload_chunk_to_node(node: Dict, chunk_hash: str, chunk_data: bytes) -> bool
             "chunk_hash": chunk_hash,
             "data": base64.b64encode(chunk_data).decode('utf-8')
         }
-        resp = session.post(url, json=json_data, timeout=UPLOAD_TIMEOUT)
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "ngrok-skip-browser-warning": "true",
+            "Bypass-Tunnel-Reminder": "true"
+        }
+        resp = session.post(url, json=json_data, headers=headers, timeout=UPLOAD_TIMEOUT)
         resp.raise_for_status()
         return True
     except Exception as e:
@@ -406,7 +411,12 @@ def download_chunk_from_node(node: Dict, chunk_hash: str) -> Optional[bytes]:
     url = f"{node['url'].rstrip('/')}/retrieve/{chunk_hash}"
     session = _make_session(retries=2)
     try:
-        resp = session.get(url, timeout=PEER_TIMEOUT)
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "ngrok-skip-browser-warning": "true",
+            "Bypass-Tunnel-Reminder": "true"
+        }
+        resp = session.get(url, headers=headers, timeout=PEER_TIMEOUT)
         resp.raise_for_status()
         return resp.content
     except Exception as e:
