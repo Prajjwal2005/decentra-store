@@ -386,12 +386,15 @@ def fetch_chunk(
 
 def upload_chunk_to_node(node: Dict, chunk_hash: str, chunk_data: bytes) -> bool:
     """Upload chunk to a node using its URL."""
+    import base64
     url = f"{node['url'].rstrip('/')}/store"
     session = _make_session(retries=2)
     try:
-        files = {"file": (chunk_hash, chunk_data)}
-        data = {"chunk_hash": chunk_hash}
-        resp = session.post(url, files=files, data=data, timeout=UPLOAD_TIMEOUT)
+        json_data = {
+            "chunk_hash": chunk_hash,
+            "data": base64.b64encode(chunk_data).decode('utf-8')
+        }
+        resp = session.post(url, json=json_data, timeout=UPLOAD_TIMEOUT)
         resp.raise_for_status()
         return True
     except Exception as e:
