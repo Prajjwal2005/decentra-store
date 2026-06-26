@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DecentraStore - Decentralized File Storage</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%);
+      min-height: 100vh;
+      color: #c9d1d9;
+    }
+
+    /* Page Views */
+    .page { display: none !important; min-height: 100vh; }
+    .page.active { display: block !important; }
+
+    /* ==================== LOGIN PAGE ==================== */
+    .login-page.active {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .login-header h1 {
+      font-size: 2.8rem;
+      background: linear-gradient(135deg, #58a6ff, #1f6feb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+
+    .login-header p {
+      color: #8b949e;
+      font-size: 1rem;
+    }
+
+    .login-card {
+      background: rgba(22, 27, 34, 0.8);
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 32px;
+      backdrop-filter: blur(10px);
+    }
+
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 24px;
+      background: #21262d;
+      border-radius: 8px;
+      padding: 4px;
+    }
+
+    .auth-tabs button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: transparent;
+      color: #8b949e;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .auth-tabs button.active {
+      background: #58a6ff;
+      color: #fff;
+    }
+
+    .auth-form { display: none; flex-direction: column; gap: 16px; }
+    .auth-form.active { display: flex; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 0.85rem; color: #8b949e; }
+
+    input[type="text"], input[type="password"], input[type="email"] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      background: #0d1117;
+      color: #c9d1d9;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    input:focus { outline: none; border-color: #58a6ff; }
+    input::placeholder { color: #484f58; }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: #238636;
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: #2ea043; }
+
+    .btn-blue {
+      background: #1f6feb;
+      color: #fff;
+    }
+
+    .btn-blue:hover { background: #388bfd; }
+
+    .btn-outline {
+      background: transparent;
+      color: #58a6ff;
+      border: 1px solid #30363d;
+    }
+
+    .btn-outline:hover { background: rgba(88, 166, 255, 0.1); }
+
+    .btn-danger {
+      background: #da3633;
+      color: #fff;
+    }
+
+    .btn-danger:hover { background: #f85149; }
+
+    /* ==================== DASHBOARD PAGE ==================== */
+    .dashboard-page { display: none; }
+    .dashboard-page.active { display: block; }
+
+    .navbar {
+      background: rgba(13, 17, 23, 0.95);
+      border-bottom: 1px solid #30363d;
+      padding: 12px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .navbar-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar-brand {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #58a6ff;
+    }
+
+    .navbar-user {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .navbar-user span { color: #8b949e; }
+    .navbar-user strong { color: #c9d1d9; }
+
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 24px;
+    }
+
+    @media (max-width: 1000px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #21262d;
+    }
+
+    .card-header h2 {
+      font-size: 1.1rem;
+      color: #c9d1d9;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-header h2 svg { width: 20px; height: 20px; color: #58a6ff; }
+
+    /* Stats Cards */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 800px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .stat-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #58a6ff;
+    }
+
+    .stat-card .label {
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-top: 4px;
+    }
+
+    /* Upload Zone */
+    .upload-zone {
+      border: 2px dashed #30363d;
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 16px;
+    }
+
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: #58a6ff;
+      background: rgba(88, 166, 255, 0.05);
+    }
+
+    .upload-zone svg { width: 48px; height: 48px; color: #58a6ff; margin-bottom: 12px; }
+    .upload-zone p { color: #8b949e; }
+    .upload-zone .file-name { color: #3fb950; font-weight: 600; margin-top: 8px; }
+
+    #file-input { display: none; }
+
+    /* Files List */
+    .files-list {
+      list-style: none;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .file-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: #0d1117;
+      border: 1px solid #21262d;
+    }
+
+    .file-info { display: flex; align-items: center; gap: 12px; }
+
+    .file-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #1f6feb, #58a6ff);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .file-icon svg { width: 18px; height: 18px; color: #fff; }
+    .file-name { font-weight: 500; color: #c9d1d9; }
+    .file-meta { font-size: 0.8rem; color: #8b949e; }
+    .file-actions { display: flex; gap: 8px; }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      border-radius: 6px;
+    }
+
+    /* Peers List */
+    .peers-list { max-height: 300px; overflow-y: auto; }
+
+    .peer-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .peer-status {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #3fb950;
+    }
+
+    .peer-info { flex: 1; }
+    .peer-id { font-family: monospace; font-size: 0.85rem; color: #c9d1d9; }
+    .peer-capacity { font-size: 0.8rem; color: #8b949e; }
+
+    /* Node Section */
+    .node-section {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .node-section p { color: #8b949e; margin-bottom: 16px; }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #8b949e;
+    }
+
+    .empty-state svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.5; }
+
+    /* Alerts */
+    .alert {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 14px 20px;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 500;
+      animation: slideIn 0.3s ease;
+      z-index: 1000;
+    }
+
+    .alert-success { background: #238636; }
+    .alert-error { background: #da3633; }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Spinner */
+    .spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Activity Log */
+    #activity-log {
+      background: #0d1117;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.85rem;
+      max-height: 200px;
+      overflow-y: auto;
+      color: #8b949e;
+      white-space: pre-wrap;
+    }
+
+    .log-success { color: #3fb950; }
+    .log-error { color: #f85149; }
+    .log-info { color: #58a6ff; }
+
+    /* Dashboard Tabs */
+    .dashboard-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #30363d;
+      padding-bottom: 12px;
+    }
+
+    .dashboard-tabs button {
+      padding: 10px 20px;
+      border: none;
+      background: transparent;
+      color: #8b949e;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dashboard-tabs button:hover { color: #c9d1d9; background: rgba(88, 166, 255, 0.1); }
+    .dashboard-tabs button.active { color: #58a6ff; background: rgba(88, 166, 255, 0.15); border-bottom: 2px solid #58a6ff; }
+    .dashboard-tabs button svg { width: 18px; height: 18px; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Blockchain Explorer */
+    .blockchain-explorer { max-height: 600px; overflow-y: auto; }
+
+    .block-item {
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.2s;
+    }
+
+    .block-item:hover { border-color: #58a6ff; }
+
+    .block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .block-index {
+      background: linear-gradient(135deg, #1f6feb, #58a6ff);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .block-time { color: #8b949e; font-size: 0.85rem; }
+
+    .block-details { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+
+    @media (max-width: 600px) {
+      .block-details { grid-template-columns: 1fr; }
+    }
+
+    .block-field {
+      background: #161b22;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+
+    .block-field-label { font-size: 0.75rem; color: #8b949e; margin-bottom: 2px; }
+    .block-field-value { font-family: monospace; font-size: 0.85rem; color: #c9d1d9; word-break: break-all; }
+
+    .block-file-name {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, rgba(31, 111, 235, 0.2), rgba(88, 166, 255, 0.1));
+      border: 1px solid rgba(88, 166, 255, 0.3);
+    }
+
+    .block-file-name .block-field-value { color: #58a6ff; font-weight: 500; }
+
+    .genesis-block { border-color: #3fb950; }
+    .genesis-block .block-index { background: linear-gradient(135deg, #238636, #3fb950); }
+
+    .explorer-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .explorer-tabs button {
+      padding: 8px 16px;
+      border: 1px solid #30363d;
+      background: transparent;
+      color: #8b949e;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .explorer-tabs button:hover { border-color: #58a6ff; color: #c9d1d9; }
+    .explorer-tabs button.active { background: #1f6feb; border-color: #1f6feb; color: #fff; }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== LOGIN PAGE ==================== -->
+  <div class="page login-page active" id="login-page">
+    <div class="login-container">
+      <div class="login-header">
+        <h1>DecentraStore</h1>
+        <p>Secure, Decentralized File Storage on the Blockchain</p>
+      </div>
+
+      <div class="login-card">
+        <div class="auth-tabs">
+          <button class="active" onclick="switchAuthTab('login')">Sign In</button>
+          <button onclick="switchAuthTab('register')">Create Account</button>
+        </div>
+
+        <form class="auth-form active" id="login-form" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="login-username" placeholder="Enter username" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="Enter password" required />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+            Sign In
+            <span class="spinner" id="login-spinner"></span>
+          </button>
+        </form>
+
+        <form class="auth-form" id="register-form" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="reg-username" placeholder="Choose a username" required />
+          </div>
+          <div class="form-group">
+            <label>Email (optional)</label>
+            <input type="email" id="reg-email" placeholder="your@email.com" />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="reg-password" placeholder="Choose a password" required />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+            Create Account
+            <span class="spinner" id="register-spinner"></span>
+          </button>
+        </form>
+      </div>
+
+      <p style="text-align: center; margin-top: 24px; color: #8b949e; font-size: 0.9rem;">
+        Your files are encrypted and distributed across the network
+      </p>
+    </div>
+  </div>
+
+  <!-- ==================== DASHBOARD PAGE ==================== -->
+  <div class="page dashboard-page" id="dashboard-page">
+    <nav class="navbar">
+      <div class="navbar-content">
+        <span class="navbar-brand">DecentraStore</span>
+        <div class="navbar-user">
+          <span>Welcome, <strong id="nav-username">User</strong></span>
+          <button class="btn btn-outline btn-sm" onclick="handleLogout()">Logout</button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-container">
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="value" id="stat-peers">0</div>
+          <div class="label">Active Nodes</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="stat-blocks">0</div>
+          <div class="label">Blocks</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="stat-files">0</div>
+          <div class="label">Your Files</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="stat-size">0 B</div>
+          <div class="label">Storage Used</div>
+        </div>
+      </div>
+
+      <!-- Dashboard Tabs -->
+      <div class="dashboard-tabs">
+        <button class="active" onclick="switchDashboardTab('files')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+          </svg>
+          Files
+        </button>
+        <button onclick="switchDashboardTab('shared')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+          </svg>
+          Shared
+        </button>
+        <button onclick="switchDashboardTab('explorer')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          Blockchain Explorer
+        </button>
+      </div>
+
+      <!-- Files Tab -->
+      <div class="tab-content active" id="tab-files">
+      <div class="dashboard-grid">
+        <!-- Main Column -->
+        <div class="main-column">
+          <!-- Upload Card -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header">
+              <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                Upload File
+              </h2>
+            </div>
+            <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <p>Click or drag files here to upload</p>
+              <p class="file-name" id="selected-file"></p>
+            </div>
+            <input type="file" id="file-input" onchange="handleFileSelect(this)" />
+            <button class="btn btn-blue" style="width: 100%;" onclick="uploadFile()">
+              Encrypt & Upload to Network
+              <span class="spinner" id="upload-spinner"></span>
+            </button>
+          </div>
+
+          <!-- My Files Card -->
+          <div class="card">
+            <div class="card-header">
+              <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                </svg>
+                My Files
+              </h2>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="file-search" placeholder="Search files..."
+                  style="padding: 6px 12px; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: #c9d1d9; font-size: 0.85rem; width: 150px;"
+                  onkeyup="filterFiles()" />
+                <button class="btn btn-outline btn-sm" onclick="loadMyFiles()">Refresh</button>
+              </div>
+            </div>
+            <ul class="files-list" id="files-list">
+              <li class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+                </svg>
+                <p>No files yet. Upload your first file!</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+          <!-- Become a Node Card -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header">
+              <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
+                </svg>
+                Become a Node
+              </h2>
+            </div>
+            <div class="node-section">
+              <p>Help the network by running a storage node. Earn rewards by storing encrypted file chunks.</p>
+              <button class="btn btn-primary" style="width: 100%;" onclick="downloadNodePackage()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download Node Software
+              </button>
+            </div>
+          </div>
+
+          <!-- Active Peers Card -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header">
+              <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Active Nodes
+              </h2>
+              <button class="btn btn-outline btn-sm" onclick="loadPeers()">Refresh</button>
+            </div>
+            <div class="peers-list" id="peers-list">
+              <div class="empty-state">
+                <p>No active nodes</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Log Card -->
+          <div class="card">
+            <div class="card-header">
+              <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Activity
+              </h2>
+            </div>
+            <div id="activity-log">Ready.</div>
+          </div>
+        </div>
+      </div>
+      </div><!-- End Files Tab -->
+
+      <!-- Shared Files Tab -->
+      <div class="tab-content" id="tab-shared">
+        <div class="dashboard-grid">
+          <div class="main-column">
+            <!-- Files Shared With Me -->
+            <div class="card" style="margin-bottom: 24px;">
+              <div class="card-header">
+                <h2>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" />
+                  </svg>
+                  Shared With Me
+                </h2>
+                <button class="btn btn-outline btn-sm" onclick="loadSharedWithMe()">Refresh</button>
+              </div>
+              <ul class="files-list" id="shared-files-list">
+                <li class="empty-state">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                  <p>No files have been shared with you yet.</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <div class="sidebar">
+            <div class="card">
+              <div class="card-header">
+                <h2>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  About Sharing
+                </h2>
+              </div>
+              <div style="color: #8b949e; font-size: 0.9rem; line-height: 1.6;">
+                <p style="margin-bottom: 12px;">Share your files securely with other DecentraStore users.</p>
+                <p style="margin-bottom: 12px;">To share a file, go to your Files tab and click the Share button next to any file.</p>
+                <p>Files shared with you will appear in this tab.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- End Shared Tab -->
+
+      <!-- Blockchain Explorer Tab -->
+      <div class="tab-content" id="tab-explorer">
+        <div class="card">
+          <div class="card-header">
+            <h2>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+              Blockchain Explorer
+            </h2>
+            <button class="btn btn-outline btn-sm" onclick="loadBlockchain()">Refresh</button>
+          </div>
+
+          <div class="explorer-tabs">
+            <button class="active" onclick="switchExplorerTab('all')">All Blocks</button>
+            <button onclick="switchExplorerTab('mine')">My Blocks</button>
+          </div>
+
+          <div class="blockchain-explorer" id="blockchain-list">
+            <div class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+              <p>Loading blockchain...</p>
+            </div>
+          </div>
+        </div>
+      </div><!-- End Explorer Tab -->
+
+    </div>
+  </div>
+
+    <script>
+      // Use same origin for API calls (works for both dev and production)
+      const API_BASE = window.location.origin;
+
+      // ==================== CRYPTO UTILITIES (Phase 2) ====================
+      function arrayBufferToBase64(buffer) {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary);
+      }
+
+      function base64ToArrayBuffer(base64) {
+        const binary_string = window.atob(base64);
+        const len = binary_string.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes.buffer;
+      }
+
+      async function deriveUserKey(password, saltBase64) {
+        const enc = new TextEncoder();
+        const keyMaterial = await crypto.subtle.importKey(
+          "raw",
+          enc.encode(password),
+          { name: "PBKDF2" },
+          false,
+          ["deriveKey"]
+        );
+        
+        const salt = base64ToArrayBuffer(saltBase64);
+        
+        return crypto.subtle.deriveKey(
+          {
+            name: "PBKDF2",
+            salt: salt,
+            iterations: 100000,
+            hash: "SHA-256"
+          },
+          keyMaterial,
+          { name: "AES-GCM", length: 256 },
+          true,
+          ["encrypt", "decrypt"]
+        );
+      }
+
+      // ==================== UI HELPERS ====================
+    function showAlert(message, type = 'success') {
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      document.body.appendChild(alert);
+      setTimeout(() => alert.remove(), 3000);
+    }
+
+    function log(msg, type = 'info') {
+      const logEl = document.getElementById('activity-log');
+      const timestamp = new Date().toLocaleTimeString();
+      const text = typeof msg === 'string' ? msg : JSON.stringify(msg, null, 2);
+      const colorClass = type === 'error' ? 'log-error' : type === 'success' ? 'log-success' : 'log-info';
+      logEl.innerHTML = `<span class="${colorClass}">[${timestamp}]</span> ${text}\n` + logEl.innerHTML;
+    }
+
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    function switchAuthTab(tab) {
+      document.querySelectorAll('.auth-tabs button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+
+      if (tab === 'login') {
+        document.querySelector('.auth-tabs button:first-child').classList.add('active');
+        document.getElementById('login-form').classList.add('active');
+      } else {
+        document.querySelector('.auth-tabs button:last-child').classList.add('active');
+        document.getElementById('register-form').classList.add('active');
+      }
+    }
+
+    // ==================== AUTH ====================
+    async function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+      const spinner = document.getElementById('login-spinner');
+
+      spinner.style.display = 'inline-block';
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('password', password);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          showAlert('Login successful!');
+          initDashboard();
+        } else {
+          showAlert(data.error || 'Login failed', 'error');
+        }
+      } catch (err) {
+        showAlert('Network error', 'error');
+      }
+
+      spinner.style.display = 'none';
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const username = document.getElementById('reg-username').value;
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+      const spinner = document.getElementById('register-spinner');
+
+      spinner.style.display = 'inline-block';
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password, email })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          showAlert('Account created! Please sign in.');
+          switchAuthTab('login');
+          document.getElementById('login-username').value = username;
+        } else {
+          showAlert(data.error || 'Registration failed', 'error');
+        }
+      } catch (err) {
+        showAlert('Network error', 'error');
+      }
+
+      spinner.style.display = 'none';
+    }
+
+    function handleLogout() {
+      localStorage.clear();
+      showPage('login-page');
+      showAlert('Logged out');
+    }
+
+    // ==================== DASHBOARD ====================
+    function initDashboard() {
+      const username = localStorage.getItem('username');
+      document.getElementById('nav-username').textContent = username;
+      showPage('dashboard-page');
+      loadStats();
+      loadMyFiles();
+      loadPeers();
+    }
+
+    async function loadStats() {
+      try {
+        const [peersRes, statsRes] = await Promise.all([
+          fetch(`${API_BASE}/network/peers`),
+          fetch(`${API_BASE}/blockchain/stats`)
+        ]);
+
+        const peers = await peersRes.json();
+        const stats = await statsRes.json();
+
+        document.getElementById('stat-peers').textContent = peers.count || 0;
+        document.getElementById('stat-blocks').textContent = stats.total_blocks || 0;
+        document.getElementById('stat-files').textContent = stats.total_files || 0;
+        document.getElementById('stat-size').textContent = formatBytes(stats.total_size || 0);
+      } catch (err) {
+        log('Failed to load stats', 'error');
+      }
+    }
+
+    // ==================== FILES ====================
+    function handleFileSelect(input) {
+      const fileName = input.files[0]?.name || '';
+      document.getElementById('selected-file').textContent = fileName;
+    }
+
+    // Drag and drop
+    document.addEventListener('DOMContentLoaded', () => {
+      const uploadZone = document.getElementById('upload-zone');
+      if (uploadZone) {
+        uploadZone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          uploadZone.classList.add('dragover');
+        });
+        uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+        uploadZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          uploadZone.classList.remove('dragover');
+          if (e.dataTransfer.files.length) {
+            document.getElementById('file-input').files = e.dataTransfer.files;
+            handleFileSelect(document.getElementById('file-input'));
+          }
+        });
+      }
+    });
+
+    async function uploadFile() {
+      const token = localStorage.getItem('token');
+      const password = localStorage.getItem('password');
+      const userStr = localStorage.getItem('user');
+
+      if (!token || !password || !userStr) {
+        showAlert('Please login first', 'error');
+        return;
+      }
+
+      const file = document.getElementById('file-input').files[0];
+      if (!file) {
+        showAlert('Please select a file', 'error');
+        return;
+      }
+
+      const spinner = document.getElementById('upload-spinner');
+      spinner.style.display = 'inline-block';
+      log(`Encrypting ${file.name} locally...`);
+
+      try {
+        const userObj = JSON.parse(userStr);
+        const fileBuffer = await file.arrayBuffer();
+
+        // 1. Generate a random file key
+        const fileKey = await crypto.subtle.generateKey(
+          { name: "AES-GCM", length: 256 },
+          true,
+          ["encrypt", "decrypt"]
+        );
+
+        // 2. Encrypt the file
+        const fileIv = crypto.getRandomValues(new Uint8Array(12));
+        const encryptedFileBuffer = await crypto.subtle.encrypt(
+          { name: "AES-GCM", iv: fileIv },
+          fileKey,
+          fileBuffer
+        );
+
+        // 3. Wrap the file key with the user's password-derived key
+        const userKey = await deriveUserKey(password, userObj.key_salt);
+        const exportedFileKey = await crypto.subtle.exportKey("raw", fileKey);
+        
+        const keyIv = crypto.getRandomValues(new Uint8Array(12));
+        const encryptedKeyBuffer = await crypto.subtle.encrypt(
+          { name: "AES-GCM", iv: keyIv },
+          userKey,
+          exportedFileKey
+        );
+
+        // 4. Send encrypted blob and metadata to backend
+        log(`Uploading encrypted blob to network...`);
+        const formData = new FormData();
+        formData.append('file', new Blob([encryptedFileBuffer], {type: file.type}), file.name);
+        formData.append('encrypted_key', arrayBufferToBase64(encryptedKeyBuffer));
+        formData.append('key_iv', arrayBufferToBase64(keyIv));
+        formData.append('file_iv', arrayBufferToBase64(fileIv));
+
+        const res = await fetch(`${API_BASE}/files/upload`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          showAlert('File encrypted and uploaded successfully!');
+          log(`Uploaded: ${file.name} (${data.size} bytes)`, 'success');
+          document.getElementById('file-input').value = '';
+          document.getElementById('selected-file').textContent = '';
+          loadMyFiles();
+          loadStats();
+        } else {
+          showAlert(data.error || 'Upload failed', 'error');
+          log(data.error || 'Upload failed', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showAlert(err.message || 'Error encrypting/uploading file', 'error');
+        log(`Upload failed: ${err.message}`, 'error');
+      }
+
+      spinner.style.display = 'none';
+    }
+
+    async function downloadFile(fileId, filename) {
+      const token = localStorage.getItem('token');
+      const password = localStorage.getItem('password');
+      const userStr = localStorage.getItem('user');
+
+      if (!token || !password || !userStr) {
+        showAlert('Please login first', 'error');
+        return;
+      }
+
+      log(`Downloading encrypted file ${filename} from network...`);
+
+      try {
+        const res = await fetch(`${API_BASE}/files/${fileId}/download`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          showAlert(data.error || 'Download failed', 'error');
+          log(data.error || 'Download failed', 'error');
+          return;
+        }
+
+        // Get metadata from headers
+        const encryptedKeyB64 = res.headers.get('X-Encrypted-Key');
+        const keyIvB64 = res.headers.get('X-Key-Iv');
+        const fileIvB64 = res.headers.get('X-File-Iv');
+        const mimeType = res.headers.get('X-Original-Mime');
+
+        if (!encryptedKeyB64 || !keyIvB64 || !fileIvB64) {
+           throw new Error("Missing encryption metadata from server");
+        }
+
+        const encryptedFileBlob = await res.blob();
+        const encryptedFileBuffer = await encryptedFileBlob.arrayBuffer();
+
+        log(`Decrypting ${filename} locally...`);
+
+        // 1. Unwrap the file key
+        const userObj = JSON.parse(userStr);
+        const userKey = await deriveUserKey(password, userObj.key_salt);
+
+        const encryptedKeyBuffer = base64ToArrayBuffer(encryptedKeyB64);
+        const keyIv = base64ToArrayBuffer(keyIvB64);
+
+        const decryptedKeyBuffer = await crypto.subtle.decrypt(
+          { name: "AES-GCM", iv: keyIv },
+          userKey,
+          encryptedKeyBuffer
+        );
+
+        const fileKey = await crypto.subtle.importKey(
+          "raw",
+          decryptedKeyBuffer,
+          { name: "AES-GCM" },
+          false,
+          ["decrypt"]
+        );
+
+        // 2. Decrypt the file
+        const fileIv = base64ToArrayBuffer(fileIvB64);
+        const decryptedFileBuffer = await crypto.subtle.decrypt(
+          { name: "AES-GCM", iv: fileIv },
+          fileKey,
+          encryptedFileBuffer
+        );
+
+        log(`Decrypted ${filename} successfully. Saving to disk...`, 'success');
+
+        // 3. Trigger download
+        const url = URL.createObjectURL(new Blob([decryptedFileBuffer], {type: mimeType}));
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error(err);
+        showAlert(err.message || 'Decryption failed', 'error');
+        log(`Download/Decryption failed: ${err.message}`, 'error');
+      }
+    }
+
+    async function loadMyFiles() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/files`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await res.json();
+        const list = document.getElementById('files-list');
+        list.innerHTML = '';
+
+        if (data.files && data.files.length > 0) {
+          document.getElementById('stat-files').textContent = data.files.length;
+
+          data.files.forEach(f => {
+            const li = document.createElement('li');
+            li.className = 'file-item';
+            li.innerHTML = `
+              <div class="file-info">
+                <div class="file-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="file-name">${f.original_name}</div>
+                  <div class="file-meta">${formatBytes(f.size)} &bull; ${f.chunk_count} chunks</div>
+                </div>
+              </div>
+              <div class="file-actions">
+                <button class="btn btn-primary btn-sm" onclick="downloadFile('${f.id}', '${f.original_name}')">Download</button>
+                <button class="btn btn-outline btn-sm" onclick="showShareDialog('${f.id}', '${f.original_name}')">Share</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteFile('${f.id}', '${f.original_name}')">Delete</button>
+              </div>
+            `;
+            list.appendChild(li);
+          });
+        } else {
+          list.innerHTML = `
+            <li class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+              </svg>
+              <p>No files yet. Upload your first file!</p>
+            </li>
+          `;
+        }
+      } catch (err) {
+        log('Failed to load files', 'error');
+      }
+    }
+
+    function filterFiles() {
+      const searchTerm = document.getElementById('file-search').value.toLowerCase();
+      const fileItems = document.querySelectorAll('#files-list .file-item');
+
+      fileItems.forEach(item => {
+        const filename = item.querySelector('.file-name').textContent.toLowerCase();
+        if (filename.includes(searchTerm)) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    async function downloadFile(fileId, filename) {
+      const token = localStorage.getItem('token');
+      const password = localStorage.getItem('password');
+
+      if (!token) {
+        showAlert('Please login first', 'error');
+        return;
+      }
+
+      log(`Downloading ${filename}...`);
+
+      try {
+        const res = await fetch(`${API_BASE}/download/${fileId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'X-User-Password': password
+          }
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          showAlert(data.error || 'Download failed', 'error');
+          log(data.error || 'Download failed', 'error');
+          return;
+        }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        showAlert('Download started!');
+        log(`Downloaded: ${filename}`, 'success');
+      } catch (err) {
+        showAlert('Download failed', 'error');
+        log('Download failed: network error', 'error');
+      }
+    }
+
+    async function deleteFile(fileId, filename) {
+      if (!confirm(`Are you sure you want to delete "${filename}"? This action cannot be undone.`)) {
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showAlert('Please login first', 'error');
+        return;
+      }
+
+      log(`Deleting ${filename}...`);
+
+      try {
+        const res = await fetch(`${API_BASE}/delete/${fileId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          showAlert('File deleted successfully!');
+          log(`Deleted: ${filename}`, 'success');
+          loadMyFiles(); // Refresh file list
+          loadStats();   // Refresh stats
+        } else {
+          showAlert(data.error || 'Delete failed', 'error');
+          log(data.error || 'Delete failed', 'error');
+        }
+      } catch (err) {
+        showAlert('Delete failed', 'error');
+        log('Delete failed: network error', 'error');
+      }
+    }
+
+    // ==================== FILE SHARING ====================
+    function showShareDialog(fileId, filename) {
+      const username = prompt(`Share "${filename}" with user:\n\nEnter their username:`);
+      if (username && username.trim()) {
+        shareFile(fileId, filename, username.trim());
+      }
+    }
+
+    async function shareFile(fileId, filename, targetUsername) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showAlert('Please login first', 'error');
+        return;
+      }
+
+      log(`Sharing ${filename} with ${targetUsername}...`);
+
+      try {
+        const res = await fetch(`${API_BASE}/share/${fileId}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username: targetUsername })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          showAlert(`File shared with ${targetUsername}!`);
+          log(`Shared: ${filename} with ${targetUsername}`, 'success');
+        } else {
+          showAlert(data.error || 'Share failed', 'error');
+          log(data.error || 'Share failed', 'error');
+        }
+      } catch (err) {
+        showAlert('Share failed', 'error');
+        log('Share failed: network error', 'error');
+      }
+    }
+
+    async function loadSharedWithMe() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/shared-with-me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await res.json();
+        const list = document.getElementById('shared-files-list');
+        list.innerHTML = '';
+
+        if (data.files && data.files.length > 0) {
+          data.files.forEach(f => {
+            const li = document.createElement('li');
+            li.className = 'file-item';
+            const sharedDate = new Date(f.shared_at * 1000).toLocaleDateString();
+            li.innerHTML = `
+              <div class="file-info">
+                <div class="file-icon" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="file-name">${f.filename}</div>
+                  <div class="file-meta">From: ${f.owner} &bull; ${formatBytes(f.size)} &bull; Shared on ${sharedDate}</div>
+                </div>
+              </div>
+              <div class="file-actions">
+                <button class="btn btn-primary btn-sm" onclick="downloadSharedFile('${f.id}', '${f.filename}')">Download</button>
+              </div>
+            `;
+            list.appendChild(li);
+          });
+        } else {
+          list.innerHTML = `
+            <li class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+              <p>No files have been shared with you yet.</p>
+            </li>
+          `;
+        }
+      } catch (err) {
+        log('Failed to load shared files', 'error');
+      }
+    }
+
+    async function downloadSharedFile(fileId, filename) {
+      // For now, shared files need the owner's decryption - this would need key sharing
+      showAlert('Shared file download requires key exchange (coming soon)', 'info');
+      log('Shared file download not yet implemented - requires key sharing', 'info');
+    }
+
+    // ==================== PEERS ====================
+    async function loadPeers() {
+      try {
+        const res = await fetch(`${API_BASE}/network/peers`);
+        const data = await res.json();
+        const list = document.getElementById('peers-list');
+
+        if (data.peers && data.peers.length > 0) {
+          list.innerHTML = data.peers.map(p => `
+            <div class="peer-item">
+              <div class="peer-status"></div>
+              <div class="peer-info">
+                <div class="peer-id">${p.node_id ? p.node_id.substring(0, 12) + '...' : 'Unknown'}</div>
+                <div class="peer-capacity">${p.capacity_gb || '?'} GB capacity</div>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          list.innerHTML = '<div class="empty-state"><p>No active nodes</p></div>';
+        }
+      } catch (err) {
+        log('Failed to load peers', 'error');
+      }
+    }
+
+    // ==================== NODE DOWNLOAD ====================
+    function downloadNodePackage() {
+      log('Downloading node software...');
+      window.location.href = `${API_BASE}/download-node`;
+      showAlert('Download started!');
+    }
+
+    // ==================== DASHBOARD TABS ====================
+    function switchDashboardTab(tab) {
+      document.querySelectorAll('.dashboard-tabs button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      const buttons = document.querySelectorAll('.dashboard-tabs button');
+      if (tab === 'files') {
+        buttons[0].classList.add('active');
+        document.getElementById('tab-files').classList.add('active');
+      } else if (tab === 'shared') {
+        buttons[1].classList.add('active');
+        document.getElementById('tab-shared').classList.add('active');
+        loadSharedWithMe();
+      } else if (tab === 'explorer') {
+        buttons[2].classList.add('active');
+        document.getElementById('tab-explorer').classList.add('active');
+        loadBlockchain();
+      }
+    }
+
+    // ==================== BLOCKCHAIN EXPLORER ====================
+    let currentExplorerTab = 'all';
+
+    function switchExplorerTab(tab) {
+      currentExplorerTab = tab;
+      document.querySelectorAll('.explorer-tabs button').forEach(btn => btn.classList.remove('active'));
+      if (tab === 'all') {
+        document.querySelector('.explorer-tabs button:first-child').classList.add('active');
+      } else {
+        document.querySelector('.explorer-tabs button:last-child').classList.add('active');
+      }
+      loadBlockchain();
+    }
+
+    async function loadBlockchain() {
+      const token = localStorage.getItem('token');
+      const list = document.getElementById('blockchain-list');
+
+      list.innerHTML = '<div class="empty-state"><p>Loading blockchain...</p></div>';
+
+      try {
+        const endpoint = currentExplorerTab === 'mine'
+          ? `${API_BASE}/blockchain/my-blocks`
+          : `${API_BASE}/blockchain/blocks`;
+
+        const headers = currentExplorerTab === 'mine'
+          ? { 'Authorization': `Bearer ${token}` }
+          : {};
+
+        const res = await fetch(endpoint, { headers });
+        const data = await res.json();
+
+        if (data.blocks && data.blocks.length > 0) {
+          list.innerHTML = data.blocks.map(block => {
+            const isGenesis = block.index === 0;
+            const timestamp = block.timestamp
+              ? new Date(block.timestamp * 1000).toLocaleString()
+              : 'N/A';
+
+            return `
+              <div class="block-item ${isGenesis ? 'genesis-block' : ''}">
+                <div class="block-header">
+                  <span class="block-index">Block #${block.index}</span>
+                  <span class="block-time">${timestamp}</span>
+                </div>
+                <div class="block-details">
+                  <div class="block-field block-file-name">
+                    <div class="block-field-label">File</div>
+                    <div class="block-field-value">${block.filename || 'Genesis Block'}</div>
+                  </div>
+                  <div class="block-field">
+                    <div class="block-field-label">Hash</div>
+                    <div class="block-field-value">${block.hash || 'N/A'}</div>
+                  </div>
+                  <div class="block-field">
+                    <div class="block-field-label">Previous Hash</div>
+                    <div class="block-field-value">${block.previous_hash || 'None (Genesis)'}</div>
+                  </div>
+                  ${!isGenesis ? `
+                  <div class="block-field">
+                    <div class="block-field-label">Size</div>
+                    <div class="block-field-value">${formatBytes(block.size)}</div>
+                  </div>
+                  <div class="block-field">
+                    <div class="block-field-label">Chunks</div>
+                    <div class="block-field-value">${block.chunks || 0}</div>
+                  </div>
+                  <div class="block-field">
+                    <div class="block-field-label">Merkle Root</div>
+                    <div class="block-field-value">${block.merkle_root || 'N/A'}</div>
+                  </div>
+                  <div class="block-field">
+                    <div class="block-field-label">File ID</div>
+                    <div class="block-field-value">${block.file_id || 'N/A'}</div>
+                  </div>
+                  ` : ''}
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          list.innerHTML = `
+            <div class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+              <p>${currentExplorerTab === 'mine' ? 'You have no blocks yet. Upload a file to create your first block!' : 'No blocks in the blockchain yet.'}</p>
+            </div>
+          `;
+        }
+      } catch (err) {
+        log('Failed to load blockchain', 'error');
+        list.innerHTML = '<div class="empty-state"><p>Failed to load blockchain</p></div>';
+      }
+    }
+
+    // ==================== UTILITY ====================
+    function formatBytes(bytes) {
+      if (!bytes || bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // ==================== INIT ====================
+    (async function init() {
+      const token = localStorage.getItem('token');
+      const username = localStorage.getItem('username');
+      const password = localStorage.getItem('password');
+
+      if (token && username && password) {
+        // Validate token by calling /auth/me
+        try {
+          const res = await fetch(`${API_BASE}/auth/me`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            initDashboard();
+          } else {
+            // Token is invalid, clear and show login
+            localStorage.clear();
+            showPage('login-page');
+          }
+        } catch (err) {
+          // Network error, try to show dashboard anyway
+          initDashboard();
+        }
+      } else {
+        localStorage.clear();
+        showPage('login-page');
+      }
+    })();
+  </script>
+
+</body>
+</html>
