@@ -255,7 +255,6 @@ def upload_file():
         if user.storage_used_bytes + file_size > user.storage_quota_bytes:
             return jsonify({"error": "Storage quota exceeded"}), 403
             
-        file_key = generate_file_key()
         chunks = chunk_file(temp_path, CHUNK_SIZE)
         
         chunk_records = []
