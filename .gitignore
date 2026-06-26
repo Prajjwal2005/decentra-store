@@ -4,3 +4,6 @@ data/
 *.db
 .env
 testfile.txt
+
+# Test databases
+*.db
