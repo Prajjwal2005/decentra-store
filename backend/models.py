@@ -113,9 +113,12 @@ class FileMetadata(Base):
     merkle_root = Column(String(64), nullable=False)
     chunk_count = Column(Integer, nullable=False)
     
-    encrypted_key = Column(Text, nullable=False)
-    iv = Column(String(32), nullable=False)
+    # Encryption metadata
+    encrypted_key = Column(Text, nullable=False)  # File key encrypted with user's key
+    key_iv = Column(String(32), nullable=False)   # IV for the wrapped key (base64)
+    file_iv = Column(String(32), nullable=False)  # IV for the encrypted file blob (base64)
     
+    # Relationships
     created_at = Column(DateTime, default=datetime.utcnow)
     
     def to_dict(self):

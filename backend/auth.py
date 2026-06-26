@@ -22,8 +22,9 @@ from flask import Blueprint, request, jsonify, g, current_app
 
 # Keep these imports consistent with your project structure
 from config import SECRET_KEY, JWT_EXPIRY_HOURS, KDF_SALT_SIZE
-from shared.crypto import derive_key_from_password, b64_encode, b64_decode
 from backend.models import User, get_session
+import base64
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -168,7 +169,7 @@ def register_user(username: str, password: str, email: str = None) -> Tuple[Opti
             username=username,
             email=email,
             password_hash=hash_password(password),
-            key_salt=b64_encode(key_salt),
+            key_salt=base64.b64encode(key_salt).decode("utf-8"),
             is_active=True
         )
 
@@ -221,15 +222,6 @@ def login_user(username: str, password: str) -> Tuple[Optional[str], Optional[Us
         return None, None, f"Login failed: {e}"
     finally:
         session.close()
-
-
-def get_user_encryption_key(user: User, password: str) -> bytes:
-    """
-    Derive the user's encryption key from their password.
-    """
-    salt = b64_decode(user.key_salt)
-    key, _ = derive_key_from_password(password, salt)
-    return key
 
 
 def change_password(user: User, old_password: str, new_password: str) -> Tuple[bool, Optional[str]]:

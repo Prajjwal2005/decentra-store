@@ -32,21 +32,15 @@ from config import (
     DATA_DIR,
     NODE_TTL
 )
-from shared.crypto import (
-    generate_file_key,
-    encrypt_chunk,
-    decrypt_chunk,
-    encrypt_file_key,
-    decrypt_file_key,
-    compute_hash,
-    b64_encode,
-    b64_decode,
-)
 from shared.chunker import (
     chunk_file,
     compute_merkle_root,
     verify_chunk_hash,
 )
+import hashlib
+
+def compute_hash(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
 from backend.models import User, FileMetadata, ChunkLocation, Node, get_session, init_db
 from backend.auth import (
     login_required,
@@ -54,7 +48,6 @@ from backend.auth import (
     get_current_user,
     register_user,
     login_user,
-    get_user_encryption_key,
 )
 from backend import uploader
 
@@ -79,12 +72,6 @@ FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
 # =============================================================================
 # Helpers
 # =============================================================================
-
-def get_user_key_from_header(user: User) -> Optional[bytes]:
-    password = request.headers.get("X-User-Password")
-    if not password:
-        return None
-    return get_user_encryption_key(password, user.key_salt)
 
 @app.before_request
 def before_request():
@@ -114,7 +101,7 @@ def register():
         return jsonify({"error": error}), 400
     return jsonify({
         "status": "registered",
-        "user": user.to_dict()
+        "user": user.to_dict(include_private=True)
     }), 201
 
 @app.route("/auth/login", methods=["POST"])
@@ -127,7 +114,7 @@ def login():
         return jsonify({"error": error}), 401
     return jsonify({
         "token": token,
-        "user": user.to_dict()
+        "user": user.to_dict(include_private=True)
     })
 
 @app.route("/auth/me", methods=["GET"])
@@ -135,7 +122,7 @@ def login():
 def me():
     return jsonify({
         "status": "authenticated",
-        "user": g.current_user.to_dict(include_private=False)
+        "user": g.current_user.to_dict(include_private=True)
     })
 
 # =============================================================================
@@ -242,9 +229,12 @@ def upload_file():
     if file.filename == "":
         return jsonify({"error": "No selected file"}), 400
         
-    user_key = get_user_key_from_header(user)
-    if not user_key:
-        return jsonify({"error": "Encryption key required. Provide X-User-Password header."}), 401
+    encrypted_key = request.form.get("encrypted_key")
+    key_iv = request.form.get("key_iv")
+    file_iv = request.form.get("file_iv")
+    
+    if not encrypted_key or not key_iv or not file_iv:
+        return jsonify({"error": "Encryption metadata required (encrypted_key, key_iv, file_iv)"}), 400
         
     nodes = get_active_nodes()
     if not nodes:
@@ -274,14 +264,13 @@ def upload_file():
         session = get_session()
         try:
             for i, chunk_data in enumerate(chunks):
-                encrypted_chunk, iv, tag = encrypt_chunk(chunk_data, file_key)
-                final_chunk = iv + tag + encrypted_chunk
-                chunk_hash = compute_hash(final_chunk)
+                # The chunk_data is ALREADY encrypted by the frontend. We just hash and distribute it.
+                chunk_hash = compute_hash(chunk_data)
                 merkle_leaves.append(chunk_hash)
                 
                 # Distribute (using simple round-robin for now)
                 node = nodes[i % len(nodes)]
-                success = uploader.upload_chunk_to_node({"url": node.url, "node_id": node.id}, chunk_hash, final_chunk)
+                success = uploader.upload_chunk_to_node({"url": node.url, "node_id": node.id}, chunk_hash, chunk_data)
                 if not success:
                     raise Exception(f"Failed to upload chunk {i} to node {node.id}")
                     
@@ -292,7 +281,6 @@ def upload_file():
                 })
                 
             merkle_root = compute_merkle_root(merkle_leaves)
-            enc_file_key, file_key_iv = encrypt_file_key(file_key, user_key)
             
             # Save metadata to postgres
             file_meta = FileMetadata(
@@ -304,8 +292,9 @@ def upload_file():
                 mime_type=file.content_type or "application/octet-stream",
                 merkle_root=merkle_root,
                 chunk_count=len(chunks),
-                encrypted_key=b64_encode(enc_file_key),
-                iv=b64_encode(file_key_iv)
+                encrypted_key=encrypted_key,
+                key_iv=key_iv,
+                file_iv=file_iv
             )
             session.add(file_meta)
             
@@ -344,9 +333,6 @@ def upload_file():
 @login_required
 def download_file(file_id):
     user = g.current_user
-    user_key = get_user_key_from_header(user)
-    if not user_key:
-        return jsonify({"error": "Encryption key required"}), 401
         
     session = get_session()
     try:
@@ -356,14 +342,6 @@ def download_file(file_id):
             
         if file_meta.owner_id != user.id:
             return jsonify({"error": "Access denied"}), 403
-            
-        enc_key = b64_decode(file_meta.encrypted_key)
-        iv = b64_decode(file_meta.iv)
-        
-        try:
-            file_key = decrypt_file_key(enc_key, iv, user_key)
-        except ValueError:
-            return jsonify({"error": "Invalid password/key"}), 403
             
         chunks = session.query(ChunkLocation).filter_by(file_id=file_id).order_by(ChunkLocation.chunk_index).all()
         
@@ -385,17 +363,20 @@ def download_file(file_id):
                 if not verify_chunk_hash(encrypted_chunk, chunk_record.chunk_hash):
                     raise Exception(f"Chunk integrity check failed for {chunk_record.chunk_hash}")
                     
-                c_iv = encrypted_chunk[:12]
-                c_tag = encrypted_chunk[12:28]
-                c_ciphertext = encrypted_chunk[28:]
-                
-                decrypted = decrypt_chunk(c_ciphertext, c_iv, c_tag, file_key)
-                yield decrypted
+                yield encrypted_chunk
                 
         return Response(
             generate(),
-            mimetype=file_meta.mime_type,
-            headers={"Content-Disposition": f'attachment; filename="{file_meta.original_name}"'}
+            mimetype="application/octet-stream",
+            headers={
+                "Content-Disposition": f'attachment; filename="{file_meta.original_name}.enc"',
+                "X-Encrypted-Key": file_meta.encrypted_key,
+                "X-Key-Iv": file_meta.key_iv,
+                "X-File-Iv": file_meta.file_iv,
+                "X-Original-Mime": file_meta.mime_type or "application/octet-stream",
+                "X-Original-Name": file_meta.original_name,
+                "Access-Control-Expose-Headers": "X-Encrypted-Key, X-Key-Iv, X-File-Iv, X-Original-Mime, X-Original-Name"
+            }
         )
     finally:
         session.close()

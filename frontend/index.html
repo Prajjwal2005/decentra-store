@@ -828,11 +828,57 @@
     </div>
   </div>
 
-  <script>
-    // Use same origin for API calls (works for both dev and production)
-    const API_BASE = window.location.origin;
+    <script>
+      // Use same origin for API calls (works for both dev and production)
+      const API_BASE = window.location.origin;
 
-    // ==================== UI HELPERS ====================
+      // ==================== CRYPTO UTILITIES (Phase 2) ====================
+      function arrayBufferToBase64(buffer) {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary);
+      }
+
+      function base64ToArrayBuffer(base64) {
+        const binary_string = window.atob(base64);
+        const len = binary_string.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes.buffer;
+      }
+
+      async function deriveUserKey(password, saltBase64) {
+        const enc = new TextEncoder();
+        const keyMaterial = await crypto.subtle.importKey(
+          "raw",
+          enc.encode(password),
+          { name: "PBKDF2" },
+          false,
+          ["deriveKey"]
+        );
+        
+        const salt = base64ToArrayBuffer(saltBase64);
+        
+        return crypto.subtle.deriveKey(
+          {
+            name: "PBKDF2",
+            salt: salt,
+            iterations: 100000,
+            hash: "SHA-256"
+          },
+          keyMaterial,
+          { name: "AES-GCM", length: 256 },
+          true,
+          ["encrypt", "decrypt"]
+        );
+      }
+
+      // ==================== UI HELPERS ====================
     function showAlert(message, type = 'success') {
       const alert = document.createElement('div');
       alert.className = `alert alert-${type}`;
@@ -887,8 +933,8 @@
 
         if (res.ok) {
           localStorage.setItem('token', data.token);
-          localStorage.setItem('username', username);
-          localStorage.setItem('password', password); // For X-User-Password header
+          localStorage.setItem('password', password);
+          localStorage.setItem('user', JSON.stringify(data.user));
           showAlert('Login successful!');
           initDashboard();
         } else {
@@ -997,8 +1043,9 @@
     async function uploadFile() {
       const token = localStorage.getItem('token');
       const password = localStorage.getItem('password');
+      const userStr = localStorage.getItem('user');
 
-      if (!token) {
+      if (!token || !password || !userStr) {
         showAlert('Please login first', 'error');
         return;
       }
@@ -1011,17 +1058,50 @@
 
       const spinner = document.getElementById('upload-spinner');
       spinner.style.display = 'inline-block';
-      log(`Uploading ${file.name}...`);
-
-      const formData = new FormData();
-      formData.append('file', file);
+      log(`Encrypting ${file.name} locally...`);
 
       try {
-        const res = await fetch(`${API_BASE}/upload`, {
+        const userObj = JSON.parse(userStr);
+        const fileBuffer = await file.arrayBuffer();
+
+        // 1. Generate a random file key
+        const fileKey = await crypto.subtle.generateKey(
+          { name: "AES-GCM", length: 256 },
+          true,
+          ["encrypt", "decrypt"]
+        );
+
+        // 2. Encrypt the file
+        const fileIv = crypto.getRandomValues(new Uint8Array(12));
+        const encryptedFileBuffer = await crypto.subtle.encrypt(
+          { name: "AES-GCM", iv: fileIv },
+          fileKey,
+          fileBuffer
+        );
+
+        // 3. Wrap the file key with the user's password-derived key
+        const userKey = await deriveUserKey(password, userObj.key_salt);
+        const exportedFileKey = await crypto.subtle.exportKey("raw", fileKey);
+        
+        const keyIv = crypto.getRandomValues(new Uint8Array(12));
+        const encryptedKeyBuffer = await crypto.subtle.encrypt(
+          { name: "AES-GCM", iv: keyIv },
+          userKey,
+          exportedFileKey
+        );
+
+        // 4. Send encrypted blob and metadata to backend
+        log(`Uploading encrypted blob to network...`);
+        const formData = new FormData();
+        formData.append('file', new Blob([encryptedFileBuffer], {type: file.type}), file.name);
+        formData.append('encrypted_key', arrayBufferToBase64(encryptedKeyBuffer));
+        formData.append('key_iv', arrayBufferToBase64(keyIv));
+        formData.append('file_iv', arrayBufferToBase64(fileIv));
+
+        const res = await fetch(`${API_BASE}/files/upload`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'X-User-Password': password
+            'Authorization': `Bearer ${token}`
           },
           body: formData
         });
@@ -1029,8 +1109,8 @@
         const data = await res.json();
 
         if (res.ok) {
-          showAlert('File uploaded successfully!');
-          log(`Uploaded: ${file.name} (${data.chunks} chunks)`, 'success');
+          showAlert('File encrypted and uploaded successfully!');
+          log(`Uploaded: ${file.name} (${data.size} bytes)`, 'success');
           document.getElementById('file-input').value = '';
           document.getElementById('selected-file').textContent = '';
           loadMyFiles();
@@ -1040,11 +1120,100 @@
           log(data.error || 'Upload failed', 'error');
         }
       } catch (err) {
-        showAlert('Network error', 'error');
-        log('Upload failed: network error', 'error');
+        console.error(err);
+        showAlert(err.message || 'Error encrypting/uploading file', 'error');
+        log(`Upload failed: ${err.message}`, 'error');
       }
 
       spinner.style.display = 'none';
+    }
+
+    async function downloadFile(fileId, filename) {
+      const token = localStorage.getItem('token');
+      const password = localStorage.getItem('password');
+      const userStr = localStorage.getItem('user');
+
+      if (!token || !password || !userStr) {
+        showAlert('Please login first', 'error');
+        return;
+      }
+
+      log(`Downloading encrypted file ${filename} from network...`);
+
+      try {
+        const res = await fetch(`${API_BASE}/files/${fileId}/download`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          showAlert(data.error || 'Download failed', 'error');
+          log(data.error || 'Download failed', 'error');
+          return;
+        }
+
+        // Get metadata from headers
+        const encryptedKeyB64 = res.headers.get('X-Encrypted-Key');
+        const keyIvB64 = res.headers.get('X-Key-Iv');
+        const fileIvB64 = res.headers.get('X-File-Iv');
+        const mimeType = res.headers.get('X-Original-Mime');
+
+        if (!encryptedKeyB64 || !keyIvB64 || !fileIvB64) {
+           throw new Error("Missing encryption metadata from server");
+        }
+
+        const encryptedFileBlob = await res.blob();
+        const encryptedFileBuffer = await encryptedFileBlob.arrayBuffer();
+
+        log(`Decrypting ${filename} locally...`);
+
+        // 1. Unwrap the file key
+        const userObj = JSON.parse(userStr);
+        const userKey = await deriveUserKey(password, userObj.key_salt);
+
+        const encryptedKeyBuffer = base64ToArrayBuffer(encryptedKeyB64);
+        const keyIv = base64ToArrayBuffer(keyIvB64);
+
+        const decryptedKeyBuffer = await crypto.subtle.decrypt(
+          { name: "AES-GCM", iv: keyIv },
+          userKey,
+          encryptedKeyBuffer
+        );
+
+        const fileKey = await crypto.subtle.importKey(
+          "raw",
+          decryptedKeyBuffer,
+          { name: "AES-GCM" },
+          false,
+          ["decrypt"]
+        );
+
+        // 2. Decrypt the file
+        const fileIv = base64ToArrayBuffer(fileIvB64);
+        const decryptedFileBuffer = await crypto.subtle.decrypt(
+          { name: "AES-GCM", iv: fileIv },
+          fileKey,
+          encryptedFileBuffer
+        );
+
+        log(`Decrypted ${filename} successfully. Saving to disk...`, 'success');
+
+        // 3. Trigger download
+        const url = URL.createObjectURL(new Blob([decryptedFileBuffer], {type: mimeType}));
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error(err);
+        showAlert(err.message || 'Decryption failed', 'error');
+        log(`Download/Decryption failed: ${err.message}`, 'error');
+      }
     }
 
     async function loadMyFiles() {
