@@ -31,3 +31,7 @@ python-dotenv>=1.0.0
 gunicorn>=21.0.0
 gevent>=23.0.0
 gevent-websocket>=0.10.1
+
+# Testing
+pytest>=7.0.0
+pytest-flask>=1.2.0

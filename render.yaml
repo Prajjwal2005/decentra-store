@@ -1,20 +1,33 @@
-# render.yaml
-# Render deployment configuration for DecentraStore
-# Deploy at: https://render.com
-
 services:
-  # Main web service (Backend + Discovery combined)
   - type: web
-    name: decentrastore
+    name: decentrastore-discovery
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: python server.py --port $PORT --discovery-port 4000
+    region: oregon
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn -b 0.0.0.0:$PORT discovery.server:app"
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: 3.10.0
+      - key: FLASK_ENV
+        value: production
+
+  - type: web
+    name: decentrastore-backend
+    env: python
+    region: oregon
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn -b 0.0.0.0:$PORT backend.app:app"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
       - key: DISCOVERY_URL
-        value: http://localhost:4000
-    disk:
-      name: decentra-data
-      mountPath: /app/data
-      sizeGB: 1
+        fromService:
+          type: web
+          name: decentrastore-discovery
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: DATABASE_URL
+        sync: false
