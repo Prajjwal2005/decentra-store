@@ -289,7 +289,7 @@ def upload_file():
                 size=file_size,
                 mime_type=file.content_type or "application/octet-stream",
                 merkle_root=merkle_root,
-                chunk_count=len(chunks),
+                chunk_count=len(chunk_records),
                 encrypted_key=encrypted_key,
                 key_iv=key_iv,
                 file_iv=file_iv
