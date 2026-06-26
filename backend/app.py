@@ -295,6 +295,7 @@ def upload_file():
                 file_iv=file_iv
             )
             session.add(file_meta)
+            session.flush()  # Ensure file_meta is inserted before chunk locations
             
             for cr in chunk_records:
                 session.add(ChunkLocation(
