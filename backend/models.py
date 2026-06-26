@@ -10,7 +10,7 @@ import time
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import create_engine, Column, String, Integer, Float, Text, Boolean, DateTime
+from sqlalchemy import create_engine, Column, String, Integer, Float, Text, Boolean, DateTime, BigInteger
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 
@@ -44,8 +44,8 @@ class User(Base):
     last_login = Column(DateTime, nullable=True)
     
     # Storage quota
-    storage_quota_bytes = Column(Integer, default=10 * 1024 * 1024 * 1024)  # 10 GB default
-    storage_used_bytes = Column(Integer, default=0)
+    storage_quota_bytes = Column(BigInteger, default=10 * 1024 * 1024 * 1024)  # 10 GB default
+    storage_used_bytes = Column(BigInteger, default=0)
     
     def to_dict(self, include_private: bool = False) -> dict:
         """Convert to dictionary."""
