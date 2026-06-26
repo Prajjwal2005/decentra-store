@@ -2,6 +2,7 @@ services:
   - type: web
     name: decentrastore-discovery
     env: python
+    plan: free
     region: oregon
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn -b 0.0.0.0:$PORT discovery.server:app"
@@ -14,6 +15,7 @@ services:
   - type: web
     name: decentrastore-backend
     env: python
+    plan: free
     region: oregon
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn -b 0.0.0.0:$PORT backend.app:app"
