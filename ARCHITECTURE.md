@@ -1,74 +1,62 @@
 # DecentraStore Architecture
 
 ## Overview
-DecentraStore is a decentralized file storage system that combines end-to-end encryption, blockchain-based metadata management, Merkle tree integrity verification, and a Proof of Storage consensus mechanism. The architecture ensures data availability and integrity across decentralized storage nodes without relying on a single central storage provider.
+DecentraStore is a federated decentralized file storage system that combines client-side end-to-end encryption, Merkle tree integrity verification, and distributed peer-to-peer storage. The architecture ensures data privacy and fault tolerance by splitting files into encrypted chunks across untrusted storage nodes, while relying on a federated coordination server (tracker) for routing and metadata.
 
-## High-Level Architecture
+## High-Level Architecture (Federated Decentralized)
 
 The system is composed of several independent but interacting components:
 
 1. **Web Browser (Frontend)**
-   - User interface for uploading, downloading, and managing files.
-   - Communicates with the Backend Server via HTTPS.
+   - Client-side application for uploading, downloading, and managing files.
+   - Performs encryption and decryption directly in the browser using the Web Crypto API, guaranteeing Zero-Knowledge.
 
-2. **Backend Server (`backend/app.py`)**
-   - The primary API gateway (Flask).
+2. **Coordination Server (Tracker/Backend)**
+   - The primary API gateway (Flask) acting as a federated tracker (similar to BitTorrent trackers).
    - Handles user authentication (JWT).
-   - Manages file chunking, AES-256 encryption, and coordinates chunk distribution.
-   - Handles file retrieval, Merkle verification, and decryption.
+   - Coordinates chunk distribution and retrieval.
+   - Maintains a Postgres database containing file metadata, Merkle roots, and chunk location mappings.
 
-3. **Discovery Service (`discovery/server.py`)**
-   - A central registry where Storage Nodes register when they come online.
-   - Tracks node health via heartbeats.
-   - Provides the Backend Server with a list of active peers to distribute chunks to.
-
-4. **Storage Nodes (`node/storage_node.py`)**
-   - Peer-to-peer nodes (which can be run by anyone) that store encrypted file chunks.
-   - Nodes only see encrypted binary blobs and have zero knowledge of the file contents, file names, or ownership.
-   - Register automatically with the Discovery Service.
-
-5. **Blockchain (`shared/blockchain.py`)**
-   - A private, tamper-evident blockchain that stores file metadata.
-   - Records file hashes, Merkle roots, chunk locations, and encrypted file keys.
-   - Provides privacy by ensuring metadata is tied only to owner IDs, with the actual decryption key encrypted.
+3. **Storage Nodes (Peers)**
+   - Untrusted peer-to-peer nodes (which can be run by anyone on home PCs, VPS, or cloud instances).
+   - Store purely encrypted binary blobs and have zero knowledge of file contents, names, or ownership.
+   - Register automatically with the Coordination Server via a public URL (using tools like localhost.run, ngrok, or raw IPs).
 
 ## Security Model
 
-### File Upload Flow
+### File Upload Flow (Zero-Knowledge)
 1. User authenticates and receives a JWT token.
-2. User uploads a file through the frontend.
-3. Backend generates a random AES-256 encryption key specifically for this file.
-4. The file is split into chunks (default 256KB).
-5. Each chunk is individually encrypted using AES-256-GCM.
-6. Encrypted chunks are distributed to *N* peers (determined by the replication factor).
-7. The file encryption key is then encrypted with a key derived from the user's password (PBKDF2).
-8. Encrypted metadata is stored on the blockchain, including the file hash, Merkle root, chunk locations, and the encrypted file key.
+2. User selects a file through the frontend.
+3. The frontend generates a random AES-256 encryption key and encrypts the file *before* it leaves the browser.
+4. The file encryption key itself is encrypted using a Key Encryption Key (KEK) derived from the user's password (PBKDF2).
+5. The encrypted file blob and encrypted key are sent to the Coordination Server.
+6. The Coordination Server splits the encrypted blob into chunks (default 256KB).
+7. Chunks are distributed to *N* peers (determined by the replication factor).
+8. The Postgres database stores the file hash, Merkle root, chunk locations, and the encrypted file key.
 
 ### File Retrieval Flow
-1. User requests their file. The backend verifies ownership via the blockchain metadata.
-2. Backend locates the chunks using the locations stored on the blockchain.
-3. Chunks are retrieved from the respective storage nodes.
-4. The backend uses the Merkle tree to verify the integrity of each chunk.
-5. Chunks are decrypted using the user's file key (which is decrypted using their derived key).
-6. The file is reassembled and sent to the user.
+1. User requests their file via the frontend.
+2. Coordination Server verifies ownership and locates the chunks via the Postgres database.
+3. Chunks are retrieved from the respective untrusted storage nodes.
+4. The Coordination Server uses the Merkle tree to verify the integrity of each chunk.
+5. The reassembled (but still encrypted) file is sent back to the browser.
+6. The browser decrypts the file key using the user's password, and then decrypts the file.
 
-## Proof of Storage Consensus
-
-DecentraStore uses a hybrid consensus mechanism combining Proof of Storage with quorum-based validation.
-- When retrieving chunks, the system can query multiple nodes to verify storage.
-- A quorum (e.g., 2/3 of nodes) must agree on the integrity of the chunk.
-- Byzantine fault tolerance ensures that malicious or failing nodes cannot corrupt the retrieved file, as the Merkle root on the blockchain acts as the ultimate source of truth.
+## Why Federated?
+Rather than relying on a slow, expensive public blockchain or a complex gossip protocol, DecentraStore opts for a **Federated** architecture. 
+- **Storage** is fully decentralized across community nodes.
+- **Coordination** is centralized for maximum speed and efficiency.
+This mirrors the architecture of highly successful P2P systems (like early BitTorrent) and provides the perfect balance of performance and decentralized storage.
 
 ## Cryptographic Specifications
 
-- **Encryption**: AES-256-GCM (32-byte key, 12-byte nonce, 16-byte auth tag)
-- **Key Derivation**: PBKDF2-HMAC-SHA256 (100,000 iterations, 16-byte salt)
-- **Hashing**: SHA-256 (used for chunk hashing, Merkle trees, and the blockchain)
+- **Encryption**: AES-256-GCM
+- **Key Derivation**: PBKDF2-HMAC-SHA256
+- **Hashing**: SHA-256 (used for chunk hashing and Merkle trees)
 
 ## Directory Structure
-- `backend/`: Flask API and core business logic (auth, uploader, models).
-- `discovery/`: Node registry and heartbeat service.
-- `node/`: Storage node implementation.
-- `frontend/`: Web user interface.
-- `shared/`: Common utilities including cryptography, chunking, and the blockchain implementation.
-- `config.py`: Shared configuration parameters.
+- ackend/: Flask API and coordination tracker logic.
+- 
+ode/: Storage node implementation (can be distributed).
+- rontend/: Web user interface with client-side cryptography.
+- shared/: Common utilities including cryptography and chunking.
