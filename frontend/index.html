@@ -1243,14 +1243,14 @@
                   </svg>
                 </div>
                 <div>
-                  <div class="file-name">${f.filename}</div>
-                  <div class="file-meta">${formatBytes(f.file_size)} &bull; ${f.chunk_count} chunks</div>
+                  <div class="file-name">${f.original_name}</div>
+                  <div class="file-meta">${formatBytes(f.size)} &bull; ${f.chunk_count} chunks</div>
                 </div>
               </div>
               <div class="file-actions">
-                <button class="btn btn-primary btn-sm" onclick="downloadFile('${f.file_id}', '${f.filename}')">Download</button>
-                <button class="btn btn-outline btn-sm" onclick="showShareDialog('${f.file_id}', '${f.filename}')">Share</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteFile('${f.file_id}', '${f.filename}')">Delete</button>
+                <button class="btn btn-primary btn-sm" onclick="downloadFile('${f.id}', '${f.original_name}')">Download</button>
+                <button class="btn btn-outline btn-sm" onclick="showShareDialog('${f.id}', '${f.original_name}')">Share</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteFile('${f.id}', '${f.original_name}')">Delete</button>
               </div>
             `;
             list.appendChild(li);
@@ -1436,7 +1436,7 @@
                 </div>
               </div>
               <div class="file-actions">
-                <button class="btn btn-primary btn-sm" onclick="downloadSharedFile('${f.file_id}', '${f.filename}')">Download</button>
+                <button class="btn btn-primary btn-sm" onclick="downloadSharedFile('${f.id}', '${f.filename}')">Download</button>
               </div>
             `;
             list.appendChild(li);
