@@ -90,6 +90,16 @@ def get_user_key_from_header(user: User) -> Optional[bytes]:
 def before_request():
     g.current_user = get_current_user()
 
+@app.route("/")
+def index():
+    """Serve frontend."""
+    return send_from_directory(FRONTEND_DIR, "index.html")
+
+@app.route("/static/<path:filename>")
+def static_files(filename):
+    """Serve static files."""
+    return send_from_directory(FRONTEND_DIR / "static", filename)
+
 # =============================================================================
 # Auth Routes
 # =============================================================================
