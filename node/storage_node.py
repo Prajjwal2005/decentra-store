@@ -55,10 +55,11 @@ CORS(app)
 
 # Node configuration (set at startup)
 NODE_ID: str = None
-NODE_IP: str = None
-NODE_PORT: int = None
-STORAGE_DIR: Path = None
-DISCOVERY: str = None
+NODE_IP = "127.0.0.1"
+NODE_PORT = 6001
+NODE_PUBLIC_URL = None
+STORAGE_DIR = None
+DISCOVERY = None
 
 # Runtime stats
 STATS = {
@@ -121,6 +122,7 @@ def register_with_discovery():
             "ip": NODE_IP,
             "port": NODE_PORT,
             "public_ip": external_ip or NODE_IP,
+            "public_url": NODE_PUBLIC_URL,
             "capacity_gb": get_storage_capacity_gb(),
             "meta": {
                 "version": "1.0.0",
@@ -502,17 +504,19 @@ def start_node(
     host: str = "0.0.0.0",
     port: int = 6001,
     discovery_url: str = None,
+    public_url: str = None,
     storage_dir: str = None,
     node_id: str = None,
     debug: bool = False
 ):
     """Start the storage node."""
-    global NODE_ID, NODE_IP, NODE_PORT, STORAGE_DIR, DISCOVERY
+    global NODE_ID, NODE_IP, NODE_PORT, NODE_PUBLIC_URL, STORAGE_DIR, DISCOVERY
     
     # Generate node ID if not provided
     NODE_ID = node_id or f"node-{uuid.uuid4().hex[:8]}"
     NODE_IP = host if host != "0.0.0.0" else "127.0.0.1"
     NODE_PORT = port
+    NODE_PUBLIC_URL = public_url
     DISCOVERY = discovery_url or DISCOVERY_URL
     
     # Setup storage directory
@@ -557,6 +561,7 @@ if __name__ == "__main__":
     parser.add_argument("--host", default="0.0.0.0", help="Bind host")
     parser.add_argument("--port", "-p", type=int, default=6001, help="Bind port")
     parser.add_argument("--discovery", "-d", default=None, help="Discovery service URL")
+    parser.add_argument("--public-url", "-u", default=None, help="Public URL (e.g., Ngrok) for NAT traversal")
     parser.add_argument("--storage-dir", "-s", default=None, help="Chunk storage directory")
     parser.add_argument("--node-id", "-n", default=None, help="Node identifier")
     parser.add_argument("--debug", action="store_true", help="Debug mode")
@@ -567,6 +572,7 @@ if __name__ == "__main__":
         host=args.host,
         port=args.port,
         discovery_url=args.discovery,
+        public_url=args.public_url,
         storage_dir=args.storage_dir,
         node_id=args.node_id,
         debug=args.debug

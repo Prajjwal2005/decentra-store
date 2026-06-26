@@ -135,11 +135,12 @@ def node_register():
     node_id = data.get("node_id")
     ip = data.get("ip")
     port = data.get("port")
+    public_url = data.get("public_url")
     
     if not all([node_id, ip, port]):
         return jsonify({"error": "node_id, ip, and port are required"}), 400
         
-    url = f"http://{ip}:{port}"
+    url = public_url if public_url else f"http://{ip}:{port}"
     session = get_session()
     try:
         node = session.query(Node).filter_by(id=node_id).first()
