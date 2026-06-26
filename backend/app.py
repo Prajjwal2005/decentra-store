@@ -262,19 +262,17 @@ def upload_file():
         
         session = get_session()
         try:
-            for i, chunk_data in enumerate(chunks):
-                # The chunk_data is ALREADY encrypted by the frontend. We just hash and distribute it.
-                chunk_hash = compute_hash(chunk_data)
+            for chunk_index, chunk_bytes, chunk_hash in chunks:
                 merkle_leaves.append(chunk_hash)
                 
                 # Distribute (using simple round-robin for now)
-                node = nodes[i % len(nodes)]
-                success = uploader.upload_chunk_to_node({"url": node.url, "node_id": node.id}, chunk_hash, chunk_data)
+                node = nodes[chunk_index % len(nodes)]
+                success = uploader.upload_chunk_to_node({"url": node.url, "node_id": node.id}, chunk_hash, chunk_bytes)
                 if not success:
-                    raise Exception(f"Failed to upload chunk {i} to node {node.id}")
+                    raise Exception(f"Failed to upload chunk {chunk_index} to node {node.id}")
                     
                 chunk_records.append({
-                    "chunk_index": i,
+                    "chunk_index": chunk_index,
                     "chunk_hash": chunk_hash,
                     "node_id": node.id
                 })
