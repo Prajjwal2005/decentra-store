@@ -129,7 +129,7 @@ def register_with_discovery():
         }
         
         resp = requests.post(
-            f"{DISCOVERY}/register",
+            f"{DISCOVERY}/nodes/register",
             json=payload,
             timeout=PEER_TIMEOUT
         )
@@ -177,7 +177,7 @@ def send_heartbeat():
         }
         
         resp = requests.post(
-            f"{DISCOVERY}/heartbeat",
+            f"{DISCOVERY}/nodes/heartbeat",
             json=payload,
             timeout=PEER_TIMEOUT
         )
@@ -202,7 +202,7 @@ def unregister_from_discovery():
     
     try:
         resp = requests.post(
-            f"{DISCOVERY}/unregister",
+            f"{DISCOVERY}/nodes/unregister",
             json={"node_id": NODE_ID},
             timeout=5
         )

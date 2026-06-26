@@ -1,18 +1,5 @@
 services:
   - type: web
-    name: decentrastore-discovery
-    env: python
-    plan: free
-    region: oregon
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn -b 0.0.0.0:$PORT discovery.server:app"
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.10.0
-      - key: FLASK_ENV
-        value: production
-
-  - type: web
     name: decentrastore-backend
     env: python
     plan: free
@@ -26,10 +13,5 @@ services:
         value: production
       - key: SECRET_KEY
         generateValue: true
-      - key: DISCOVERY_URL
-        fromService:
-          type: web
-          name: decentrastore-discovery
-          envVarKey: RENDER_EXTERNAL_URL
       - key: DATABASE_URL
         sync: false

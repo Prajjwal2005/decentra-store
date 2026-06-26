@@ -19,8 +19,6 @@ from .chunker import (
     reassemble_chunks,
 )
 
-from .blockchain import SimpleBlockchain
-
 __all__ = [
     "generate_file_key",
     "encrypt_chunk",
@@ -32,5 +30,4 @@ __all__ = [
     "compute_merkle_root",
     "verify_chunk_hash",
     "reassemble_chunks",
-    "SimpleBlockchain",
 ]

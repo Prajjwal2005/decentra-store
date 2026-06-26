@@ -4,6 +4,6 @@ def test_app_exists(app):
     assert app.config["TESTING"] is True
 
 def test_my_files_requires_auth(client):
-    """Test that the /my-files endpoint requires authentication."""
-    response = client.get('/my-files')
+    """Test that the /files endpoint requires authentication."""
+    response = client.get('/files')
     assert response.status_code == 401

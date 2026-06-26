@@ -9,8 +9,7 @@ import uuid
 import time
 from datetime import datetime
 from typing import Optional
-
-from sqlalchemy import create_engine, Column, String, Integer, Float, Text, Boolean, DateTime, BigInteger
+from sqlalchemy import create_engine, Column, String, Integer, Float, Text, Boolean, DateTime, BigInteger, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 
@@ -97,6 +96,80 @@ class UploadSession(Base):
     # Encrypted file key (for the owner)
     encrypted_file_key = Column(Text, nullable=True)
 
+
+class FileMetadata(Base):
+    """File metadata replacing the custom blockchain."""
+    
+    __tablename__ = "files"
+    
+    id = Column(String(36), primary_key=True)
+    owner_id = Column(String(36), ForeignKey('users.id'), nullable=False, index=True)
+    
+    original_name = Column(String(256), nullable=False)
+    stored_name = Column(String(256), nullable=False)
+    size = Column(BigInteger, nullable=False)
+    mime_type = Column(String(128), default="application/octet-stream")
+    
+    merkle_root = Column(String(64), nullable=False)
+    chunk_count = Column(Integer, nullable=False)
+    
+    encrypted_key = Column(Text, nullable=False)
+    iv = Column(String(32), nullable=False)
+    
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "owner_id": self.owner_id,
+            "original_name": self.original_name,
+            "stored_name": self.stored_name,
+            "size": self.size,
+            "mime_type": self.mime_type,
+            "merkle_root": self.merkle_root,
+            "chunk_count": self.chunk_count,
+            "created_at": self.created_at.isoformat() if self.created_at else None
+        }
+
+
+class ChunkLocation(Base):
+    """Maps chunks to the storage nodes hosting them."""
+    
+    __tablename__ = "chunk_locations"
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    file_id = Column(String(36), ForeignKey('files.id'), nullable=False, index=True)
+    chunk_index = Column(Integer, nullable=False)
+    chunk_hash = Column(String(64), nullable=False)
+    node_id = Column(String(36), ForeignKey('nodes.id'), nullable=False, index=True)
+    
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class Node(Base):
+    """Registered storage nodes."""
+    
+    __tablename__ = "nodes"
+    
+    id = Column(String(36), primary_key=True)
+    url = Column(String(256), nullable=False)
+    
+    capacity_bytes = Column(BigInteger, default=0)
+    used_bytes = Column(BigInteger, default=0)
+    
+    is_active = Column(Boolean, default=True)
+    last_heartbeat = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "url": self.url,
+            "capacity_bytes": self.capacity_bytes,
+            "used_bytes": self.used_bytes,
+            "is_active": self.is_active,
+            "last_heartbeat": self.last_heartbeat.isoformat() if self.last_heartbeat else None
+        }
 
 # Database initialization
 def get_engine():
