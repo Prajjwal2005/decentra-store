@@ -196,6 +196,8 @@ def get_session():
 def init_db():
     """Initialize database tables."""
     engine = get_engine()
+    # Temporary: reset database schema for Phase 2
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
 
